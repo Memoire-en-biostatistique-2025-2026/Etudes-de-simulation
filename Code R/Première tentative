@@ -1,0 +1,1 @@
+# Ce fichier va contenir ma première tentative de génération de données basée sur le DAG que vous m'avez envoyé
