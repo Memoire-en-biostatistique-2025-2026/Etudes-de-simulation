@@ -30,9 +30,10 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
           
           I2 <- rbinom(n = popsize, size = 1, prob = plogis(-11.51292 + 0.15*C - 0.1*V))  
           
-          # Génération des symptomes W1: W1~  et W2: W2~
+          # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
+          #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
           
-          W1 <- rep(0, popsize)
+          W1 <- rep(0, popsize) # W1 = 0 si I1 = 0, donc:
           
           W1[I1 == 1] <- rbinom(
             
@@ -42,7 +43,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
             
           )
           
-          W2 <- rep(0, popsize)
+          W2 <- rep(0, popsize) # W2 = 0 si I2 = 0, donc:
           
           W2[I2 == 1] <- rbinom(
             
@@ -56,9 +57,9 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
           
           W <- pmax(W1, W2)
           
-          # Génération de l'hospitalization
+          # Génération de l'hospitalization 
           
-          H = rep(0, popsize)
+          H = rep(0, popsize) # H = 0 si W = 0, donc:
           
           H[W == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W == 1]),
                               size = 1, n = sum(W == 1))
