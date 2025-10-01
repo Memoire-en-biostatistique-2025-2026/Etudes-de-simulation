@@ -1,4 +1,5 @@
 # Ce fichier va contenir ma première tentative de génération de données basée sur le DAG que vous m'avez envoyé
+# Les différentes valeurs des paramètres utilisées sont issues de la lescture des différents articles 
 
 # Génération des données
 
