@@ -24,7 +24,6 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C))
   
-  
   I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*0))
   I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*1))
   
@@ -42,34 +41,48 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
   )
   
-  W2_0 <- rep(0, popsize) # W2 = 0 si I2 = 0, donc:
-  W2_1 <- rep(0, popsize) # W2 = 0 si I2 = 0, donc:
+  W2_0 <- rep(0, popsize) # W2_0 = 0 si I2_0 = 0, donc:
+  W2_1 <- rep(0, popsize) # W2_1 = 0 si I2_1 = 0, donc:
   
   W2_0[I2_0 == 1] <- rbinom(
     
-    n = sum(I2_0 == 1), # J'arrete ici...
+    n = sum(I2_0 == 1),
     size = 1,
-    prob = plogis(-3.75 + 2*C[I2 == 1] - 0.91*V[I2 == 1])
+    prob = plogis(-3.75 + 2*C[I2_0 == 1] - 0.91*V[I2_0 == 1])
+    
+  )
+  
+  W2_1[I2_1 == 1] <- rbinom(
+    
+    n = sum(I2_1 == 1), 
+    size = 1,
+    prob = plogis(-3.75 + 2*C[I2_1 == 1] - 0.91*V[I2_1 == 1])
     
   )
   
   # Génération de W
   
-  W <- pmax(W1, W2)
+  W_0 <- pmax(W1, W2_0)
+  W_1 <- pmax(W1, W2_1)
+  
   
   # Génération de l'hospitalization 
   
-  H = rep(0, popsize) # H = 0 si W = 0, donc:
+  H_0 = rep(0, popsize) # H_0 = 0 si W_0 = 0, donc:
+  H_1 = rep(0, popsize) # H_1 = 0 si W_1 = 0, donc:
   
-  H[W == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W == 1]),
-                      size = 1, n = sum(W == 1))
+  H_0[W_0 == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W_0 == 1]),
+                      size = 1, n = sum(W_0 == 1))
+
+  H_1[W_1 == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W_0 == 1]),
+                        size = 1, n = sum(W_1 == 1))
 }
 
-
+################################################################################
 
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                     
-                    popsize = 150000) {
+                    popsize = 150000, cfV0 = FALSE, cfV1 = FALSE) {
   
           
           # Génération du facteur de confusion continu C 
@@ -78,9 +91,19 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
           
           # Génération du statut vaccinal V : V ~ Bernoulli(logit(a0 + a1*C))
           
+          if (cfV0 == TRUE) {
+            
+            V <- rep(0, popsize)
+            
+          } else if (cfV1 == TRUE) {
+            
+            V <- rep(1, popsize)
+            
+          } else {
             
           V <- rbinom(n = popsize, size = 1, prob = plogis(0.5 + 0.3*C))
 
+          }
           
           # Génération des infections I1 : I1 ~ Bernoulli(logit(a0 + a1*C)) et 
           #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
@@ -128,22 +151,3 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
    
 
 }
-################################################################################
-
-dag <- empty_dag() +
-        
-       node("C", type = "runif", 0.1, 3) +
-       
-       node("V", type = "binomial", formula = ~ -12.25 + 0.3*C) +
-       
-       node("I1", type = "binomial", formula = ~ -11.51292 + 0.35*C) 
-
-  
-set.seed(10)
-
-sim_dat <- sim_from_dag(dag, n_sim = 100000)
-
-plot(dag)
-
-  
-  
