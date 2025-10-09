@@ -84,9 +84,7 @@ dat <- datagen(ssize = 5000)
 
 ################################################################################ 
 
-datagen.cont <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
-                    
-                         popsize = 150000) {
+datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000) {
   
   
   # Génération du facteur de confusion continu C 
@@ -151,6 +149,10 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
 
   H_1[W_1 == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W_0 == 1]),
                         size = 1, n = sum(W_1 == 1))
+  
+  dat <- data.frame(C, I1, I2_0, I2_1, W1, W2_0, W2_1, W_0, W_1, H_0, H_1)
+  
+  return(dat)
 }
 
 ################################################################################
@@ -226,3 +228,24 @@ datagen_con_2 <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
    
 
 }
+
+
+#### Calcul des vraies valeurs ####
+
+## Regression logistique ##
+dat <- datagen.cont(seed = 94178, popsize = 10000000)
+
+dat0 <- data.frame(C = dat$C, V = 0, Y = dat$I2_0*dat$W2_0*dat$H_0)
+dat1 <- data.frame(C = dat$C, V = 1, Y = dat$I2_1*dat$W2_1*dat$H_1) 
+dat_complet <- rbind(dat0, dat1)
+vraiRRc <- glm(Y ~ V + C, family = binomial(link = "log"), data = dat_complet)
+vrai.EV.logistique <- 1 - exp(coef(vraiRRc)[2])
+# 0.3640776
+## Autres methodes ##
+vraiRRm <- mean(dat1$Y)/mean(dat0$Y)
+vrai.EV.autres <- 1 - vraiRRm
+# 0.3682873
+
+
+
+
