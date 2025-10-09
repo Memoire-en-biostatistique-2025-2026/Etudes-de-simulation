@@ -60,7 +60,28 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
 
   H[W == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W == 1]),
                           size = 1, n = sum(W == 1))
+  
+  # Le devis test-négatif ne conserve que les personnes testées : H = 1
+  
+  R <- sample(which(H == 1), ssize, replace = TRUE) 
+  
+  if (return_full == FALSE) {
+    
+    dat <- as.data.frame(cbind(Y = I2, V = V, C = C)[R, ])
+    
+  } else {
+    
+    dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W = W, V = V,
+                               C = C)) # Virus respiratoire syncytial RSV
+    
+  }
+  
+  return(dat)
+  
 }  
+
+dat <- datagen(ssize = 5000)
+
 ################################################################################ 
 
 datagen.cont <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
