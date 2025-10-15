@@ -18,6 +18,10 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   C <- runif(n = popsize, 0.1, 3); # On commence par les noeuds racines de notre DAG
   
+  # Génération du statut vaccinal V : V ~ Bernoulli(logit(a0 + a1*C))
+  
+  V <- rbinom(n = popsize, size = 1, prob = plogis(0.5 + 0.3*C))
+    
   # Génération des infections I1 : I1 ~ Bernoulli(logit(a0 + a1*C)) et 
   #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
   
@@ -233,16 +237,24 @@ datagen_con_2 <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
 #### Calcul des vraies valeurs ####
 
 ## Regression logistique ##
+
 dat <- datagen.cont(seed = 94178, popsize = 10000000)
 
 dat0 <- data.frame(C = dat$C, V = 0, Y = dat$I2_0*dat$W2_0*dat$H_0)
+
 dat1 <- data.frame(C = dat$C, V = 1, Y = dat$I2_1*dat$W2_1*dat$H_1) 
+
 dat_complet <- rbind(dat0, dat1)
+
 vraiRRc <- glm(Y ~ V + C, family = binomial(link = "log"), data = dat_complet)
+
 vrai.EV.logistique <- 1 - exp(coef(vraiRRc)[2])
 # 0.3640776
+
 ## Autres methodes ##
+
 vraiRRm <- mean(dat1$Y)/mean(dat0$Y)
+
 vrai.EV.autres <- 1 - vraiRRm
 # 0.3682873
 
