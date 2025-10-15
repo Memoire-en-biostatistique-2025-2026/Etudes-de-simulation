@@ -9,6 +9,7 @@ library(simDAG)
 library(ggplot2)
 library(ggforce) # Pour afficher le DAG pour la deuxième méthode de génération
 
+
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                          
                          popsize = 150000) {
@@ -30,6 +31,12 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   I2 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*V))
   
+  # Calcul du pourcentage des co-infections
+  
+  co_inf <- sum(I1 == 1 & I2 == 1)
+  
+  per_co_inf <- co_inf / popsize * 100
+  # 7.120667
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
@@ -68,17 +75,9 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   # Le devis test-négatif ne conserve que les personnes testées : H = 1
   
   R <- sample(which(H == 1), ssize, replace = TRUE) 
-  
-  if (return_full == FALSE) {
     
-    dat <- as.data.frame(cbind(Y = I2, V = V, C = C)[R, ])
-    
-  } else {
-    
-    dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W = W, V = V,
+  dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W = W, V = V,
                                C = C)) # Virus respiratoire syncytial RSV
-    
-  }
   
   return(dat)
   
@@ -103,6 +102,18 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000) {
   
   I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*0))
   I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*1))
+  
+  # Calcul du pourcentage des co-infections
+  
+  co_inf_0 <- sum(I1 == 1 & I2_0 == 1)
+  
+  per_co_inf_0 <- co_inf / popsize * 100
+  # 7.120667
+  
+  co_inf_1 <- sum(I1 == 1 & I2_1 == 1)
+  
+  per_co_inf_1 <- co_inf / popsize * 100
+  # 7.120667
   
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
@@ -232,7 +243,7 @@ datagen_con_2 <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
    
 
 }
-
+################################################################################
 
 #### Calcul des vraies valeurs ####
 
@@ -257,6 +268,41 @@ vraiRRm <- mean(dat1$Y)/mean(dat0$Y)
 
 vrai.EV.autres <- 1 - vraiRRm
 # 0.3682873
+################################################################################
+
+#### Paramètres de la simulation ####
+
+## Regression logistique ##
+
+set.seed(1) # Pour avoir toujours les mêmes germes
+
+seeds_list <- sample(1:1000000, size = 1000)
+
+l_vraiRRc <- rep(NA, 1000)
+
+for (i in seeds_list) {
+  
+  for (j in 1:50){
+  
+  dat <- datagen.cont(seed = i, popsize = 10000000)
+
+  dat0 <- data.frame(C = dat$C, V = 0, Y = dat$I2_0*dat$W2_0*dat$H_0)
+
+  dat1 <- data.frame(C = dat$C, V = 1, Y = dat$I2_1*dat$W2_1*dat$H_1) 
+
+  dat_complet <- rbind(dat0, dat1)
+
+  vraiRRc <- glm(Y ~ V + C, family = binomial(link = "log"), data = dat_complet)
+
+  l_vraiRRc[j] <- 1 - exp(coef(vraiRRc)[2])
+  
+  }
+  
+  mean(l_vraiRRc)
+  
+}
+
+
 
 
 
