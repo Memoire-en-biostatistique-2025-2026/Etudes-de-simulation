@@ -302,8 +302,19 @@ for (i in seeds_list) {
   
 }
 
+## Autres methodes ##
 
+l_vrai.EV.autres <- rep(NA, 1000)
 
+for (i in seeds_list) {
+  
+  for (j in 1:50) {
 
+vraiRRm <- mean(dat1$Y)/mean(dat0$Y)
+
+vrai.EV.autres[j] <- 1 - vraiRRm
+
+  }
+}
 
 
