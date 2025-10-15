@@ -107,12 +107,12 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000) {
   
   co_inf_0 <- sum(I1 == 1 & I2_0 == 1)
   
-  per_co_inf_0 <- co_inf / popsize * 100
+  per_co_inf_0 <- co_inf_0 / popsize * 100
   # 7.120667
   
   co_inf_1 <- sum(I1 == 1 & I2_1 == 1)
   
-  per_co_inf_1 <- co_inf / popsize * 100
+  per_co_inf_1 <- co_inf_1 / popsize * 100
   # 7.120667
   
   
