@@ -260,14 +260,14 @@ dat_complet <- rbind(dat0, dat1)
 vraiRRc <- glm(Y ~ V + C, family = binomial(link = "log"), data = dat_complet)
 
 vrai.EV.logistique <- 1 - exp(coef(vraiRRc)[2])
-# 0.3640776
+# 0.3624796
 
 ## Autres methodes ##
 
 vraiRRm <- mean(dat1$Y)/mean(dat0$Y)
 
 vrai.EV.autres <- 1 - vraiRRm
-# 0.3682873
+# 0.3665348
 ################################################################################
 
 #### Paramètres de la simulation ####
@@ -275,15 +275,17 @@ vrai.EV.autres <- 1 - vraiRRm
 ## Regression logistique ##
 
 set.seed(1) # Pour avoir toujours les mêmes germes
+nrep <- 10
 
-seeds_list <- sample(1:1000000, size = 1000)
+seeds_list <- sample(1:1000000, size = nrep)
 
-l_vraiRRc <- rep(NA, 1000)
+l_vraiRRc <- rep(NA, nrep)
 
+j = 1;
 for (i in seeds_list) {
   
-  for (j in 1:50){
-  
+  # for (j in 1:50){
+
   dat <- datagen.cont(seed = i, popsize = 10000000)
 
   dat0 <- data.frame(C = dat$C, V = 0, Y = dat$I2_0*dat$W2_0*dat$H_0)
@@ -296,11 +298,12 @@ for (i in seeds_list) {
 
   l_vraiRRc[j] <- 1 - exp(coef(vraiRRc)[2])
   
-  }
-  
-  mean(l_vraiRRc)
+  j = j + 1
   
 }
+  
+l_vraiRRc
+  
 
 ## Autres methodes ##
 
