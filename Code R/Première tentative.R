@@ -280,6 +280,7 @@ nrep <- 10
 seeds_list <- sample(1:1000000, size = nrep)
 
 l_vraiRRc <- rep(NA, nrep)
+vrai.EV.autres <- rep(NA, nrep)
 
 j = 1;
 for (i in seeds_list) {
@@ -298,26 +299,19 @@ for (i in seeds_list) {
 
   l_vraiRRc[j] <- 1 - exp(coef(vraiRRc)[2])
   
+  vraiRRm <- mean(dat1$Y)/mean(dat0$Y)
+  
+  vrai.EV.autres[j] <- 1 - vraiRRm
+  
   j = j + 1
+  print(data.frame(Sys.time(), j))
   
 }
   
 l_vraiRRc
+# [1] 0.3597205 0.3618331 0.3631053 0.3631609 0.3640605 0.3611498 0.3627725 0.3612469 0.3623667
+# [10] 0.3632017
   
-
-## Autres methodes ##
-
-l_vrai.EV.autres <- rep(NA, 1000)
-
-for (i in seeds_list) {
-  
-  for (j in 1:50) {
-
-vraiRRm <- mean(dat1$Y)/mean(dat0$Y)
-
-vrai.EV.autres[j] <- 1 - vraiRRm
-
-  }
-}
+vrai.EV.autres
 
 
