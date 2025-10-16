@@ -17,7 +17,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   # Génération du facteur de confusion continu C 
   
-  C <- runif(n = popsize, 0.1, 3); # On commence par les noeuds racines de notre DAG
+  C <- runif(n = popsize, 0.1, 3) # On commence par les noeuds racines de notre DAG
   
   # Génération du statut vaccinal V : V ~ Bernoulli(logit(a0 + a1*C))
   
@@ -26,10 +26,11 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   # Génération des infections I1 : I1 ~ Bernoulli(logit(a0 + a1*C)) et 
   #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
   
+  C2 <- runif(n = popsize, 0,1)
   
-  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C))
+  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C + co_inf_para*C2))
   
-  I2 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*V))
+  I2 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*V + co_inf_para*C2))
   
   # Calcul du pourcentage des co-infections
   
@@ -61,6 +62,9 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
   )
   
+  co_W <- sum(W1 == 1 & W2 == 1, na.rm = TRUE)
+  per_co_W <- co_W / popsize * 100
+  
   # Génération de W
   
   W <- pmax(W1, W2)
@@ -79,7 +83,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W = W, V = V,
                                C = C)) # Virus respiratoire syncytial RSV
   
-  return(dat)
+  return(list(dat = dat, per_co_inf = per_co_inf, per_co_W = per_co_W))
   
 }  
 
@@ -324,4 +328,14 @@ mean(vrai.EV.autres)
 # 0.3664181
 sd(vrai.EV.autres)
 # 0.001245681
+
+
+
+sortie = datagen(seed = 4791401, ssize = 5000, popsize = 150000, co_inf_para = 0)
+sortie$per_co_inf; sortie$per_co_W;
+datagen(seed = 4791401, ssize = 5000, popsize = 150000, co_inf_para = -1)$per_co_inf
+datagen(seed = 4791401, ssize = 5000, popsize = 150000, co_inf_para = 1)$per_co_inf
+
+
+
 
