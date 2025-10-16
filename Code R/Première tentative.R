@@ -12,7 +12,7 @@ library(ggforce) # Pour afficher le DAG pour la deuxième méthode de générati
 
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                          
-                         popsize = 150000) {
+                         popsize = 150000, co_inf_para = 0.00001) {
   
   
   # Génération du facteur de confusion continu C 
@@ -87,7 +87,8 @@ dat <- datagen(ssize = 5000)
 
 ################################################################################ 
 
-datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000) {
+datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
+                         co_inf_para = 0.00001) {
   
   
   # Génération du facteur de confusion continu C 
@@ -174,7 +175,9 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000) {
 
 datagen_con_2 <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                     
-                    popsize = 150000, cfV0 = FALSE, cfV1 = FALSE) {
+                    popsize = 150000, co_inf_para = 0.00001, cfV0 = FALSE,
+                    
+                    cfV1 = FALSE) {
   
           
           # Génération du facteur de confusion continu C 
@@ -285,8 +288,6 @@ vrai.EV.autres <- rep(NA, nrep)
 j = 1;
 for (i in seeds_list) {
   
-  # for (j in 1:50){
-
   dat <- datagen.cont(seed = i, popsize = 10000000)
 
   dat0 <- data.frame(C = dat$C, V = 0, Y = dat$I2_0*dat$W2_0*dat$H_0)
