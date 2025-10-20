@@ -97,8 +97,8 @@ for (i in seeds_list) {
     
     fit.TND <- glm(Y ~ V + C,
                        
-                       family = binomial(link = "log"), 
-                       
+                       family = binomial(link = "logit"),  
+                        # DT: Pour les donnees TND, on utilise logit
                        data = TNDdat) 
     
     resultats.TND <- summary(fit.TND)
@@ -115,6 +115,9 @@ for (i in seeds_list) {
     l_RRc[j] <- 1 - exp(resultats.TND$coefficients[2])
     
     j <- j +1
+    
+    if(!(j%%10)) print(data.frame(temps = Sys.time(), iter = j))
+      # DT : Ajout d'une ligne pour suivre l'avancement
 
 }
 
@@ -128,8 +131,10 @@ help(bias)
 #    - statistiques descriptives
 #    - biais, variance, moyenne de l'erreur-type, couverture des IC
 
-mean(l_RCC)
-sd(l_RCC)
+mean(l_RRc)
+sd(l_RRc)
+  # DT : J'ai remplace RCC par RRc
+
 
 ## Table 01 Résultats de l'étude de simulation (Scénario 01 :
 ##                                                    P_co-infections = 0.00001)
