@@ -80,10 +80,10 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   R <- sample(which(H == 1), ssize, replace = TRUE) 
     
-  dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W = W, V = V,
-                               C = C)) # Virus respiratoire syncytial RSV
+  dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W1 = W1, W2 = W2,
+                             W = W, V = V, C = C)) # Virus respiratoire syncytial RSV
   
-  return(list(dat = dat, per_co_inf = per_co_inf, per_co_W = per_co_W))
+  return(dat)
   
 }  
 
