@@ -1,14 +1,12 @@
 # Ce fichier va contenir ma première tentative de génération de données basée sur le DAG que vous m'avez envoyé
 # Les différentes valeurs des paramètres utilisées sont issues de la lescture des différents articles 
 
-# Génération des données
+## Génération des données ##
 
 ## Chargement des librairies nécessaires
 
 library(simDAG)
 library(ggplot2)
-library(ggforce) # Pour afficher le DAG pour la deuxième méthode de génération
-
 
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                          
@@ -91,6 +89,8 @@ dat <- datagen(ssize = 5000)
 
 ################################################################################ 
 
+# Génération des scénarios contrefactuels
+
 datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
                          co_inf_para = 0.00001) {
   
@@ -103,10 +103,12 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
   
   
-  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C))
+  C2 <- runif(n = popsize, 0,1)
   
-  I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*0))
-  I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*1))
+  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C + co_inf_para*C2))
+  
+  I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C + co_inf_para*C2 - 0.1*0))
+  I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C + co_inf_para*C2 - 0.1*1))
   
   # Calcul du pourcentage des co-infections
   
@@ -175,7 +177,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   return(dat)
 }
 
-################################################################################
+# Deuxième version
 
 datagen_con_2 <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                     
@@ -207,11 +209,12 @@ datagen_con_2 <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
           # Génération des infections I1 : I1 ~ Bernoulli(logit(a0 + a1*C)) et 
           #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
           
-
-          I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C))
+          C2 <- runif(n = popsize, 0,1)
+          
+          I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C + co_inf_para*C2))
 
           
-          I2 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*V))
+          I2 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*V + co_inf_para*C2))
 
           
           # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
@@ -248,11 +251,14 @@ datagen_con_2 <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
           H[W == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W == 1]),
                               size = 1, n = sum(W == 1))
    
-
+          dat <- data.frame(C, I1, I2, W1, W2, W, H)
+          
+          return(dat)
+          
 }
 ################################################################################
 
-#### Calcul des vraies valeurs ####
+### Calcul des vraies valeurs ###
 
 ## Regression logistique ##
 

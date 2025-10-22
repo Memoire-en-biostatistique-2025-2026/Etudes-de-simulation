@@ -1,12 +1,12 @@
-# 1. Calculer les vraies valeurs (fait !)
+# 1. Calculer les vraies valeurs 
 # 2. Parametres de la simulation
-#    - Nombre de replications (1000 ?)
-#    - Liste de 1000 germes
+#    - Nombre de replications 
+#    - Liste des germes
 # 3. Initialiser des objets pour contenir les resultats
 #    - Coefficient de la regression logistique
 #    - Erreur-type du coefficient
 # 4. Faire une boucle de 1 a nombre de replications
-# 5. Generation des donnees TND (n = ?)
+# 5. Generation des donnees TND 
 # 6. Analyse avec regression logistique
 # 7. Enregistrer les resultats
 # 8. Analyser les resultats
@@ -21,6 +21,8 @@
 
 ## Regression logistique ##
 
+## Création d'une liste de germes pour assurer la reproductibilité des résultats
+
 set.seed(1) # Pour avoir toujours les mêmes germes
 nrep <- 10
 
@@ -29,10 +31,11 @@ seeds_list <- sample(1:1000000, size = nrep)
 l_vraiRRc <- rep(NA, nrep)
 vrai.EV.autres <- rep(NA, nrep)
 
-j = 1;
-for (i in seeds_list) {
+nsim <- 10 # Fixer le nombre de réplications
+
+for (i in 1:nsim) {
   
-  dat <- datagen.cont(seed = i, popsize = 10000000)
+  dat <- datagen.cont(seed = seeds_list[i], popsize = 10000000)
   
   dat0 <- data.frame(C = dat$C, V = 0, Y = dat$I2_0*dat$W2_0*dat$H_0)
   
@@ -42,14 +45,13 @@ for (i in seeds_list) {
   
   vraiRRc <- glm(Y ~ V + C, family = binomial(link = "log"), data = dat_complet)
   
-  l_vraiRRc[j] <- 1 - exp(coef(vraiRRc)[2])
+  l_vraiRRc[i] <- 1 - exp(coef(vraiRRc)[2])
   
   vraiRRm <- mean(dat1$Y)/mean(dat0$Y)
   
-  vrai.EV.autres[j] <- 1 - vraiRRm
+  vrai.EV.autres[i] <- 1 - vraiRRm
   
-  j = j + 1
-  print(data.frame(Sys.time(), j))
+  print(data.frame(Sys.time(), i))
   
 }
 
@@ -65,29 +67,22 @@ sd(l_vraiRRc)
 #    - Coefficient de la regression logistique
 #    - Erreur-type du coefficient
 
-nrep <- 10
 
-resultats <- data.frame(matrix(ncol = 3, 
-                            nrow = nrep))
+resultats <- data.frame(matrix(ncol = 5, 
+                            nrow = nsim))
 
 colnames(resultats) <- c("iteration",
+                         "germe",
                          "coe_reg", 
-                         "err_reg")
+                         "err_reg",
+                         "RRc")
 
 # 4. Faire une boucle de 1 a nombre de replications
 # 5. Generation des donnees TND (n = 1000)
 
-set.seed(1) # Pour avoir toujours les mêmes germes
-
-l_RRc <- rep(NA, nrep)
-
-seeds_list <- sample(1:1000000, size = nrep)
-
-j <- 1
-
-for (i in seeds_list) {
+for (i in 1:nsim) {
   
-    dat <- datagen(seed = i, ssize = 1000)
+    dat <- datagen(seed = seeds_list[i], ssize = 1000)
     TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
     
 # 6. Analyse avec regression logistique
@@ -103,38 +98,45 @@ for (i in seeds_list) {
     
     resultats.TND <- summary(fit.TND)
     
-    ## Numéro de l'itération
-    resultats[j, 1] <- j
+    ## Numéro de l'itération et la valeur du germe
+    resultats[i, 1] <- i
+    resultats[i, 2] <- seeds_list[i]
     
     ## Coefficient de la regression logistique
-    resultats[j, 2] <- resultats.TND$coefficients[2]
+    resultats[i, 3] <- resultats.TND$coefficients[2]
 
     ## Erreur-type du coefficient
-    resultats[j, 3] <- resultats.TND$coefficients[5]
+    resultats[i, 4] <- resultats.TND$coefficients[5]
     
-    l_RRc[j] <- 1 - exp(resultats.TND$coefficients[2])
+    resultats[i, 5] <- 1 - exp(resultats.TND$coefficients[2])
     
-    j <- j +1
-    
-    if(!(j%%10)) print(data.frame(temps = Sys.time(), iter = j))
+    if(!(i%%10)) print(data.frame(temps = Sys.time(), iter = i))
       # DT : Ajout d'une ligne pour suivre l'avancement
 
 }
 
 # 8. Analyser les resultats
 
-install.packages("Metrics")
-library(Metrics)
-
-help(bias)
-
 #    - statistiques descriptives
+
+summary(resultats$RRc)
+mean(resultats$RRc)
+sd(resultats$RRc)
+
 #    - biais, variance, moyenne de l'erreur-type, couverture des IC
 
-mean(l_RRc)
-sd(l_RRc)
-  # DT : J'ai remplace RCC par RRc
+## Chargements des librairies nécessaires
 
+library(simhelpers)
+library(dplyr)
+library(tibble)
+library(knitr)
+library(dplyr)
+library(kableExtra)
+
+# Ajout de la colonne contenant la vraie valeur du paramètre
+
+resultats$vrai_param <- rep(0.3622618, 10)
 
 ## Table 01 Résultats de l'étude de simulation (Scénario 01 :
 ##                                                    P_co-infections = 0.00001)
@@ -144,19 +146,60 @@ Tab01 <- data.frame(matrix(ncol = 3,
 
 colnames(Tab01) <- c("n",
                       "Methode", 
-                      "Regression logistique")
+                      "Regression_logistique")
 
 Tab01$n <- c("1000", "-", "-", "-")
-Tab01$Methode <- c("Median biais", "MC MSE", "MC SE", "%Cov")
+Tab01$Methode <- c("MCSE_bias", "MCSE_var", "MCSE_mse", "%Cov")
+
+estimations <- resultats$RRc
+vraie_valeur <- 0.3622618 # moyenne(vraies_valeurs)
+
+# Utiliser la fonction "calc_absolute" pour calculer les différentes mesures de performance
+
+help("calc_absolute")
+
+#Calculates absolute bias, variance, mean squared error (mse) and root mean squared error (rmse).
+#The function also calculates the associated Monte Carlo standard errors.
+
+T <- calc_absolute(resultats, RRc, vrai_param, criteria = c("bias", "variance", "stddev", "mse", "rmse"))
+kable(T, digits = 5)
 
 ### Calcul du biais
 
-estimates <- 
-vrais_valeurs <-   
+MCSE_biais <- calc_absolute(resultats, RRc, vrai_param, criteria = "bias")
+Tab01$Regression_logistique[1] <- MCSE_biais[3]
 
-biais <- 
+MCSE_biais <- sqrt(sum((estimations - mean(estimations))^2) / (nrep*(nrep - 1)))
+Tab01$Regression_logistique[1] <- MCSE_biais
+
+### Calcul de la variance
+
+MCSE_var <- calc_absolute(resultats, RRc, vrai_param, criteria = "var")
+Tab01$Regression_logistique[2] <- MCSE_var[3]
+
+### Calcul de "Monte Carlo Mean Squared Error" (MC MSE)
+
+MCSE_MSE <- calc_absolute(resultats, RRc, vrai_param, criteria = "mse")
+Tab01$Regression_logistique[3] <- MCSE_MSE[3]
+
+### Calcul de la "couverture" (coverage)
+
+help("calc_coverage")
+
+## Calcul de la moyenne et de l'erreur type 
+
+sample_mean <- mean(resultats$RRc)
+sample_sd <- sd(resultats$RRc)
+standard_error <- sample_sd / sqrt(nsim)
+
+margin_of_error <- 1.96 * standard_error # (alpha = 0.05)
+
+# Calcul des bornes de l'intervalle de confiance
+
+resultats$lim_inf <- sample_mean - margin_of_error
+resultats$lim_sup <- sample_mean + margin_of_error
   
-mean_bias <- mean(bias, na.rm = TRUE)
-median_bias <- median(bias, na.rm = TRUE)
-rmse <- sqrt(mean(bias^2, na.rm = TRUE))
-mc_standard_error <- sd(estimates, na.rm = TRUE) / sqrt(length(estimates))
+coverage <- calc_coverage(resultats, lim_inf, lim_sup, vrai_param)
+Tab01$Regression_logistique[4] <- coverage[3]
+
+kable(Tab01)
