@@ -23,15 +23,16 @@
 
 ## Création d'une liste de germes pour assurer la reproductibilité des résultats
 
-set.seed(1) # Pour avoir toujours les mêmes germes
-nrep <- 10
 
-seeds_list <- sample(1:1000000, size = nrep)
+
+set.seed(1) # Pour avoir toujours les mêmes germes
+
+nsim <- 10 # Fixer le nombre de réplications
+
+seeds_list <- sample(1:1000000, size = nsim)
 
 l_vraiRRc <- rep(NA, nrep)
 vrai.EV.autres <- rep(NA, nrep)
-
-nsim <- 10 # Fixer le nombre de réplications
 
 for (i in 1:nsim) {
   
@@ -80,9 +81,13 @@ colnames(resultats) <- c("iteration",
 # 4. Faire une boucle de 1 a nombre de replications
 # 5. Generation des donnees TND (n = 1000)
 
+nsim <- 100 # Fixer le nombre de réplications
+
+seeds_list <- sample(1:1000000, size = nsim)
+
 for (i in 1:nsim) {
   
-    dat <- datagen(seed = seeds_list[i], ssize = 1000)
+    dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para = 0)
     TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
     
 # 6. Analyse avec regression logistique
@@ -136,7 +141,7 @@ library(kableExtra)
 
 # Ajout de la colonne contenant la vraie valeur du paramètre
 
-resultats$vrai_param <- rep(0.3622618, 10)
+resultats$vrai_param <- rep(0.3622618, nsim)
 
 ## Table 01 Résultats de l'étude de simulation (Scénario 01 :
 ##                                                    P_co-infections = 0.00001)
@@ -161,8 +166,8 @@ help("calc_absolute")
 #Calculates absolute bias, variance, mean squared error (mse) and root mean squared error (rmse).
 #The function also calculates the associated Monte Carlo standard errors.
 
-T <- calc_absolute(resultats, RRc, vrai_param, criteria = c("bias", "variance", "stddev", "mse", "rmse"))
-kable(T, digits = 5)
+T <- calc_absolute(resultats, RRc, vrai_param, criteria = c("bias", "stddev", "rmse"))
+kable(T, digits = 3)
 
 ### Calcul du biais
 
@@ -186,20 +191,14 @@ Tab01$Regression_logistique[3] <- MCSE_MSE[3]
 
 help("calc_coverage")
 
-## Calcul de la moyenne et de l'erreur type 
-
-sample_mean <- mean(resultats$RRc)
-sample_sd <- sd(resultats$RRc)
-standard_error <- sample_sd / sqrt(nsim)
-
-margin_of_error <- 1.96 * standard_error # (alpha = 0.05)
-
 # Calcul des bornes de l'intervalle de confiance
 
-resultats$lim_inf <- sample_mean - margin_of_error
-resultats$lim_sup <- sample_mean + margin_of_error
+resultats$lim_inf <- 1 - exp(resultats[, 3] + 1.96*resultats[, 4])
+resultats$lim_sup <- 1 - exp(resultats[, 3] - 1.96*resultats[, 4])
+
+mean(resultats$lim_inf < resultats$vrai_param & resultats$lim_sup > resultats$vrai_param)
   
 coverage <- calc_coverage(resultats, lim_inf, lim_sup, vrai_param)
-Tab01$Regression_logistique[4] <- coverage[3]
+Tab01$Regression_logistique[4] <- coverage[2]
 
 kable(Tab01)

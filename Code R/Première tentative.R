@@ -10,7 +10,7 @@ library(ggplot2)
 
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                          
-                         popsize = 150000, co_inf_para = 0.00001) {
+                         popsize = 150000, co_inf_para = 0) {
   
   
   # Génération du facteur de confusion continu C 
@@ -78,8 +78,9 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   R <- sample(which(H == 1), ssize, replace = TRUE) 
     
-  dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W1 = W1, W2 = W2,
-                             W = W, V = V, C = C)) # Virus respiratoire syncytial RSV
+  dat <- as.data.frame(cbind(Infec_RSV = I2[R], Infec = I1[R],
+                             H = H[R], W1 = W1[R], W2 = W2[R],
+                             W = W[R], V = V[R], C = C[R])) # Virus respiratoire syncytial RSV
   
   return(dat)
   
@@ -92,7 +93,7 @@ dat <- datagen(ssize = 5000)
 # Génération des scénarios contrefactuels
 
 datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
-                         co_inf_para = 0.00001) {
+                         co_inf_para = 0) {
   
   
   # Génération du facteur de confusion continu C 
@@ -338,6 +339,7 @@ sd(vrai.EV.autres)
 
 
 sortie = datagen(seed = 4791401, ssize = 5000, popsize = 150000, co_inf_para = 0)
+
 sortie$per_co_inf; sortie$per_co_W;
 datagen(seed = 4791401, ssize = 5000, popsize = 150000, co_inf_para = -1)$per_co_inf
 datagen(seed = 4791401, ssize = 5000, popsize = 150000, co_inf_para = 1)$per_co_inf
