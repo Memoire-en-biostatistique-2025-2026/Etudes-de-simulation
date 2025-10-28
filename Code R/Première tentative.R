@@ -10,8 +10,8 @@ library(ggplot2)
 
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                          
-                         popsize = 150000, co_inf_para = 0) {
-  
+                         popsize = 150000, co_inf_para = 0, return_full = FALSE) {
+                                                            # Pour choisir entre population et échantillon
   
   # Génération du facteur de confusion continu C 
   
@@ -29,13 +29,6 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C + co_inf_para*C2))
   
   I2 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*V + co_inf_para*C2))
-  
-  # Calcul du pourcentage des co-infections
-  
-  co_inf <- sum(I1 == 1 & I2 == 1)
-  
-  per_co_inf <- co_inf / popsize * 100
-  # 7.120667
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
@@ -76,23 +69,51 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   # Le devis test-négatif ne conserve que les personnes testées : H = 1
   
-  R <- sample(which(H == 1), ssize, replace = TRUE) 
+  R <- sample(which(H == 1), ssize, replace = TRUE) # Échantillon aléatoire parmi les personnes hospitalisées
+  
+  if (return_full == FALSE) {
     
-  dat <- as.data.frame(cbind(Infec_RSV = I2[R], Infec = I1[R],
-                             H = H[R], W1 = W1[R], W2 = W2[R],
-                             W = W[R], V = V[R], C = C[R])) # Virus respiratoire syncytial RSV
+    dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W1 = W1, W2 = W2,
+                               
+                               W = W, V = V, C = C)[R, ]) # Virus respiratoire syncytial RSV
+    
+    # Calcul du pourcentage de co-infection (symptomatique) dans l'échantillon
+    
+    co_inf <- sum(dat$Infec == 1 & dat$Infec_RSV == 1)
+    
+    per_co_inf <- co_inf / ssize * 100
+    
+    print(paste("Le pourcentage de co_infection dans l'échantillon est :", per_co_inf))
+    
+  } else { # Données pour la population totale (return_full == TRUE)
+    
+    dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W1 = W1, W2 = W2,
+                               
+                               W = W, V = V, C = C))
+    
+    # Calcul du pourcentage de co-infection dans la population
+    
+    co_inf <- sum(dat$Infec == 1 & dat$Infec_RSV == 1)
+    
+    per_co_inf <- co_inf / popsize * 100
+    
+    print((paste("Le pourcentage de co_infection dans la population est :", per_co_inf)))
+    
+  }
   
   return(dat)
   
 }  
 
 dat <- datagen(ssize = 5000)
+dat_full <- datagen(return_full = TRUE)
 
 ################################################################################ 
 
 # Génération des scénarios contrefactuels
 
 datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
+                         
                          co_inf_para = 0) {
   
   
@@ -110,19 +131,6 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C + co_inf_para*C2 - 0.1*0))
   I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C + co_inf_para*C2 - 0.1*1))
-  
-  # Calcul du pourcentage des co-infections
-  
-  co_inf_0 <- sum(I1 == 1 & I2_0 == 1)
-  
-  per_co_inf_0 <- co_inf_0 / popsize * 100
-  # 7.120667
-  
-  co_inf_1 <- sum(I1 == 1 & I2_1 == 1)
-  
-  per_co_inf_1 <- co_inf_1 / popsize * 100
-  # 7.120667
-  
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
@@ -174,6 +182,18 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
                         size = 1, n = sum(W_1 == 1))
   
   dat <- data.frame(C, I1, I2_0, I2_1, W1, W2_0, W2_1, W_0, W_1, H_0, H_1)
+  
+  # Calcul du pourcentage de co-infection
+  
+  co_inf_0 <- sum(dat$I1 == 1 & dat$I2_0 == 1)
+  
+  per_co_inf_0 <- co_inf_0 / popsize * 100
+  
+  co_inf_1 <- sum(dat$I1 == 1 & dat$I2_1 == 1)
+  
+  per_co_inf_1 <- co_inf_1 / popsize * 100
+  
+  print(paste(per_co_inf_0, per_co_inf_1))
   
   return(dat)
 }
@@ -338,7 +358,7 @@ sd(vrai.EV.autres)
 
 
 
-sortie = datagen(seed = 4791401, ssize = 5000, popsize = 150000, co_inf_para = 0)
+sortie <- datagen(seed = 4791401, ssize = 5000, popsize = 150000, co_inf_para = 0)
 
 sortie$per_co_inf; sortie$per_co_W;
 datagen(seed = 4791401, ssize = 5000, popsize = 150000, co_inf_para = -1)$per_co_inf
