@@ -111,7 +111,7 @@ kable(T, digits = 3)
 MCSE_biais <- calc_absolute(resultats2, VE, vrai_param, criteria = "bias")
 Tab01$IPW[1] <- MCSE_biais[3]
 
-MCSE_biais <- sqrt(sum((estimations - mean(estimations))^2) / (nrep*(nrep - 1)))
+MCSE_biais <- sqrt(sum((estimations - mean(estimations))^2) / (nsim*(nsim - 1)))
 Tab01$IPW[1] <- MCSE_biais
 
 ### Calcul de la variance
@@ -130,8 +130,8 @@ help("calc_coverage")
 
 # Calcul des bornes de l'intervalle de confiance
 
-resultats2$lim_inf <- 1 - exp(resultats2[, 3] + 1.96*resultats[, 4])
-resultats2$lim_sup <- 1 - exp(resultats2[, 3] - 1.96*resultats[, 4])
+resultats2$lim_inf <- 1 - exp(resultats2[, 3] + 1.96*resultats2[, 4])
+resultats2$lim_sup <- 1 - exp(resultats2[, 3] - 1.96*resultats2[, 4])
 
 mean(resultats2$lim_inf < resultats2$vrai_param & resultats2$lim_sup > resultats2$vrai_param)
 
