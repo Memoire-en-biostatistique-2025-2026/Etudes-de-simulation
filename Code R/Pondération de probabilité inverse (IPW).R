@@ -8,7 +8,6 @@ library(geepack)
 #    - Coefficient 
 #    - Erreur-type du coefficient
 
-nsim <- 100 # Fixer le nombre de réplications
 
 resultats2 <- data.frame(matrix(ncol = 4, 
                                nrow = nsim))

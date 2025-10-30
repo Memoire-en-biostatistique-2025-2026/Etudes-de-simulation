@@ -76,7 +76,7 @@ colnames(resultats) <- c("iteration",
                          "germe",
                          "RRc", 
                          "err_reg",
-                         "VE")
+                         "est_VE")
 
 # 4. Faire une boucle de 1 a nombre de replications
 # 5. Generation des donnees TND (n = 1000)
