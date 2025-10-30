@@ -116,6 +116,7 @@ for (i in 1:nsim) {
     resultats[i, 5] <- 1 - exp(resultats.TND$coefficients[2])
     
     if(!(i%%10)) print(data.frame(temps = Sys.time(), iter = i))
+    
       # DT : Ajout d'une ligne pour suivre l'avancement
 
 }
