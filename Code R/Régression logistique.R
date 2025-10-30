@@ -74,9 +74,9 @@ resultats <- data.frame(matrix(ncol = 5,
 
 colnames(resultats) <- c("iteration",
                          "germe",
-                         "coe_reg", 
+                         "RRc", 
                          "err_reg",
-                         "RRc")
+                         "VE")
 
 # 4. Faire une boucle de 1 a nombre de replications
 # 5. Generation des donnees TND (n = 1000)
@@ -108,7 +108,7 @@ for (i in 1:nsim) {
     resultats[i, 2] <- seeds_list[i]
     
     ## Coefficient de la regression logistique
-    resultats[i, 3] <- resultats.TND$coefficients[2]
+    resultats[i, 3] <- exp(resultats.TND$coefficients[2])
 
     ## Erreur-type du coefficient
     resultats[i, 4] <- resultats.TND$coefficients[5]
@@ -174,7 +174,7 @@ kable(T, digits = 3)
 MCSE_biais <- calc_absolute(resultats, RRc, vrai_param, criteria = "bias")
 Tab01$Regression_logistique[1] <- MCSE_biais[3]
 
-MCSE_biais <- sqrt(sum((estimations - mean(estimations))^2) / (nrep*(nrep - 1)))
+MCSE_biais <- sqrt(sum((estimations - mean(estimations))^2) / (nsim*(nsim - 1)))
 Tab01$Regression_logistique[1] <- MCSE_biais
 
 ### Calcul de la variance
