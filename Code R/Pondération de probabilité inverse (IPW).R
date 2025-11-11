@@ -32,7 +32,9 @@ for (i in 1:nsim) {
   mod.denom <- glm(V ~ C,
                    
                    family = binomial(link = "logit"),  
-                   data = TNDdat)
+                   data = TNDdat,
+                   subset = (dat$Y == 0)) # Chez les témoins
+  
   g1 <- predict(mod.denom, type = "response")
 
   # Analyse avec IPW
@@ -61,9 +63,9 @@ for (i in 1:nsim) {
 
 #    - statistiques descriptives
 
-summary(resultats2$VE)
-mean(resultats2$VE)
-sd(resultats2$VE)
+summary(resultats2$RRm)
+mean(resultats2$RRm)
+sd(resultats2$RRm)
 
 #    - biais, variance, moyenne de l'erreur-type, couverture des IC
 
@@ -93,7 +95,7 @@ colnames(Tab01) <- c("n",
 Tab01$n <- c("1000", "-", "-", "-")
 Tab01$Methode <- c("MCSE_bias", "MCSE_var", "MCSE_mse", "%Cov")
 
-estimations <- resultats2$VE
+estimations <- resultats2$RRm
 vraie_valeur <- 0.3664181 # moyenne(autres_vraies_valeurs)
 
 # Utiliser la fonction "calc_absolute" pour calculer les différentes mesures de performance
@@ -103,12 +105,12 @@ help("calc_absolute")
 #Calculates absolute bias, variance, mean squared error (mse) and root mean squared error (rmse).
 #The function also calculates the associated Monte Carlo standard errors.
 
-T <- calc_absolute(resultats2, VE, vrai_param, criteria = c("bias", "stddev", "rmse"))
+T <- calc_absolute(resultats2, RRm, vrai_param, criteria = c("bias", "stddev", "rmse"))
 kable(T, digits = 3)
 
 ### Calcul du biais
 
-MCSE_biais <- calc_absolute(resultats2, VE, vrai_param, criteria = "bias")
+MCSE_biais <- calc_absolute(resultats2, RRm, vrai_param, criteria = "bias")
 Tab01$IPW[1] <- MCSE_biais[3]
 
 MCSE_biais <- sqrt(sum((estimations - mean(estimations))^2) / (nsim*(nsim - 1)))
@@ -116,26 +118,74 @@ Tab01$IPW[1] <- MCSE_biais
 
 ### Calcul de la variance
 
-MCSE_var <- calc_absolute(resultats2, VE, vrai_param, criteria = "var")
+MCSE_var <- calc_absolute(resultats2, RRm, vrai_param, criteria = "var")
 Tab01$IPW[2] <- MCSE_var[3]
 
 ### Calcul de "Monte Carlo Mean Squared Error" (MC MSE)
 
-MCSE_MSE <- calc_absolute(resultats2, VE, vrai_param, criteria = "mse")
+MCSE_MSE <- calc_absolute(resultats2, RRm, vrai_param, criteria = "mse")
 Tab01$IPW[3] <- MCSE_MSE[3]
 
-### Calcul de la "couverture" (coverage)
+################################################################################
+############################ m-estimateurs #####################################
 
-help("calc_coverage")
+dat <- datagen(seed = 123456, ssize = 1000, co_inf_para = 0)
+TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
 
-# Calcul des bornes de l'intervalle de confiance
+library(geex)
 
-resultats2$lim_inf <- 1 - exp(resultats2[, 3] + 1.96*resultats2[, 4])
-resultats2$lim_sup <- 1 - exp(resultats2[, 3] - 1.96*resultats2[, 4])
+# Estimation de la variance
 
-mean(resultats2$lim_inf < resultats2$vrai_param & resultats2$lim_sup > resultats2$vrai_param)
+#### Estimation du RRm avec GEEx ####
 
-coverage <- calc_coverage(resultats2, lim_inf, lim_sup, vrai_param)
-Tab01$IPW[4] <- coverage[2]
+geex_ef <- function(data){
+  
+  Y <- data$Y
+  V <- data$V
+  C <- data$C
+  
+  function(theta){
+    
+    alpha <- theta[1:2]  
+    
+    pscore <- (Y == 0)*plogis(alpha[1] + alpha[2]*C)
+    # pscore seulement chez les témoins
+    
+    # Equations d'estimation
+    
+    eq_1 <- (Y == 0)*((V - 1)*pscore - V)                  
+    eq_2 <- (Y == 0)*((V - 1)*pscore - V)*C
 
-kable(Tab01)
+    eq_3 <- (Y*V/plogis(alpha[1] + alpha[2]*C)) - theta[3]
+    eq_4 <- (Y*(1 - V)/(1 - plogis(alpha[1] + alpha[2]*C))) - theta[4]
+    
+    return(c(eq_1, eq_2, eq_3, eq_4))
+  }
+}
+
+mestr <- m_estimate(estFUN = geex_ef,                                       
+                    data = TNDdat,                                             
+                    root_control = setup_root_control(start = c(0, 0, 0.5, 0.5))) # Mêmes valeurs que dans le code que vous m'avez envoyé
+
+beta_geex <- roots(mestr)             
+se_geex <- sqrt(diag(vcov(mestr))) # vcov(mestr) : Matrice de variance-covariance
+
+## Comparaison
+
+beta_geex[5:6]
+
+# Intervalles de confiance
+
+bor_Inf <- beta_geex - 1.96 * se_geex
+bor_Sup <- beta_geex + 1.96 * se_geex
+
+
+IC <- cbind( # Intervalle de confiance
+  
+  Estimate = beta_geex,
+  Std.Error = se_geex,
+  Lower_CI = bor_Inf,
+  Upper_CI = bor_Sup
+)
+
+print(confidence_intervals)

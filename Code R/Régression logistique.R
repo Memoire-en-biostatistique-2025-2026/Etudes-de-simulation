@@ -205,6 +205,6 @@ resultats$lim_sup <- exp(resultats[, 3] + 1.96*resultats[, 4])
 mean(resultats$lim_inf < resultats$vrai_param & resultats$lim_sup > resultats$vrai_param)
   
 coverage <- calc_coverage(resultats, lim_inf, lim_sup, vrai_param)
-Tab01$Regression_logistique[4] <- coverage[2] # %Cov = 0.59
+Tab01$Regression_logistique[4] <- coverage[2] # %Cov = 59%
 
 kable(Tab01)

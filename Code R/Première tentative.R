@@ -91,13 +91,21 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
                                
                                W = W, V = V, C = C))
     
-    # Calcul du pourcentage de co-infection dans la population
+    # Calcul du pourcentage de co-infection symptomatique dans la population
     
-    co_inf <- sum(dat$Infec == 1 & dat$Infec_RSV == 1)
+    co_inf_1 <- sum(dat$Infec == 1 & dat$Infec_RSV == 1 & dat$W == 1)
     
-    per_co_inf <- co_inf / popsize * 100
+    per_co_inf_1 <- co_inf_1 / popsize * 100
     
-    print((paste("Le pourcentage de co_infection dans la population est :", per_co_inf)))
+    print((paste("Le pourcentage de co_infection symptomatique dans la population est :", per_co_inf_1)))
+    
+    # Calcul du pourcentage de co-infection asymptomatique dans la population
+    
+    co_inf_0 <- sum(dat$Infec == 1 & dat$Infec_RSV == 1 & dat$W == 0)
+    
+    per_co_inf_0 <- co_inf_0 / popsize * 100
+    
+    print((paste("Le pourcentage de co_infection asymptomatique dans la population est :", per_co_inf_0)))
     
   }
   
