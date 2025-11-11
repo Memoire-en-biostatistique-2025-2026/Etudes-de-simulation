@@ -69,13 +69,14 @@ sd(l_vraiRRc)
 #    - Erreur-type du coefficient
 
 
-resultats <- data.frame(matrix(ncol = 5, 
+resultats <- data.frame(matrix(ncol = 6, 
                             nrow = nsim))
 
 colnames(resultats) <- c("iteration",
                          "germe",
-                         "RRc", 
+                         "coe_reg", 
                          "err_reg",
+                         "RRc",
                          "est_VE")
 
 # 4. Faire une boucle de 1 a nombre de replications
@@ -108,12 +109,16 @@ for (i in 1:nsim) {
     resultats[i, 2] <- seeds_list[i]
     
     ## Coefficient de la regression logistique
-    resultats[i, 3] <- exp(resultats.TND$coefficients[2])
+    resultats[i, 3] <- resultats.TND$coefficients[2]
 
     ## Erreur-type du coefficient
     resultats[i, 4] <- resultats.TND$coefficients[5]
     
-    resultats[i, 5] <- 1 - exp(resultats.TND$coefficients[2])
+    ## RRc
+    resultats[i, 5] <- exp(resultats.TND$coefficients[2])
+    
+    ## ^VE
+    resultats[i, 6] <- 1 - exp(resultats.TND$coefficients[2])
     
     if(!(i%%10)) print(data.frame(temps = Sys.time(), iter = i))
     
@@ -194,12 +199,12 @@ help("calc_coverage")
 
 # Calcul des bornes de l'intervalle de confiance
 
-resultats$lim_inf <- 1 - exp(resultats[, 3] + 1.96*resultats[, 4])
-resultats$lim_sup <- 1 - exp(resultats[, 3] - 1.96*resultats[, 4])
+resultats$lim_inf <- exp(resultats[, 3] - 1.96*resultats[, 4]) # Les critères concernent l'estimation du RRc
+resultats$lim_sup <- exp(resultats[, 3] + 1.96*resultats[, 4])
 
 mean(resultats$lim_inf < resultats$vrai_param & resultats$lim_sup > resultats$vrai_param)
   
 coverage <- calc_coverage(resultats, lim_inf, lim_sup, vrai_param)
-Tab01$Regression_logistique[4] <- coverage[2]
+Tab01$Regression_logistique[4] <- coverage[2] # %Cov = 0.59
 
 kable(Tab01)
