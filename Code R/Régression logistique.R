@@ -31,8 +31,8 @@ nsim <- 10 # Fixer le nombre de réplications
 
 seeds_list <- sample(1:1000000, size = nsim)
 
-l_vraiRRc <- rep(NA, nrep)
-vrai.EV.autres <- rep(NA, nrep)
+l_vraiRRc <- rep(NA, nsim)
+l_vraiRRm <- rep(NA, nsim)
 
 for (i in 1:nsim) {
   
@@ -46,23 +46,30 @@ for (i in 1:nsim) {
   
   vraiRRc <- glm(Y ~ V + C, family = binomial(link = "log"), data = dat_complet)
   
-  l_vraiRRc[i] <- 1 - exp(coef(vraiRRc)[2])
+  l_vraiRRc[i] <- exp(coef(vraiRRc)[2])
   
-  vraiRRm <- mean(dat1$Y)/mean(dat0$Y)
-  
-  vrai.EV.autres[i] <- 1 - vraiRRm
+  l_vraiRRm[i] <- mean(dat1$Y)/mean(dat0$Y)
   
   print(data.frame(Sys.time(), i))
   
 }
 
 l_vraiRRc
-# [1] 0.3597205 0.3618331 0.3631053 0.3631609 0.3640605 0.3611498 0.3627725 0.3612469 0.3623667
-# [10] 0.3632017
+# [1] 
+# [10] 
 mean(l_vraiRRc)
-# [1] 0.3622618
+# [1] 
 sd(l_vraiRRc)
-# [1] 0.001283177
+# [1] 
+
+
+l_vraiRRm
+# [1] 
+# [10] 
+mean(l_vraiRRm)
+# [1] 
+sd(l_vraiRRm)
+# [1] 
 
 # 3. Initialiser des objets pour contenir les resultats
 #    - Coefficient de la regression logistique
@@ -147,7 +154,7 @@ library(kableExtra)
 
 # Ajout de la colonne contenant la vraie valeur du paramètre
 
-resultats$vrai_param <- rep(0.3622618, nsim)
+resultats$vrai_param <- rep(0.6377382, nsim)
 
 ## Table 01 Résultats de l'étude de simulation (Scénario 01 :
 ##                                                    P_co-infections = 0.00001)
@@ -162,8 +169,8 @@ colnames(Tab01) <- c("n",
 Tab01$n <- c("1000", "-", "-", "-")
 Tab01$Methode <- c("MCSE_bias", "MCSE_var", "MCSE_mse", "%Cov")
 
-estimations <- resultats$RRc
-vraie_valeur <- 0.3622618 # moyenne(vraies_valeurs)
+# estimations <- resultats$RRc
+# vraie_valeur <- 0.6377382 # moyenne(vraies_valeurs)
 
 # Utiliser la fonction "calc_absolute" pour calculer les différentes mesures de performance
 
@@ -202,6 +209,13 @@ resultats$lim_sup <- exp(resultats[, 3] + 1.96*resultats[, 4])
 mean(resultats$lim_inf < resultats$vrai_param & resultats$lim_sup > resultats$vrai_param)
   
 coverage <- calc_coverage(resultats, lim_inf, lim_sup, vrai_param)
-Tab01$Regression_logistique[4] <- coverage[2] # %Cov = 59%
+Tab01$Regression_logistique[4] <- coverage[2] # %Cov = 78%
 
 kable(Tab01)
+
+#  |n    |Methode   |Regression_logistique |
+#  |:----|:---------|:---------------------|
+#  |1000 |MCSE_bias |0.01194089            |
+#  |-    |MCSE_var  |0.002760415           |
+#  |-    |MCSE_mse  |0.002605946           |
+#  |-    |%Cov      |0.78                  |

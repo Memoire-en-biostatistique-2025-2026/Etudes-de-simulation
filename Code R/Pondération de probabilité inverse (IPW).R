@@ -33,7 +33,7 @@ for (i in 1:nsim) {
                    
                    family = binomial(link = "logit"),  
                    data = TNDdat,
-                   subset = (dat$Y == 0)) # Chez les témoins
+                   subset = (TNDdat$Y == 0)) # Chez les témoins
   
   g1 <- predict(mod.denom, type = "response")
 
@@ -80,7 +80,7 @@ library(kableExtra)
 
 # Ajout de la colonne contenant la vraie valeur du paramètre
 
-resultats2$vrai_param <- rep(0.3664181, nsim)
+resultats2$vrai_param <- rep(0.6326075, nsim)
 
 ## Table 01 Résultats de l'étude de simulation (Scénario 01 :
 ##                                                    P_co-infections = 0.00001)
@@ -95,8 +95,8 @@ colnames(Tab01) <- c("n",
 Tab01$n <- c("1000", "-", "-", "-")
 Tab01$Methode <- c("MCSE_bias", "MCSE_var", "MCSE_mse", "%Cov")
 
-estimations <- resultats2$RRm
-vraie_valeur <- 0.3664181 # moyenne(autres_vraies_valeurs)
+# estimations <- resultats2$RRm
+# vraie_valeur <- 0.6326075 # moyenne(autres_vraies_valeurs)
 
 # Utiliser la fonction "calc_absolute" pour calculer les différentes mesures de performance
 
@@ -107,6 +107,10 @@ help("calc_absolute")
 
 T <- calc_absolute(resultats2, RRm, vrai_param, criteria = c("bias", "stddev", "rmse"))
 kable(T, digits = 3)
+
+# | K_absolute|  bias| bias_mcse| stddev| stddev_mcse|  rmse| rmse_mcse|
+# |----------:|-----:|---------:|------:|-----------:|-----:|---------:|
+# |          1| 0.087|        NA|     NA|          NA| 0.087|       NaN|
 
 ### Calcul du biais
 
@@ -122,6 +126,8 @@ Tab01$IPW[2] <- MCSE_var[3]
 
 MCSE_MSE <- calc_absolute(resultats2, RRm, vrai_param, criteria = "mse")
 Tab01$IPW[3] <- MCSE_MSE[3]
+
+kable(Tab01)
 
 ################################################################################
 ############### Calcul des ICs avec l'approche des m-estimateurs ###############
