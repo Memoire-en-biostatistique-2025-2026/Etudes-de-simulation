@@ -150,9 +150,9 @@ geex_ef <- function(data){
     
     # Equations d'estimation : les poids sont estimés à partir d'une régression logistique simple
     
-    eq_1 <- (Y == 0)*((V - 1)*pscore + V) # ∂l(β)/β0 = 0
+    eq_1 <- (Y == 0)*(V - pscore) # ∂l(β)/β0 = 0
                     
-    eq_2 <- (Y == 0)*((V - 1)*pscore + V)*C # ∂l(β)/β1 = 0
+    eq_2 <- (Y == 0)*(V - pscore)*C # ∂l(β)/β1 = 0
 
     eq_3 <- (Y*V/plogis(alpha[1] + alpha[2]*C)) - theta[3]
     eq_4 <- (Y*(1 - V)/(1 - plogis(alpha[1] + alpha[2]*C))) - theta[4]
@@ -160,6 +160,13 @@ geex_ef <- function(data){
     return(c(eq_1, eq_2, eq_3, eq_4))
   }
 }
+
+## Estimation avec glm:
+
+mod.V = glm(V ~ C , data = TNDdat[TNDdat$Y==0,], family = "binomial"); 
+ps = predict(mod.V, newdata = TNDdat, type = "res");
+num = mean((TNDdat$Y*TNDdat$V/ps));
+denom = mean((TNDdat$Y*(1 - TNDdat$V)/(1 - ps))); 
 
 help("m_estimate")
 
@@ -172,5 +179,7 @@ se_geex <- sqrt(diag(vcov(mestr))) # vcov(mestr) : Matrice de variance-covarianc
 
 ## Comparaison
 
-beta_geex[3:4]
+c(num, denom) ; beta_geex[3:4]
 
+RRm <- beta_geex[[3]] / beta_geex[[4]]
+RRm # 0.6245755
