@@ -180,9 +180,6 @@ kable(T, digits = 3)
 MCSE_biais <- calc_absolute(resultats, RRc, vrai_param, criteria = "bias")
 Tab01$Regression_logistique[1] <- MCSE_biais[3]
 
-MCSE_biais <- sqrt(sum((estimations - mean(estimations))^2) / (nsim*(nsim - 1)))
-Tab01$Regression_logistique[1] <- MCSE_biais
-
 ### Calcul de la variance
 
 MCSE_var <- calc_absolute(resultats, RRc, vrai_param, criteria = "var")
