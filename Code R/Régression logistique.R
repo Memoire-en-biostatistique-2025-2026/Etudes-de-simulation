@@ -36,7 +36,9 @@ l_vraiRRm <- rep(NA, nsim)
 
 for (i in 1:nsim) {
   
-  dat <- datagen.cont(seed = seeds_list[i], popsize = 10000000)
+  dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000,
+                      co_inf_para1 = -20, co_inf_para2 = 20)
+  summary(dat)
   
   dat0 <- data.frame(C = dat$C, V = 0, Y = dat$I2_0*dat$W2_0*dat$H_0)
   
@@ -55,21 +57,21 @@ for (i in 1:nsim) {
 }
 
 l_vraiRRc
-# [1] 
-# [10] 
+# [1]  0.6509240 0.6529137 0.6520821 0.6492924 0.6463953 0.6557662 0.6506859 0.6488186 0.6531425
+# [10] 0.6472286
 mean(l_vraiRRc)
-# [1] 
+# [1] 0.6507249
 sd(l_vraiRRc)
-# [1] 
+# [1] 0.002878837
 
 
 l_vraiRRm
-# [1] 
-# [10] 
+# [1]  0.6475929 0.6498124 0.6490622 0.6461163 0.6431699 0.6525718 0.6472154 0.6460639 0.6497057
+# [10] 0.6445213
 mean(l_vraiRRm)
-# [1] 
+# [1] 0.6475832
 sd(l_vraiRRm)
-# [1] 
+# [1] 0.00278879
 
 # 3. Initialiser des objets pour contenir les resultats
 #    - Coefficient de la regression logistique

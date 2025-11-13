@@ -10,7 +10,9 @@ library(ggplot2)
 
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                          
-                         popsize = 150000, co_inf_para = 0, return_full = FALSE) {
+                    popsize = 150000, co_inf_para1 = 0, co_inf_para2 = 0,
+                    
+                    return_full = FALSE) {
                                                             # Pour choisir entre population et échantillon
   
   # Génération du facteur de confusion continu C 
@@ -24,11 +26,17 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   # Génération des infections I1 : I1 ~ Bernoulli(logit(a0 + a1*C)) et 
   #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
   
-  C2 <- runif(n = popsize, 0,1)
+  C2 <- 2*rbinom(n = popsize, 1, 0.5) - 1
   
-  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C + co_inf_para*C2))
+  p1_temp = plogis(0.35*C + co_inf_para1*C2);
+  p1 = p1_temp/mean(p1_temp)*0.15;
   
-  I2 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C - 0.1*V + co_inf_para*C2))
+  I1 <- rbinom(n = popsize, size = 1, prob = p1)
+  
+  p2_temp = plogis(0 + 0.15*C - 0.1*V + co_inf_para2*C2)
+  p2 = p2_temp/mean(p2_temp)*0.50;
+  
+  I2 <- rbinom(n = popsize, size = 1, prob = p2)
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
@@ -122,7 +130,7 @@ dat_full <- datagen(return_full = TRUE)
 
 datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
                          
-                         co_inf_para = 0) {
+                         co_inf_para1 = 0, co_inf_para2 = 0) {
   
   
   # Génération du facteur de confusion continu C 
@@ -133,12 +141,21 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
   
   
-  C2 <- runif(n = popsize, 0,1)
+  C2 <- 2*rbinom(n = popsize, 1, 0.5) - 1
   
-  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C + co_inf_para*C2))
+  p1_temp = plogis(0.35*C + co_inf_para1*C2);
+  p1 = pmin(pmax(p1_temp/mean(p1_temp)*0.15, 0), 1);
   
-  I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C + co_inf_para*C2 - 0.1*0))
-  I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(0 + 0.15*C + co_inf_para*C2 - 0.1*1))
+  I1 <- rbinom(n = popsize, size = 1, prob = p1)
+  
+  p2_temp0 = plogis(0 + 0.15*C - 0.1*0 + co_inf_para2*C2)
+  p2_0 = pmin(pmax(p2_temp0/mean(p2_temp0)*0.50, 0), 1);
+  
+  p2_temp1 = plogis(0 + 0.15*C - 0.1*1 + co_inf_para2*C2)
+  p2_1 = pmin(pmax(p2_temp1/mean(p2_temp1)*0.50, 0), 1);
+  
+  I2_0 <- rbinom(n = popsize, size = 1, prob = p2_0)
+  I2_1 <- rbinom(n = popsize, size = 1, prob = p2_1)
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
@@ -238,7 +255,7 @@ datagen_con_2 <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
           # Génération des infections I1 : I1 ~ Bernoulli(logit(a0 + a1*C)) et 
           #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
           
-          C2 <- runif(n = popsize, 0,1)
+          C2 <- runif(n = popsize, -1,1)
           
           I1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.5 + 0.35*C + co_inf_para*C2))
 
