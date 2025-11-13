@@ -120,4 +120,110 @@ dat_full <- datagen(return_full = TRUE)
 
 ################################################################################
 
+datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
+                         
+                         co_inf_para = 0) {
+  
+  
+  # Génération du facteur de confusion continu C 
+  
+  C <- runif(n = popsize, 0.1, 3); # On commence par les noeuds racines de notre DAG
+  
+  # Génération des infections I1 : I1 ~ Bernoulli(logit(a0 + a1*C)) et 
+  #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
+  
+  
+  C2 <- runif(n = popsize, 0,1)
+  
+  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-7 + 0.35*C + co_inf_para*C2))
+  
+  I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(-7 + 0.15*C + co_inf_para*C2 - 0.1*0))
+  I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(-7 + 0.15*C + co_inf_para*C2 - 0.1*1))
+  
+  # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
+  #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
+  
+  W1 <- rep(0, popsize) # W1 = 0 si I1 = 0, donc:
+  
+  W1[I1 == 1] <- rbinom(
+    
+    n = sum(I1 == 1),
+    size = 1,
+    prob = plogis(-0.5 + 0.5 * C[I1 == 1])
+    
+  )
+  
+  W2_0 <- rep(0, popsize) # W2_0 = 0 si I2_0 = 0, donc:
+  W2_1 <- rep(0, popsize) # W2_1 = 0 si I2_1 = 0, donc:
+  
+  W2_0[I2_0 == 1] <- rbinom(
+    
+    n = sum(I2_0 == 1),
+    size = 1,
+    prob = plogis(-3.75 + 2*C[I2_0 == 1] - 0.91*0) # V[I2_0 == 1]
+    
+  )
+  
+  W2_1[I2_1 == 1] <- rbinom(
+    
+    n = sum(I2_1 == 1), 
+    size = 1,
+    prob = plogis(-3.75 + 2*C[I2_1 == 1] - 0.91*1) # V[I2_1 == 1]
+    
+  )
+  
+  # Génération de W
+  
+  W_0 <- pmax(W1, W2_0)
+  W_1 <- pmax(W1, W2_1)
+  
+  
+  # Génération de l'hospitalization 
+  
+  H_0 = rep(0, popsize) # H_0 = 0 si W_0 = 0, donc:
+  H_1 = rep(0, popsize) # H_1 = 0 si W_1 = 0, donc:
+  
+  H_0[W_0 == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W_0 == 1]),
+                          size = 1, n = sum(W_0 == 1))
+  
+  H_1[W_1 == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W_0 == 1]),
+                          size = 1, n = sum(W_1 == 1))
+  
+  dat <- data.frame(C, I1, I2_0, I2_1, W1, W2_0, W2_1, W_0, W_1, H_0, H_1)
+  
+  # Calcul du pourcentage de co-infection
+  
+  co_inf_0 <- sum(dat$I1 == 1 & dat$I2_0 == 1)
+  
+  per_co_inf_0 <- co_inf_0 / popsize * 100
+  
+  co_inf_1 <- sum(dat$I1 == 1 & dat$I2_1 == 1)
+  
+  per_co_inf_1 <- co_inf_1 / popsize * 100
+  
+  print(paste(per_co_inf_0, per_co_inf_1))
+  
+  return(dat)
+}
 
+################################################################################
+
+### Calcul des vraies valeurs ### popsize = 1000000!
+
+## Regression logistique ##
+
+l_vraiVE
+# 0.4129067 0.4103635 0.5108003 0.3956070 0.4068455 0.3146842 0.4200826 0.3269186 0.3796457 0.4786688
+
+mean(l_vraiVE)
+# 0.4056523
+
+sd(l_vraiVE)
+# 0.05955708
+
+# |n    |Methode   |Regression_logistique |
+# |:----|:---------|:---------------------|
+# |1000 |MCSE_bias |0.0632358             |
+# |-    |MCSE_var  |0.1626116             |
+# |-    |MCSE_mse  |0.1818748             |
+# |-    |%Cov      |0.38                  |

@@ -75,6 +75,7 @@ sd(l_vraiRRm)
 #    - Coefficient de la regression logistique
 #    - Erreur-type du coefficient
 
+nsim <- 100 # Fixer le nombre de réplications
 
 resultats <- data.frame(matrix(ncol = 6, 
                             nrow = nsim))
@@ -89,7 +90,6 @@ colnames(resultats) <- c("iteration",
 # 4. Faire une boucle de 1 a nombre de replications
 # 5. Generation des donnees TND (n = 1000)
 
-nsim <- 100 # Fixer le nombre de réplications
 
 seeds_list <- sample(1:1000000, size = nsim)
 
