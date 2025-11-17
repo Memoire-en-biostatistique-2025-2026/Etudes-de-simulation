@@ -191,11 +191,12 @@ RRm <- beta_geex[[3]] / beta_geex[[4]]
 RRm # 0.6245755
 
 ## Estimation de la variance du mRR
-
+# On suppose que le RRm est distribué selon une loi log-normale,
 # theta3 et theta4 sont les valeurs observées des deux paramètres
-var_RRm <- (1/theta3^2) * vcov(mestr)[3, 3] + (theta4^2/theta3^4) * vcov(mestr)[4, 4]
 
-## Intervalle de confiance
+var_log_RRm <- (1/theta3^2) * vcov(mestr)[3, 3] + (1/theta4^2) * vcov(mestr)[4, 4]
 
-IC_Inf <- theta3/theta4 - 1.96*sqrt(var_RRm)
-IC_Sup <- theta3/theta4 + 1.96*sqrt(var_RRm)
+## Intervalle de confiance pour RRm
+
+IC_Inf <- theta3/theta4*exp(- 1.96*sqrt(var_log_RRm)) 
+IC_Sup <- theta3/theta4*exp(1.96*sqrt(var_log_RRm)) 
