@@ -69,8 +69,8 @@ IPW <- function(dat){
       eq_4 <- (Y*(1 - V)/(1 - plogis(alpha[1] + alpha[2]*C))) - theta[4]
     
       return(c(eq_1, eq_2, eq_3, eq_4))
+    }
   }
-}
 
 ## Estimation avec glm:
 
