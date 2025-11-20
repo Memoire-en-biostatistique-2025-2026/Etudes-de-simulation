@@ -1,7 +1,7 @@
 
 source("Code R/Génération des données_Calcul des vraies valeurs.R")
 source("Code R/Fonc01_RegLog.R")
-source("Code R/Fonc02IPW.R")
+source("Code R/Fonc02_IPW.R")
 
 # Chargements des librairies nécessaires
 
@@ -79,8 +79,19 @@ kable(Tab01)
 #|-    |MCSE_mse  |0.006718649           |
 #|-    |%Cov      |0.9                   |
 
-# Analyser les resultats
-# IPW
+################################################################################
+################################ IPW ###########################################
+
+for (i in 1:nsim) {
+  
+  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 10, co_inf_para2 = -10)
+  resultats2[i,] <- IPW(dat)
+  
+  # DT : Ajout d'une ligne pour suivre l'avancement
+  
+  if(!(i%%10)) print(data.frame(temps = Sys.time(), iter = i))
+  
+}
 
 ##    - statistiques descriptives
 
@@ -119,3 +130,15 @@ Tab01$IPW[2] <- MCSE_var[3]
 
 MCSE_MSE <- calc_absolute(resultats2, RRm, vrai_param, criteria = "mse")
 Tab01$IPW[3] <- MCSE_MSE[3]
+
+### Coverage
+
+help("calc_coverage")
+
+# Calcul des bornes de l'intervalle de confiance
+
+
+coverage <- calc_coverage(resultats, IC_inf, IC_sup, vrai_param)
+Tab01$Regression_logistique[4] <- coverage[2] 
+
+kable(Tab01)
