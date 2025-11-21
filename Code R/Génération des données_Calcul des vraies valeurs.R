@@ -1,8 +1,8 @@
 
 ## Chargement des librairies nécessaires
 
-library(simDAG)
-library(ggplot2)
+library("stats")
+library(rje)
 
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                     
@@ -19,14 +19,59 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   V <- rbinom(n = popsize, size = 1, prob = plogis(0.5 + 0.3*C))
   
-  # Génération des infections I1 : I1 ~ Bernoulli(logit(a0 + a1*C)) et 
-  #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
+  # Génération des infections I1 : I1 ~ Bernoulli(logit(b0 + b1*C + b2*C2)) et 
+  #                           I2 : I2 ~ Bernoulli(logit(b0 + b1*C + b2*V + b3*C2))
   
   C2 <- 2*rbinom(n = popsize, 1, 0.5) - 1
   
-  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-4.33 + 0.35*C + co_inf_para1*C2))
+  ## Calcul de la valeur de b0 pour I1 avec b1 et b2 connus
   
-  I2 <- rbinom(n = popsize, size = 1, prob = plogis(-2.39 + 0.15*C - 0.1*V + co_inf_para2*C2))
+  # On pose:
+  
+  a <- 0.5/2.9
+
+  # P(I1 = 1) - 0.15
+  
+  f_I1 <- function (b0) {
+    
+    (a/0.35)*(log(1 + exp(b0 + 3*0.35 - co_inf_para1)) + log(1 + exp(b0 + 3*0.35 + co_inf_para1)) - 
+              
+            log(1 + exp(b0 + 0.1*0.35 - co_inf_para1)) - log(1 + exp(b0 + 0.1*0.35 + co_inf_para1))) - 
+      
+      0.15 # Contrainte pour la probabilité marginale
+    
+  }
+  
+  b0 <- uniroot(f_I1, c(-10, 10))$root
+  
+  I1 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.35*C + co_inf_para1*C2))
+  
+  ## Calcul de la valeur de b0 pour I2 avec b1, b2 et b3 connus
+  
+  P_I2 <- function(c,b0) { # Probabilité conjointe pour I2
+    
+    a*(expit(b0 + 0.15*c - 0.1 - co_inf_para2)*expit(0.5 + 0.3*c) + 
+         
+         expit(b0 + 0.15*c - co_inf_para2)*expit(0.5 + 0.3*c) + 
+         
+         expit(b0 + 0.15*c - 0.1 + co_inf_para2)*expit(0.5 + 0.3*c) + 
+         
+         expit(b0 + 0.15*c + co_inf_para2)*expit(0.5 + 0.3*c)
+    )
+    
+  }
+  
+  # P(I2 = 2) - 0.50
+  
+  f_I2 <- function(b0){
+    
+    integrate(P_I2, 0.1, 3, b0)$value - 0.50 # Contrainte pour la probabilité marginale
+    
+  }
+  
+  b0 <- uniroot(f_I2, c(-10, 10))$root
+  
+  I2 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.15*C - 0.1*V + co_inf_para2*C2))
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
@@ -111,7 +156,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
 }  
 
-dat <- datagen(ssize = 5000)
+dat <- datagen(ssize = 5000, co_inf_para1 = 8, co_inf_para2 = -8)
 dat_full <- datagen(return_full = TRUE)
 
 ################################################################################ 
@@ -133,10 +178,55 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   C2 <- 2*rbinom(n = popsize, 1, 0.5) - 1
   
-  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-4.33 + 0.35*C + co_inf_para1*C2))
+  ## Calcul de la valeur de b0 pour I1 avec b1 et b2 connus
   
-  I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(-2.39 + 0.15*C - 0.1*0 + co_inf_para2*C2))
-  I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.39 + 0.15*C - 0.1*1 + co_inf_para2*C2))
+  # On pose:
+  
+  a <- 0.5/2.9
+  
+  # P(I1 = 1) - 0.15
+  
+  f_I1 <- function (b0) {
+    
+    (a/0.35)*(log(1 + exp(b0 + 3*0.35 - co_inf_para1)) + log(1 + exp(b0 + 3*0.35 + co_inf_para1)) - 
+                
+                log(1 + exp(b0 + 0.1*0.35 - co_inf_para1)) - log(1 + exp(b0 + 0.1*0.35 + co_inf_para1))) - 
+      
+      0.15 # Contrainte pour la probabilité marginale
+    
+  }
+  
+  b0 <- uniroot(f_I1, c(-10, 10))$root
+  
+  I1 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.35*C + co_inf_para1*C2))
+  
+  ## Calcul de la valeur de b0 pour I2 avec b1, b2 et b3 connus
+  
+  P_I2 <- function(c,b0) { # Probabilité conjointe pour I2
+    
+    a*(expit(b0 + 0.15*c - 0.1 - co_inf_para2)*expit(0.5 + 0.3*c) + 
+         
+         expit(b0 + 0.15*c - co_inf_para2)*expit(0.5 + 0.3*c) + 
+         
+         expit(b0 + 0.15*c - 0.1 + co_inf_para2)*expit(0.5 + 0.3*c) + 
+         
+         expit(b0 + 0.15*c + co_inf_para2)*expit(0.5 + 0.3*c)
+    )
+    
+  }
+  
+  # P(I2 = 2) - 0.50
+  
+  f_I2 <- function(b0){
+    
+    integrate(P_I2, 0.1, 3, b0)$value - 0.50 # Contrainte pour la probabilité marginale
+    
+  }
+  
+  b0 <- uniroot(f_I2, c(-10, 10))$root
+  
+  I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.15*C - 0.1*0 + co_inf_para2*C2))
+  I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.15*C - 0.1*1 + co_inf_para2*C2))
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
