@@ -10,7 +10,7 @@ library(geex)
 resultats2 <- data.frame(matrix(ncol = 5, 
                                 nrow = nsim))
 
-colnames(resultats2) <- c("RRm_IPW",# Risque relatif marginal
+colnames(resultats2) <- c("RRm",# Risque relatif marginal
                           "VE",
                           "var_RRm",# Variance du risque relatif marginal
                           "IC_inf", # Borne inférieure de l'intervalle de confiance
@@ -86,23 +86,12 @@ IPW <- function(dat){
   beta_geex <- roots(mestr) # theta = (β0, β1, ψ10)         
   se_geex <- sqrt(diag(vcov(mestr))) # vcov(mestr) : Matrice de variance-covariance
 
-## Comparaison
-
-#c(num, denom) ; beta_geex[3:4]
-
-#RRm <- beta_geex[[3]] / beta_geex[[4]]
-#RRm # 0.689678
-
-## Estimation de la variance du RRm
-# On suppose que le RRm est distribué selon une loi log-normale,
-# theta3 et theta4 sont les valeurs observées des deux paramètres
-
-  var_log_RRm <- (1/theta3^2) * vcov(mestr)[3, 3] + (1/theta4^2) * vcov(mestr)[4, 4]
+  var_log_RRm <- (1/beta_geex[[3]]^2) * vcov(mestr)[3, 3] + (1/beta_geex[[4]]^2) * vcov(mestr)[4, 4]
 
 ## Intervalle de confiance pour RRm
 
-  IC_Inf <- theta3/theta4*exp(- 1.96*sqrt(var_log_RRm)) 
-  IC_Sup <- theta3/theta4*exp(1.96*sqrt(var_log_RRm)) 
+  IC_Inf <- beta_geex[[3]]/beta_geex[[4]]*exp(- 1.96*sqrt(var_log_RRm)) 
+  IC_Sup <- beta_geex[[3]]/beta_geex[[4]]*exp(1.96*sqrt(var_log_RRm)) 
 
   l <- list(RRm, 1 - RRm, var_log_RRm, IC_Inf, IC_Sup)
 

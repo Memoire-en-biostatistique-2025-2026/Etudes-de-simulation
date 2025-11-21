@@ -21,7 +21,7 @@ Tab01$n <- c("1000", "-", "-", "-")
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 10, co_inf_para2 = -10)
+  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8)
   resultats[i,] <- RegLog(dat)
 
   # DT : Ajout d'une ligne pour suivre l'avancement
@@ -72,19 +72,19 @@ Tab01$Regression_logistique[4] <- coverage[2]
 
 kable(Tab01)
 
-#|n    |Methode   |Regression_logistique |
+#|n    |Methode   |Regression_logistique | 
 #|:----|:---------|:---------------------|
-#|1000 |MCSE_bias |0.0358993             |
-#|-    |MCSE_var  |0.003694892           |
-#|-    |MCSE_mse  |0.006718649           |
-#|-    |%Cov      |0.9                   |
+#|1000 |MCSE_bias |0.02418405            | # |Bias |0.002370728           |
+#|-    |MCSE_var  |0.001131156           | # |Var  |0.005848682           |
+#|-    |MCSE_mse  |0.001025901           | # |MSE  |0.005269434           |
+#|-    |%Cov      |1                     |
 
 ################################################################################
 ################################ IPW ###########################################
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 10, co_inf_para2 = -10)
+  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8)
   resultats2[i,] <- IPW(dat)
   
   # DT : Ajout d'une ligne pour suivre l'avancement
@@ -138,7 +138,14 @@ help("calc_coverage")
 # Calcul des bornes de l'intervalle de confiance
 
 
-coverage <- calc_coverage(resultats, IC_inf, IC_sup, vrai_param)
-Tab01$Regression_logistique[4] <- coverage[2] 
+coverage <- calc_coverage(resultats2, IC_inf, IC_sup, vrai_param)
+Tab01$IPW[4] <- coverage[2] 
 
 kable(Tab01)
+
+#|n    |Methode   |IPW         |
+#|:----|:---------|:-----------|
+#|1000 |MCSE_bias |0.04395892  | # |Bias |0.1432697   |
+#|-    |MCSE_var  |0.006014272 | # |Var  |0.01932387  |
+#|-    |MCSE_mse  |0.01506683  | # |MSE  |0.0379177   |
+#|-    |%Cov      |0.7         |
