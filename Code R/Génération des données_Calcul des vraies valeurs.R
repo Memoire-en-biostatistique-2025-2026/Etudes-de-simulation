@@ -24,15 +24,9 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   C2 <- 2*rbinom(n = popsize, 1, 0.5) - 1
   
-  p1_temp = plogis(0.35*C + co_inf_para1*C2);
-  p1 = p1_temp/mean(p1_temp)*0.15;
+  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-4.33 + 0.35*C + co_inf_para1*C2))
   
-  I1 <- rbinom(n = popsize, size = 1, prob = p1)
-  
-  p2_temp = plogis(0 + 0.15*C - 0.1*V + co_inf_para2*C2)
-  p2 = p2_temp/mean(p2_temp)*0.50;
-  
-  I2 <- rbinom(n = popsize, size = 1, prob = p2)
+  I2 <- rbinom(n = popsize, size = 1, prob = plogis(-2.39 + 0.15*C - 0.1*V + co_inf_para2*C2))
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
@@ -139,19 +133,10 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   C2 <- 2*rbinom(n = popsize, 1, 0.5) - 1
   
-  p1_temp = plogis(0.35*C + co_inf_para1*C2);
-  p1 = pmin(pmax(p1_temp/mean(p1_temp)*0.15, 0), 1);
+  I1 <- rbinom(n = popsize, size = 1, prob = plogis(-4.33 + 0.35*C + co_inf_para1*C2))
   
-  I1 <- rbinom(n = popsize, size = 1, prob = p1)
-  
-  p2_temp0 = plogis(0 + 0.15*C - 0.1*0 + co_inf_para2*C2)
-  p2_0 = pmin(pmax(p2_temp0/mean(p2_temp0)*0.50, 0), 1);
-  
-  p2_temp1 = plogis(0 + 0.15*C - 0.1*1 + co_inf_para2*C2)
-  p2_1 = pmin(pmax(p2_temp1/mean(p2_temp1)*0.50, 0), 1);
-  
-  I2_0 <- rbinom(n = popsize, size = 1, prob = p2_0)
-  I2_1 <- rbinom(n = popsize, size = 1, prob = p2_1)
+  I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(-2.39 + 0.15*C - 0.1*0 + co_inf_para2*C2))
+  I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(-2.39 + 0.15*C - 0.1*1 + co_inf_para2*C2))
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))

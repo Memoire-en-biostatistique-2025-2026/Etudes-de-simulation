@@ -2,6 +2,7 @@
 
 install.packages("stats")
 library("stats")
+library(rje)
 
 # On pose:
 
@@ -20,6 +21,7 @@ f_I1 <- function (b0) {
           0.15 # Contrainte pour la probabilité marginale
   
 }
+
 uniroot(f_I1, c(-10, 10))
 
 help("uniroot")
@@ -35,17 +37,27 @@ b1 <- 0.15
 b2 <- -0.1
 b3 <- -3
 
-f_I2 <- function (b0) {
+P_I2 <- function(c,b0) { # Probabilité conjointe pour I2
   
-  (a/(a1+b1))*(log(1 + exp(a0 + b0 + 3*(a1 + b1) + b2 - b3)) - log(1 + exp(a0 + b0 + 0.1*(a1 + b1) + b2 - b3)) + 
-            
-               log(1 + exp(a0 + b0 + 3*(a1 + b1) - b3)) - log(1 + exp(a0 + b0 + 0.1*(a1 + b1) - b3))+
-              
-               log(1 + exp(a0 + b0 + 3*(a1 + b1) + b2 + b3)) - log(1 + exp(a0 + b0 + 0.1*(a1 + b1) + b2 + b3)) + 
-              
-               log(1 + exp(a0 + b0 + 3*(a1 + b1) + b3)) - log(1 + exp(a0 + b0 + 0.1*(a1 + b1) + b3))) - 
-    
-               0.50 # Contrainte pour la probabilité marginale
+  a*(expit(b0 + b1*c + b2 - b3)*expit(a0 + a1*c) + 
+                            
+      expit(b0 + b1*c - b3)*expit(a0 + a1*c) + 
+                            
+      expit(b0 + b1*c + b2 + b3)*expit(a0 + a1*c) + 
+                            
+      expit(b0 + b1*c + b3)*expit(a0 + a1*c)
+  )
+     
+}
+
+help(integrate)
+# ...	
+# additional arguments to be passed to f : on utilise cet argument pour passer 
+# la valeur b0 à la fonction P_I2 dans ce cas.
+
+f_I2 <- function(b0){
+  
+  integrate(P_I2, 0.1, 3, b0)$value - 0.50 # Contrainte pour la probabilité marginale
   
 }
 
