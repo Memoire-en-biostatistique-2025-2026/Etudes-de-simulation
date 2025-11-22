@@ -1,5 +1,5 @@
 
-source("Code R/Génération des données_Calcul des vraies valeurs.R")
+source("Code R/Génération des données.R")
 source("Code R/Fonc01_RegLog.R")
 source("Code R/Fonc02_IPW.R")
 
@@ -12,6 +12,50 @@ library(knitr)
 library(dplyr)
 library(kableExtra)
 
+# Calcul des vraies valeurs 
+
+set.seed(1) # Pour avoir toujours les mêmes germes
+
+seeds_list <- sample(1:1000000, size = nsim)
+
+l_vraiRRc <- rep(NA, nsim)
+l_vraiRRm <- rep(NA, nsim)
+
+for (i in 1:nsim) {
+  
+  dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000,
+                      co_inf_para1 = 8, co_inf_para2 = -8)
+  
+  summary(dat)
+  
+  dat0 <- data.frame(C = dat$C, V = 0, Y = dat$I2_0*dat$W2_0*dat$H_0)
+  
+  dat1 <- data.frame(C = dat$C, V = 1, Y = dat$I2_1*dat$W2_1*dat$H_1) 
+  
+  dat_complet <- rbind(dat0, dat1)
+  
+  vraiRRc <- glm(Y ~ V + C, family = binomial(link = "log"), data = dat_complet)
+  
+  l_vraiRRc[i] <- exp(coef(vraiRRc)[2])
+  
+  l_vraiRRm[i] <- mean(dat1$Y)/mean(dat0$Y)
+  
+  print(data.frame(Sys.time(), i))
+  
+}
+
+l_vraiRRc
+
+mean(l_vraiRRc)
+sd(l_vraiRRc)
+
+
+l_vraiRRm
+
+mean(l_vraiRRm)
+sd(l_vraiRRm)
+
+################################################################################
 # Analyser les resultats
 
 Tab01$n <- c("1000", "-", "-", "-")
@@ -39,7 +83,7 @@ help("calc_absolute") # calculer les différentes mesures de performance
 
 # Ajout de la colonne contenant la vraie valeur du paramètre
 
-resultats$vrai_param <- rep(0.6507249, nsim)
+resultats$vrai_param <- rep(mean(l_vraiRRc), nsim)
 
 ### MCSE_biais
 
@@ -74,10 +118,10 @@ kable(Tab01)
 
 #|n    |Methode   |Regression_logistique | 
 #|:----|:---------|:---------------------|
-#|1000 |MCSE_bias |0.02418405            | # |Bias |0.002370728           |
-#|-    |MCSE_var  |0.001131156           | # |Var  |0.005848682           |
-#|-    |MCSE_mse  |0.001025901           | # |MSE  |0.005269434           |
-#|-    |%Cov      |1                     |
+#|1000 |MCSE_bias |0.03777883            | # |Bias |-0.01649214           |
+#|-    |MCSE_var  |0.003786253           | # |Var  |0.0142724             |
+#|-    |MCSE_mse  |0.004233154           | # |MSE  |0.01311715            |
+#|-    |%Cov      |0.9                   |
 
 ################################################################################
 ################################ IPW ###########################################
@@ -101,7 +145,7 @@ sd(resultats2$RRm)
 
 ##    - biais, variance, moyenne de l'erreur-type, couverture des IC
 
-resultats2$vrai_param <- rep(0.6326075, nsim) # vraie valeur du paramètre
+resultats2$vrai_param <- rep(mean(l_vraiRRm), nsim) # vraie valeur du paramètre
 
 Tab01 <- data.frame(matrix(ncol = 3, 
                            nrow = 4))
@@ -118,18 +162,18 @@ help("calc_absolute") # calculer les différentes mesures de performance
 ### MCSE_biais
 
 MCSE_biais <- calc_absolute(resultats2, RRm, vrai_param, criteria = "bias")
-Tab01$IPW[1] <- MCSE_biais[3]
+Tab01$IPW[1] <- MCSE_biais[2]
 
 ### MCSE_var
 
 MCSE_var <- calc_absolute(resultats2, RRm, vrai_param, criteria = "var")
-Tab01$IPW[2] <- MCSE_var[3]
+Tab01$IPW[2] <- MCSE_var[2]
 
 
 ### MCSE_MSE 
 
 MCSE_MSE <- calc_absolute(resultats2, RRm, vrai_param, criteria = "mse")
-Tab01$IPW[3] <- MCSE_MSE[3]
+Tab01$IPW[3] <- MCSE_MSE[2]
 
 ### Coverage
 
@@ -145,7 +189,7 @@ kable(Tab01)
 
 #|n    |Methode   |IPW         |
 #|:----|:---------|:-----------|
-#|1000 |MCSE_bias |0.04395892  | # |Bias |0.1432697   |
-#|-    |MCSE_var  |0.006014272 | # |Var  |0.01932387  |
-#|-    |MCSE_mse  |0.01506683  | # |MSE  |0.0379177   |
-#|-    |%Cov      |0.7         |
+#|1000 |MCSE_bias |0.04684841  | # |Bias |0.05237775   |
+#|-    |MCSE_var  |0.008997592 | # |Var  |0.02194774   |
+#|-    |MCSE_mse  |0.01295461  | # |MSE  |0.02249639   |
+#|-    |%Cov      |0.9         |
