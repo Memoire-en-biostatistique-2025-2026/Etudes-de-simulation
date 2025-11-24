@@ -207,11 +207,11 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
     a*(expit(b0 + 0.15*c - 0.1 - co_inf_para2)*expit(0.5 + 0.3*c) + 
          
-         expit(b0 + 0.15*c - co_inf_para2)*expit(0.5 + 0.3*c) + 
+         expit(b0 + 0.15*c - co_inf_para2)*(1 - expit(0.5 + 0.3*c)) + 
          
          expit(b0 + 0.15*c - 0.1 + co_inf_para2)*expit(0.5 + 0.3*c) + 
          
-         expit(b0 + 0.15*c + co_inf_para2)*expit(0.5 + 0.3*c)
+         expit(b0 + 0.15*c + co_inf_para2)*(1 - expit(0.5 + 0.3*c))
     )
     
   }
