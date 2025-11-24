@@ -17,7 +17,7 @@ IPW <- function(dat){
                    data = TNDdat,
                    subset = (TNDdat$Y == 0)) # Chez les témoins
   
-  g1 <- predict(mod.denom, type = "response")
+  g1 <- predict(mod.denom, newdata = TNDdat, type = "response")
   
   # Analyse avec IPW
   # Enregistrer les resultats

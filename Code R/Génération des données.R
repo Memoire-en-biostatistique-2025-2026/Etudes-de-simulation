@@ -113,7 +113,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   # Le devis test-négatif ne conserve que les personnes testées : H = 1
   
-  R <- sample(which(H == 1), ssize, replace = TRUE) # Échantillon aléatoire parmi les personnes hospitalisées
+  R <- sample(which(H == 1), ssize, replace = FALSE) # Échantillon aléatoire parmi les personnes hospitalisées
   
   if (return_full == FALSE) {
     
