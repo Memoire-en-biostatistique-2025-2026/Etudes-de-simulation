@@ -275,7 +275,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   H_0[W_0 == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W_0 == 1]),
                           size = 1, n = sum(W_0 == 1))
   
-  H_1[W_1 == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W_0 == 1]),
+  H_1[W_1 == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W_1 == 1]),
                           size = 1, n = sum(W_1 == 1))
   
   dat <- data.frame(C, I1, I2_0, I2_1, W1, W2_0, W2_1, W_0, W_1, H_0, H_1)
