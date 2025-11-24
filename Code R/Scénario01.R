@@ -98,7 +98,7 @@ colnames(resultats2) <- c("RRm",# Risque relatif marginal
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8)
+  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8, popsize = 1*10**6)
   resultats[i,] <- RegLog(dat)
 
   # DT : Ajout d'une ligne pour suivre l'avancement
@@ -161,7 +161,7 @@ kable(Tab01)
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8)
+  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8, popsize = 10**6)
   resultats2[i,] <- IPW(dat)
   
   # DT : Ajout d'une ligne pour suivre l'avancement
