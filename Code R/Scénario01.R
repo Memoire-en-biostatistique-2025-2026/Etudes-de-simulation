@@ -16,6 +16,8 @@ library(kableExtra)
 
 set.seed(1) # Pour avoir toujours les mêmes germes
 
+nsim <- 10
+
 seeds_list <- sample(1:1000000, size = nsim)
 
 l_vraiRRc <- rep(NA, nsim)
@@ -58,10 +60,41 @@ sd(l_vraiRRm)
 ################################################################################
 # Analyser les resultats
 
+Tab01 <- data.frame(matrix(ncol = 3, 
+                           nrow = 4))
+
 Tab01$n <- c("1000", "-", "-", "-")
+
+colnames(Tab01) <- c("n",
+                     "Methode", 
+                     "Regression_logistique")
+
+Tab01$Methode <- c("MCSE_bias", "MCSE_var", "MCSE_mse", "%Cov")
 
 ################################################################################
 ########################## Régression logistique ###############################
+
+nsim <- 1000
+
+# Initialiser des objets pour contenir les resultats
+
+resultats <- data.frame(matrix(ncol = 6, 
+                               nrow = nsim))
+
+colnames(resultats) <- c("coe_reg", 
+                         "err_reg",
+                         "RRc", # Risque relatif conditionnel
+                         "est_VE")
+
+resultats2 <- data.frame(matrix(ncol = 5, 
+                                nrow = nsim))
+
+colnames(resultats2) <- c("RRm",# Risque relatif marginal
+                          "VE",
+                          "var_RRm",# Variance du risque relatif marginal
+                          "IC_inf", # Borne inférieure de l'intervalle de confiance
+                          "IC_sup") # Sa borne supérieure
+
 
 for (i in 1:nsim) {
   

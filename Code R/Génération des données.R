@@ -157,8 +157,8 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
 }  
 
-dat <- datagen(ssize = 5000, co_inf_para1 = 8, co_inf_para2 = -8)
-dat_full <- datagen(return_full = TRUE)
+# dat <- datagen(ssize = 5000, co_inf_para1 = 8, co_inf_para2 = -8)
+# dat_full <- datagen(return_full = TRUE)
 
 ################################################################################ 
 
@@ -295,4 +295,4 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   return(dat)
 }
 
-nsim <- 10 # Fixer le nombre de réplications
+# nsim <- 10 # Fixer le nombre de réplications

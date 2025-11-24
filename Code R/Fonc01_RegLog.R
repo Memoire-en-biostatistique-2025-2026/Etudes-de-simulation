@@ -3,28 +3,7 @@
 
 library(dplyr)
 
-# Initialiser des objets pour contenir les resultats
 
-resultats <- data.frame(matrix(ncol = 6, 
-                               nrow = nsim))
-
-colnames(resultats) <- c("coe_reg", 
-                         "err_reg",
-                         "RRc", # Risque relatif conditionnel
-                         "est_VE")
-
-##    - biais, variance, moyenne de l'erreur-type, couverture des IC
-
-resultats$vrai_param <- rep(0.6507249, nsim) # vraie valeur du paramètre
-
-Tab01 <- data.frame(matrix(ncol = 3, 
-                           nrow = 4))
-
-colnames(Tab01) <- c("n",
-                     "Methode", 
-                     "Regression_logistique")
-
-Tab01$Methode <- c("MCSE_bias", "MCSE_var", "MCSE_mse", "%Cov")
 # Définir la fonction pour la régression logistique
 
 RegLog <- function(dat){

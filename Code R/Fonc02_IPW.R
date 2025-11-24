@@ -1,20 +1,8 @@
-
 # Chargement des librairies nécessaires
 
 library(dplyr)
 library(geepack)
 library(geex)
-
-# Initialiser des objets pour contenir les resultats
-
-resultats2 <- data.frame(matrix(ncol = 5, 
-                                nrow = nsim))
-
-colnames(resultats2) <- c("RRm",# Risque relatif marginal
-                          "VE",
-                          "var_RRm",# Variance du risque relatif marginal
-                          "IC_inf", # Borne inférieure de l'intervalle de confiance
-                          "IC_sup") # Sa borne supérieure
 
 
 IPW <- function(dat){
