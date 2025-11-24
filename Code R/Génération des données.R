@@ -4,6 +4,7 @@
 library("stats")
 library(rje)
 
+
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                     
                     popsize = 150000, co_inf_para1 = 0, co_inf_para2 = 0,
@@ -52,11 +53,11 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
     a*(expit(b0 + 0.15*c - 0.1 - co_inf_para2)*expit(0.5 + 0.3*c) + 
          
-         expit(b0 + 0.15*c - co_inf_para2)*expit(0.5 + 0.3*c) + 
+         expit(b0 + 0.15*c - co_inf_para2)*(1 - expit(0.5 + 0.3*c)) + 
          
          expit(b0 + 0.15*c - 0.1 + co_inf_para2)*expit(0.5 + 0.3*c) + 
          
-         expit(b0 + 0.15*c + co_inf_para2)*expit(0.5 + 0.3*c)
+         expit(b0 + 0.15*c + co_inf_para2)*(1 - expit(0.5 + 0.3*c))
     )
     
   }
