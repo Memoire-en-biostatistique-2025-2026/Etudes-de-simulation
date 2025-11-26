@@ -2,6 +2,7 @@
 # Chargements des librairies nécessaires
 
 library(dplyr)
+library(rms)
 
 
 # Définir la fonction pour la régression logistique
@@ -27,8 +28,8 @@ RegLog <- function(dat){
   ## RRc
   ## ^VE
   
-  l <- list(resultats.TND$coefficients[2], resultats.TND$coefficients[5],
-            exp(resultats.TND$coefficients[2]), 1 - exp(resultats.TND$coefficients[2]))  
+  l <- list(resultats.TND$coefficients[2,1], resultats.TND$coefficients[2,2],
+            exp(resultats.TND$coefficients[2,1]), 1 - exp(resultats.TND$coefficients[2,1]))  
   
 
   return(l)

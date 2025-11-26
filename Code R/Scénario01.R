@@ -36,7 +36,7 @@ for (i in 1:nsim) {
   
   dat_complet <- rbind(dat0, dat1)
   
-  vraiRRc <- glm(Y ~ V + C, family = binomial(link = "log"), data = dat_complet)
+  vraiRRc <- glm(Y ~ V + C, family = binomial(link = "logit"), data = dat_complet)
   
   l_vraiRRc[i] <- exp(coef(vraiRRc)[2])
   
@@ -111,6 +111,8 @@ for (i in 1:nsim) {
 summary(resultats$RRc)
 mean(resultats$RRc)
 sd(resultats$RRc)
+sd(log(resultats$RRc));
+mean(resultats$err_reg);
 
 help("calc_absolute") # calculer les différentes mesures de performance
 
