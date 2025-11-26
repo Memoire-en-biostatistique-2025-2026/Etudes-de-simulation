@@ -220,9 +220,16 @@ Tab01$IPW[4] <- coverage[2]
 
 kable(Tab01)
 
-#|n    |Methode   |IPW         |
-#|:----|:---------|:-----------|
-#|1000 |MCSE_bias |0.04684841  | # |Bias |0.05237775   |
-#|-    |MCSE_var  |0.008997592 | # |Var  |0.02194774   |
-#|-    |MCSE_mse  |0.01295461  | # |MSE  |0.02249639   |
-#|-    |%Cov      |0.9         |
+# |n    |Methode   |IPW         |
+#   |:----|:---------|:-----------|
+#   |1000 |MCSE_bias |0.003263059 |
+#   |-    |MCSE_var  |0.01333139  |
+#   |-    |MCSE_mse  |0.01332871  |
+#   |-    |%Cov      |0.936       |
+# K_coverage coverage coverage_mcse width width_mcse
+# <int>    <dbl>         <dbl> <dbl>      <dbl>
+#   1       1000    0.936       0.00774 0.429    0.00148
+# > mean(sqrt(resultats2$var_RRm))
+# [1] 0.1554226
+# > sd(log(resultats2$RRm))
+# [1] 0.1662523
