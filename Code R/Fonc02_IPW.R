@@ -73,8 +73,13 @@ IPW <- function(dat){
 
   beta_geex <- roots(mestr) # theta = (β0, β1, ψ10)         
   se_geex <- sqrt(diag(vcov(mestr))) # vcov(mestr) : Matrice de variance-covariance
+  
+  # var(ln(O/E)) ~  (1/o^2)*var(O) + (1/e^2)*var(E) - (2/o*e)*COV(O,E) : O et E sont dépendants
 
-  var_log_RRm <- (1/beta_geex[[3]]^2) * vcov(mestr)[3, 3] + (1/beta_geex[[4]]^2) * vcov(mestr)[4, 4]
+  var_log_RRm <- (1/beta_geex[[3]]^2) * vcov(mestr)[3, 3] + (1/beta_geex[[4]]^2) * vcov(mestr)[4, 4] -
+                
+                 (2/beta_geex[[3]]*beta_geex[[4]])*vcov(mestr)[3, 4]
+                
 
 ## Intervalle de confiance pour RRm
 
