@@ -58,21 +58,13 @@ mean(l_vraiRRm)
 sd(l_vraiRRm)
 
 ################################################################################
-# Analyser les resultats
+# Initialiser des objets pour contenir les resultats
 
-Tab01 <- data.frame(matrix(ncol = 3, 
-                           nrow = 4))
+Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
 
-Tab01$n <- c("1000", "-", "-", "-")
-
-colnames(Tab01) <- c("n",
-                     "Methode", 
-                     "Regression_logistique")
-
-Tab01$Methode <- c("MCSE_bias", "MCSE_var", "MCSE_mse", "%Cov")
 
 ################################################################################
-########################## Régression logistique ###############################
+########################## Analyse des résultats ###############################
 
 nsim <- 1000
 
@@ -99,13 +91,19 @@ colnames(resultats2) <- c("RRm",# Risque relatif marginal
 for (i in 1:nsim) {
   
   dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8, popsize = 1*10**6)
-  resultats[i,] <- RegLog(dat)
+  
+  resultats[i,] <- RegLog(dat) # Régression logistique
+  resultats2[i,] <- IPW(dat)   # IPW
 
   # DT : Ajout d'une ligne pour suivre l'avancement
   
   if(!(i%%10)) print(data.frame(temps = Sys.time(), iter = i))
   
 }
+########################## Régression logistique ###############################
+
+Tab01$Methode <- c("RegLog", "-", "-","-")
+
 ##    - statistiques descriptives
 
 summary(resultats$RRc)
@@ -123,17 +121,14 @@ resultats$vrai_param <- rep(mean(l_vraiRRc), nsim)
 ### MCSE_biais
 
 MCSE_biais <- calc_absolute(resultats, RRc, vrai_param, criteria = "bias")
-Tab01$Regression_logistique[1] <- MCSE_biais[3]
 
 ### MCSE_var
 
 MCSE_var <- calc_absolute(resultats, RRc, vrai_param, criteria = "var")
-Tab01$Regression_logistique[2] <- MCSE_var[3]
 
 ### MCSE_MSE 
 
-MCSE_MSE <- calc_absolute(resultats, RRc, vrai_param, criteria = "mse")
-Tab01$Regression_logistique[3] <- MCSE_MSE[3]
+MCSE_mse <- calc_absolute(resultats, RRc, vrai_param, criteria = "mse")
 
 ### Coverage
 
@@ -147,7 +142,24 @@ resultats$lim_sup <- exp(resultats[, 1] + 1.96*resultats[, 2])
 mean(resultats$lim_inf < resultats$vrai_param & resultats$lim_sup > resultats$vrai_param)
 
 coverage <- calc_coverage(resultats, lim_inf, lim_sup, vrai_param)
-Tab01$Regression_logistique[4] <- coverage[2] 
+
+Tab01$`Erreur de Monte Carlo` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais[3]),
+  list(name = "MCSE_var", value = MCSE_var[3]),
+  list(name = "MCSE_mse", value = MCSE_mse[3]),
+  list(name = "%Cov", value = coverage[2])
+  
+)
+
+Tab01$`Autres` = list(
+  
+  list(name = "Bias", value = MCSE_biais[2]),
+  list(name = "Var", value = MCSE_var[3]),
+  list(name = "Mse", value = MCSE_mse[3]),
+  list(name = name = "Précision_var", value = sd(log(resultats2$RRc)) - mean(sqrt(resultats2$var_RRc))) # Voir si la variance est bien estimée
+  
+)
 
 kable(Tab01)
 
@@ -158,19 +170,17 @@ kable(Tab01)
 #|-    |MCSE_mse  |0.004233154           | # |MSE  |0.01311715            |
 #|-    |%Cov      |0.9                   |
 
-################################################################################
+# K_coverage coverage coverage_mcse width width_mcse
+# <int>    <dbl>         <dbl> <dbl>      <dbl>
+#   1       1000    0.936       0.00774 0.429    0.00148
+# > mean(sqrt(resultats2$var_RRc))
+# [1] 
+# > sd(log(resultats2$RRc))
+# [1] 
+
 ################################ IPW ###########################################
 
-for (i in 1:nsim) {
-  
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8, popsize = 10**6)
-  resultats2[i,] <- IPW(dat)
-  
-  # DT : Ajout d'une ligne pour suivre l'avancement
-  
-  if(!(i%%10)) print(data.frame(temps = Sys.time(), iter = i))
-  
-}
+Tab01$Methode <- c("IPW", "-", "-","-")
 
 ##    - statistiques descriptives
 
@@ -182,33 +192,21 @@ sd(resultats2$RRm)
 
 resultats2$vrai_param <- rep(mean(l_vraiRRm), nsim) # vraie valeur du paramètre
 
-Tab01 <- data.frame(matrix(ncol = 3, 
-                           nrow = 4))
-
-colnames(Tab01) <- c("n",
-                     "Methode", 
-                     "IPW")
-
-Tab01$n <- c("1000", "-", "-", "-")
-Tab01$Methode <- c("MCSE_bias", "MCSE_var", "MCSE_mse", "%Cov")
+Tab01$Methode <- c("IPW")
 
 help("calc_absolute") # calculer les différentes mesures de performance
 
 ### MCSE_biais
 
 MCSE_biais <- calc_absolute(resultats2, RRm, vrai_param, criteria = "bias")
-Tab01$IPW[1] <- MCSE_biais[2]
 
 ### MCSE_var
 
 MCSE_var <- calc_absolute(resultats2, RRm, vrai_param, criteria = "var")
-Tab01$IPW[2] <- MCSE_var[2]
-
 
 ### MCSE_MSE 
 
 MCSE_MSE <- calc_absolute(resultats2, RRm, vrai_param, criteria = "mse")
-Tab01$IPW[3] <- MCSE_MSE[2]
 
 ### Coverage
 
@@ -218,7 +216,28 @@ help("calc_coverage")
 
 
 coverage <- calc_coverage(resultats2, IC_inf, IC_sup, vrai_param)
-Tab01$IPW[4] <- coverage[2] 
+
+Tab01$`Erreur de Monte Carlo` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais[3]),
+  list(name = "MCSE_var", value = MCSE_var[3]),
+  list(name = "MCSE_mse", value = MCSE_mse[3]),
+  list(name = "%Cov", value = coverage[2])
+  
+)
+
+Tab01$`Autres` = list(
+  
+  list(name = "Bias", value = MCSE_biais[2]),
+  list(name = "Var", value = MCSE_var[3]),
+  list(name = "Mse", value = MCSE_mse[3]),
+  list(name = "Précision_var", value = sd(log(resultats2$RRm)) - mean(sqrt(resultats2$var_RRm)) # Voir si la variance est bien estimée
+       
+  )
+  
+)
+  
+
 
 kable(Tab01)
 
@@ -228,6 +247,7 @@ kable(Tab01)
 #   |-    |MCSE_var  |0.01333139  |
 #   |-    |MCSE_mse  |0.01332871  |
 #   |-    |%Cov      |0.936       |
+
 # K_coverage coverage coverage_mcse width width_mcse
 # <int>    <dbl>         <dbl> <dbl>      <dbl>
 #   1       1000    0.936       0.00774 0.429    0.00148

@@ -2,7 +2,7 @@
 ## Chargement des librairies nécessaires
 
 library("stats")
-library(rje)
+library("rje")
 
 
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
@@ -18,7 +18,9 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   # Génération du statut vaccinal V : V ~ Bernoulli(logit(a0 + a1*C))
   
-  V <- rbinom(n = popsize, size = 1, prob = plogis(0.5 + 0.3*C))
+  V <- rbinom(n = popsize, size = 1, prob = plogis(-1.18 + 0.3*C)) # Couverture vaccinale ~33%
+  # Voir fichier Anciens fichiers\Génération des variables
+  # pour la valeur de b0 
   
   # Génération des infections I1 : I1 ~ Bernoulli(logit(b0 + b1*C + b2*C2)) et 
   #                           I2 : I2 ~ Bernoulli(logit(b0 + b1*C + b2*V + b3*C2))
@@ -45,7 +47,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   b0 <- uniroot(f_I1, c(-10, 10))$root
   
-  I1 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.35*C + co_inf_para1*C2))
+  I1 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.35*C + co_inf_para1*C2)) # Pour une prévalence ~ 
   
   ## Calcul de la valeur de b0 pour I2 avec b1, b2 et b3 connus
   
@@ -62,17 +64,17 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
   }
   
-  # P(I2 = 2) - 0.50
+  # P(I2 = 2) - 0.30
   
   f_I2 <- function(b0){
     
-    integrate(P_I2, 0.1, 3, b0)$value - 0.50 # Contrainte pour la probabilité marginale
+    integrate(P_I2, 0.1, 3, b0)$value - 0.30 # Contrainte pour la probabilité marginale
     
   }
   
   b0 <- uniroot(f_I2, c(-10, 10))$root
   
-  I2 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.15*C - 0.1*V + co_inf_para2*C2))
+  I2 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.15*C - 0.1*V + co_inf_para2*C2)) # Pour une prévalence ~ 
   
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
@@ -83,19 +85,19 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
     n = sum(I1 == 1),
     size = 1,
-    prob = plogis(-0.5 + 0.5 * C[I1 == 1])
+    prob = plogis(-3.8 + 0.5 * C[I1 == 1])
     
-  )
-  
+  ) # W1 = 1 ~ 4%-5%
+   
   W2 <- rep(0, popsize) # W2_0 = 0 si I2_0 = 0, donc:
   
   W2[I2 == 1] <- rbinom(
     
     n = sum(I2 == 1),
     size = 1,
-    prob = plogis(-3.75 + 2*C[I2 == 1] - 0.91*V[I2 == 1])
+    prob = plogis(-7.5 + 2*C[I2 == 1] - 0.91*V[I2 == 1])
     
-  )
+  ) # W2 = 1 ~ 3%
   
   co_W <- sum(W1 == 1 & W2 == 1, na.rm = TRUE)
   per_co_W <- co_W / popsize * 100
@@ -113,7 +115,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   # Le devis test-négatif ne conserve que les personnes testées : H = 1
   
-  R <- sample(which(H == 1), ssize, replace = FALSE) # Échantillon aléatoire parmi les personnes hospitalisées
+  R <- sample(which(H == 1), ssize, replace = TRUE) # Échantillon aléatoire parmi les personnes hospitalisées
   
   if (return_full == FALSE) {
     
@@ -158,7 +160,15 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
 }  
 
 # dat <- datagen(ssize = 5000, co_inf_para1 = 8, co_inf_para2 = -8)
-# dat_full <- datagen(return_full = TRUE)
+dat_full <- datagen(return_full = TRUE)
+
+sum(dat_full$V == 1)/nrow(dat_full) * 100 # Couverture vaccinale
+
+sum(dat_full$Infec == 1)/nrow(dat_full) * 100
+sum(dat_full$W1 == 1)/sum(dat_full$Infec == 1) * 100 # Prévalence symptomatique pour I1
+
+sum(dat_full$Infec_RSV == 1)/nrow(dat_full) * 100
+sum(dat_full$W2 == 1)/sum(dat_full$Infec_RSV == 1) * 100 # Prévalence symptomatique pour I2
 
 ################################################################################ 
 
@@ -172,6 +182,12 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   # Génération du facteur de confusion continu C 
   
   C <- runif(n = popsize, 0.1, 3); # On commence par les noeuds racines de notre DAG
+  
+  # Génération du statut vaccinal V : V ~ Bernoulli(logit(a0 + a1*C))
+  
+  V <- rbinom(n = popsize, size = 1, prob = plogis(-1.18 + 0.3*C)) # Couverture vaccinale ~33%
+  # Voir fichier Anciens fichiers\Génération des variables
+  # pour la valeur de b0 
   
   # Génération des infections I1 : I1 ~ Bernoulli(logit(a0 + a1*C)) et 
   #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
@@ -238,7 +254,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
     n = sum(I1 == 1),
     size = 1,
-    prob = plogis(-0.5 + 0.5 * C[I1 == 1])
+    prob = plogis(-1.51 + 0.5 * C[I1 == 1])
     
   )
   
