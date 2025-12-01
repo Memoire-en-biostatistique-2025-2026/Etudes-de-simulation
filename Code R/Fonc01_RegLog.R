@@ -2,8 +2,6 @@
 # Chargements des librairies nécessaires
 
 library(dplyr)
-library(rms)
-
 
 # Définir la fonction pour la régression logistique
 

@@ -66,11 +66,11 @@ Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
 ################################################################################
 ########################## Analyse des résultats ###############################
 
-nsim <- 1000
+nsim <- 100
 
 # Initialiser des objets pour contenir les resultats
 
-resultats <- data.frame(matrix(ncol = 6, 
+resultats <- data.frame(matrix(ncol = 4, 
                                nrow = nsim))
 
 colnames(resultats) <- c("coe_reg", 
@@ -157,7 +157,7 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[3]),
   list(name = "Mse", value = MCSE_mse[3]),
-  list(name = name = "Précision_var", value = sd(log(resultats2$RRc)) - mean(sqrt(resultats2$var_RRc))) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(log(resultats$RRc)) - mean(sqrt(resultats$var_RRc))) # Voir si la variance est bien estimée
   
 )
 
