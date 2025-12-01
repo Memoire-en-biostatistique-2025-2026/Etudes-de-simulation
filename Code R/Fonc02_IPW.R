@@ -60,13 +60,6 @@ IPW <- function(dat){
     }
   }
 
-## Estimation avec glm:
-
-  # mod.V = glm(V ~ C , data = TNDdat[TNDdat$Y==0,], family = "binomial"); 
-  # ps = predict(mod.V, newdata = TNDdat, type = "res");
-  # num = mean((TNDdat$Y*TNDdat$V/ps));
-  # denom = mean((TNDdat$Y*(1 - TNDdat$V)/(1 - ps))); 
-
   mestr <- m_estimate(estFUN = geex_ef,                                       
                     data = TNDdat,                                             
                     root_control = setup_root_control(start = c(0, 0, 0.5, 0.5))) # Mêmes valeurs que dans le code que vous m'avez envoyé

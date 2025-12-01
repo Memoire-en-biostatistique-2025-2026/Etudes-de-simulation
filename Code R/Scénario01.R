@@ -83,7 +83,7 @@ resultats2 <- data.frame(matrix(ncol = 5,
 
 colnames(resultats2) <- c("RRm",# Risque relatif marginal
                           "VE",
-                          "var_RRm",# Variance du risque relatif marginal
+                          "var_log_RRm",# Variance du log du risque relatif marginal
                           "IC_inf", # Borne inférieure de l'intervalle de confiance
                           "IC_sup") # Sa borne supérieure
 
@@ -157,26 +157,24 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[3]),
   list(name = "Mse", value = MCSE_mse[3]),
-  list(name = "Précision_var", value = sd(log(resultats$RRc)) - mean(sqrt(resultats$var_RRc))) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(log(resultats$RRc)) - mean(resultats$err_reg)) # Voir si la variance est bien estimée
   
 )
 
 kable(Tab01)
 
-#|n    |Methode   |Regression_logistique | 
-#|:----|:---------|:---------------------|
-#|1000 |MCSE_bias |0.03777883            | # |Bias |-0.01649214           |
-#|-    |MCSE_var  |0.003786253           | # |Var  |0.0142724             |
-#|-    |MCSE_mse  |0.004233154           | # |MSE  |0.01311715            |
-#|-    |%Cov      |0.9                   |
+#|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
+#|:----|:-------|:------------------------------------------|:------------------------------------------|
+#|1000 |RegLog  |MCSE_bias         , 0.0071268926221513     |Bias               , 0.00428675767604619   |
+#|-    |-       |MCSE_var            , 0.000664559421799917 |Var                 , 0.000664559421799917 |
+#|-    |-       |MCSE_mse            , 0.000685994345421483 |Mse                 , 0.000685994345421483 |
+#|-    |-       |%Cov, 0.96                                 |Précision_var     , 0.0186125857979366     |
 
 # K_coverage coverage coverage_mcse width width_mcse
 # <int>    <dbl>         <dbl> <dbl>      <dbl>
 #   1       1000    0.936       0.00774 0.429    0.00148
-# > mean(sqrt(resultats2$var_RRc))
-# [1] 
-# > sd(log(resultats2$RRc))
-# [1] 
+# > mean(resultats$err_reg)
+# > sd(log(resultats$RRc))
 
 ################################ IPW ###########################################
 
@@ -231,7 +229,7 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[3]),
   list(name = "Mse", value = MCSE_mse[3]),
-  list(name = "Précision_var", value = sd(log(resultats2$RRm)) - mean(sqrt(resultats2$var_RRm)) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(log(resultats2$RRm)) - mean(sqrt(resultats2$var_log_RRm)) # Voir si la variance est bien estimée
        
   )
   
@@ -241,17 +239,17 @@ Tab01$`Autres` = list(
 
 kable(Tab01)
 
-# |n    |Methode   |IPW         |
-#   |:----|:---------|:-----------|
-#   |1000 |MCSE_bias |0.003263059 |
-#   |-    |MCSE_var  |0.01333139  |
-#   |-    |MCSE_mse  |0.01332871  |
-#   |-    |%Cov      |0.936       |
+#|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
+#|:----|:-------|:------------------------------------------|:------------------------------------------|
+#|1000 |IPW     |MCSE_bias          , 0.00714109026683143   |Bias               , 0.00366123637127513   |
+#|-    |IPW     |MCSE_var            , 0.000628107910234781 |Var                 , 0.000628107910234781 |
+#|-    |IPW     |MCSE_mse            , 0.000685994345421483 |Mse                 , 0.000685994345421483 |
+#|-    |IPW     |%Cov, 0.93                                 |Précision_var     , 0.0298310159785812     |
 
 # K_coverage coverage coverage_mcse width width_mcse
 # <int>    <dbl>         <dbl> <dbl>      <dbl>
 #   1       1000    0.936       0.00774 0.429    0.00148
-# > mean(sqrt(resultats2$var_RRm))
+# > mean(sqrt(resultats2$var_log_RRm))
 # [1] 0.1554226
 # > sd(log(resultats2$RRm))
 # [1] 0.1662523
