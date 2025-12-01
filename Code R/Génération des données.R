@@ -232,11 +232,11 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
   }
   
-  # P(I2 = 2) - 0.50
+  # P(I2 = 2) - 0.30
   
   f_I2 <- function(b0){
     
-    integrate(P_I2, 0.1, 3, b0)$value - 0.50 # Contrainte pour la probabilité marginale
+    integrate(P_I2, 0.1, 3, b0)$value - 0.30 # Contrainte pour la probabilité marginale
     
   }
   
@@ -254,7 +254,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
     n = sum(I1 == 1),
     size = 1,
-    prob = plogis(-1.51 + 0.5 * C[I1 == 1])
+    prob = plogis(-3.8 + 0.5 * C[I1 == 1])
     
   )
   
@@ -265,7 +265,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
     n = sum(I2_0 == 1),
     size = 1,
-    prob = plogis(-3.75 + 2*C[I2_0 == 1] - 0.91*0) # V[I2_0 == 1]
+    prob = plogis(-7.5 + 2*C[I2_0 == 1] - 0.91*0) # V[I2_0 == 1]
     
   )
   
@@ -273,7 +273,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
     n = sum(I2_1 == 1), 
     size = 1,
-    prob = plogis(-3.75 + 2*C[I2_1 == 1] - 0.91*1) # V[I2_1 == 1]
+    prob = plogis(-7.5 + 2*C[I2_1 == 1] - 0.91*1) # V[I2_1 == 1]
     
   )
   
