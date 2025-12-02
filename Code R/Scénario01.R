@@ -100,6 +100,7 @@ for (i in 1:nsim) {
   if(!(i%%10)) print(data.frame(temps = Sys.time(), iter = i))
   
 }
+
 ########################## Régression logistique ###############################
 
 Tab01$Methode <- c("RegLog", "-", "-","-")
@@ -109,8 +110,9 @@ Tab01$Methode <- c("RegLog", "-", "-","-")
 summary(resultats$RRc)
 mean(resultats$RRc)
 sd(resultats$RRc)
-sd(log(resultats$RRc));
-mean(resultats$err_reg);
+
+sd(resultats$coe_reg)
+mean(resultats$err_reg)
 
 help("calc_absolute") # calculer les différentes mesures de performance
 
@@ -157,7 +159,7 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[3]),
   list(name = "Mse", value = MCSE_mse[3]),
-  list(name = "Précision_var", value = sd(log(resultats$RRc)) - mean(resultats$err_reg)) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(resultats$coe_reg) - mean(resultats$err_reg)) # Voir si la variance est bien estimée
   
 )
 
@@ -165,16 +167,16 @@ kable(Tab01)
 
 #|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
 #|:----|:-------|:------------------------------------------|:------------------------------------------|
-#|1000 |RegLog  |MCSE_bias         , 0.0071268926221513     |Bias               , 0.00428675767604619   |
-#|-    |-       |MCSE_var            , 0.000664559421799917 |Var                 , 0.000664559421799917 |
-#|-    |-       |MCSE_mse            , 0.000685994345421483 |Mse                 , 0.000685994345421483 |
-#|-    |-       |%Cov, 0.96                                 |Précision_var     , 0.0186125857979366     |
+#|1000 |RegLog  |MCSE_bias         , 0.00623855694294518    |Bias               , -0.00294756569120641  |
+#|-    |-       |MCSE_var          , 0.000576833475532091   |Var                , 0.000576833475532091  |
+#|-    |-       |MCSE_mse          , 0.00057370636241932    |Mse                , 0.00057370636241932   |
+#|-    |-       |%Cov              , 0.94                   |Précision_var      , -0.00285743039950165  |
 
 # K_coverage coverage coverage_mcse width width_mcse
 # <int>    <dbl>         <dbl> <dbl>      <dbl>
 #   1       1000    0.936       0.00774 0.429    0.00148
 # > mean(resultats$err_reg)
-# > sd(log(resultats$RRc))
+# > sd(resultats$coe_reg))
 
 ################################ IPW ###########################################
 
@@ -185,6 +187,9 @@ Tab01$Methode <- c("IPW", "-", "-","-")
 summary(resultats2$RRm)
 mean(resultats2$RRm)
 sd(resultats2$RRm)
+
+mean(sqrt(resultats2$var_log_RRm))
+sd(log(resultats2$RRm))
 
 ##    - biais, variance, moyenne de l'erreur-type, couverture des IC
 
@@ -227,8 +232,8 @@ Tab01$`Erreur de Monte Carlo` = list(
 Tab01$`Autres` = list(
   
   list(name = "Bias", value = MCSE_biais[2]),
-  list(name = "Var", value = MCSE_var[3]),
-  list(name = "Mse", value = MCSE_mse[3]),
+  list(name = "Var", value = MCSE_var[2]),
+  list(name = "Mse", value = MCSE_mse[2]),
   list(name = "Précision_var", value = sd(log(resultats2$RRm)) - mean(sqrt(resultats2$var_log_RRm)) # Voir si la variance est bien estimée
        
   )
@@ -241,10 +246,10 @@ kable(Tab01)
 
 #|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
 #|:----|:-------|:------------------------------------------|:------------------------------------------|
-#|1000 |IPW     |MCSE_bias          , 0.00714109026683143   |Bias               , 0.00366123637127513   |
-#|-    |IPW     |MCSE_var            , 0.000628107910234781 |Var                 , 0.000628107910234781 |
-#|-    |IPW     |MCSE_mse            , 0.000685994345421483 |Mse                 , 0.000685994345421483 |
-#|-    |IPW     |%Cov, 0.93                                 |Précision_var     , 0.0298310159785812     |
+#|1000 |IPW     |MCSE_bias          , 0.0063372338483292    |Bias               , -0.00185081536583087  |
+#|-    |IPW     |MCSE_var           , 0.000610640374502568  |Var                , 0.00401605328484094   |
+#|-    |IPW     |MCSE_mse           , 0.00057370636241932   |Mse                , 0.00386172782381055   |
+#|-    |IPW     |%Cov               , 0.93                  |Précision_var      , 0.00162356305486544   |
 
 # K_coverage coverage coverage_mcse width width_mcse
 # <int>    <dbl>         <dbl> <dbl>      <dbl>

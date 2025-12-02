@@ -64,11 +64,11 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
   }
   
-  # P(I2 = 2) - 0.30
+  # P(I2 = 2) - 0.50
   
   f_I2 <- function(b0){
     
-    integrate(P_I2, 0.1, 3, b0)$value - 0.30 # Contrainte pour la probabilité marginale
+    integrate(P_I2, 0.1, 3, b0)$value - 0.50 # Contrainte pour la probabilité marginale
     
   }
   
@@ -232,11 +232,11 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
   }
   
-  # P(I2 = 2) - 0.30
+  # P(I2 = 2) - 0.50
   
   f_I2 <- function(b0){
     
-    integrate(P_I2, 0.1, 3, b0)$value - 0.30 # Contrainte pour la probabilité marginale
+    integrate(P_I2, 0.1, 3, b0)$value - 0.50 # Contrainte pour la probabilité marginale
     
   }
   
