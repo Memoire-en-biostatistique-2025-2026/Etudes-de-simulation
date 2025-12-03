@@ -1,5 +1,5 @@
 
-# Chargements des librairies nécessaires
+# Chargement des librairies nécessaires
 
 library(dplyr)
 
