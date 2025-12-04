@@ -4,10 +4,10 @@
 # Première étape : Diviser l'échantillon pour le cross-fitting.
 
 # Deuxième étape : Estimer les fonctions  P_TND(V = v/ C = c, Y = 0) : score de 
-                # propension parmi les témoins et P_TND(Y = 1/ V = v, C = c) : en 
-                # appliquant  une méthode d'apprentissage statistique. Je vais  travailler  dans un premier 
+                # propension parmi les témoins et P_TND(Y = 1/ V = v, C = c) en 
+                # appliquant  une méthode d'apprentissage statistique. Je vais  
                 # travailler  dans un premier  temps avec la méthode de la forêt 
-                # d'arbres décisionnels (Random forest).
+                # d'arbres décisionnels (Random forest) pour la classification.
 
 # Troisième étape : Estimer le RRM par : 𝜓mRR = 𝜓𝑣∕𝜓𝑣0 qui est un estimateur 
                   # à la fois doublement  robuste et efficace. (Article 03)
@@ -26,22 +26,28 @@ RandomForest <- function(dat) {
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
   
-  # Transformer les variables V et Y en facteurs pour la classification
+  # Transformer les variables V et Y (variables réponses) en facteurs pour la classification
   
   TNDdat$V <- as.factor(TNDdat$V)
   TNDdat$Y <- as.factor(TNDdat$Y)
   
-  # Diviser le jeu de données en deux parties égales aléatoirement
+  # Première étape : Diviser aléatoirement le jeu de données en deux parties égales 
+  # Le double cross-fit
+  
+  set.seed(1) # pour que le résultat soit reproductible
 
   s <- sample(1:nrow(TNDdat), nrow(TNDdat) / 2)
-  TNDdat1 <- TNDdat[s, ]
-  TNDdat2 <- TNDdat[-s, ]
+  TNDdat_train1 <- TNDdat[s, ]
+  TNDdat_train2 <- TNDdat[-s, ]
+  
+  # Deuxième étape : Estimer les fonctions  P_TND(V = v/ C = c, Y = 0)  
+  ## Entrainement du modèle de forêt aléatoire
+  
+  ### Sur TNDdat_ctr1 
   
   # Sous-ensemble : témoins (Y == 0)
   
-  TNDdat_ctr1 <- subset(TNDdat1, Y == 0)
-  
-  # Etape d'entrainement du modèle de forêt aléatoire
+  TNDdat_ctr1 <- subset(TNDdat_train1, Y == 0)
   
   mod_g1_ctr <- ranger(
     
@@ -56,11 +62,11 @@ RandomForest <- function(dat) {
     
   )
   
+  ### Sur TNDdat_ctr2
+  
   # Sous-ensemble : témoins (Y == 0)
   
-  TNDdat_ctr2 <- subset(TNDdat2, Y == 0)
-  
-  # Etape d'entrainement du modèle de forêt aléatoire
+  TNDdat_ctr2 <- subset(TNDdat_train2, Y == 0)
   
   mod_g2_ctr <- ranger(
     
@@ -75,70 +81,86 @@ RandomForest <- function(dat) {
     
   )
   
+  ## Prédiction des probabilités sur les ensembles tests
   # Stockage des résultats
   
   g1_cont <- rep(NA, nrow(TNDdat))  
   
-  # Ensure newTNDdata has the same structure as training TNDdata
+  # S'assurer que newTNDdata et TNDdata ont la même structure
   
-  newTNDdata_train2 <- TNDdat2 %>%
-    mutate(V = factor(rep(1, nrow(TNDdat2)), levels = levels(TNDdat$V)))
+  newTNDdata_train2 <- TNDdat_train2 %>%
+    mutate(V = factor(rep(1, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
+  
+  # Prédire sur newTNDdata_train2 (ensemble autre que celui utilisé pour le premier entraînement du modèle)
   
   g1_cont[-s] <- predict(mod_g1_ctr, TNDdata = newTNDdata_train2)$predictions[, 2]
   
   newTNDdata_train1 <- TNDdat1 %>%
     mutate(V = factor(rep(1, nrow(TNDdat1)), levels = levels(TNDdat$V)))
   
+  # Prédire sur newTNDdata_train2 (ensemble autre que celui utilisé pour le deuxième entraînement du modèle)
+  
   g1_cont[s] <- predict(mod_g2_ctr, TNDdata = newTNDdata_train1)$predictions[, 2]
   
-  # Train Random Forest models for predicting Y (mu1 and mu0) using ranger
+  # Deuxième étape : Estimer les fonctions  P_TND(Y = 1/ V = v, C = c)  
+  ## Entainement du modèle de forêt aléatoire
+  
+  ### Sur TNDdat_train1
   
   Out_mu1 <- ranger(
     
     Y ~ .,
-    TNDdata = TNDdat1,
+    TNDdata = TNDdat_train1,
     num.trees = 50,  
     mtry = 1,      
     probability = TRUE
     
   )
   
+  ### Sur TNDdat_train2
+  
   Out_mu2 <- ranger(
     
     Y ~ .,
-    TNDdata = TNDdat2,
+    TNDdata = TNDdat_train2,
     num.trees = 50,  
     mtry = 1,        
     probability = TRUE
     
   )
   
-  # # Initialiser des objets pour contenir les resultats
+  ## Prédire les probabilités sur les ensembles tests 
+  # Stockage des résultats
   
   mu1 <- rep(NA, nrow(TNDdat))
   mu0 <- rep(NA, nrow(TNDdat))
   
-  # Prédire mu1: P(Y = 1/ V = 1)
+  # Prédire mu1: P(Y = 1/ V = 1) sur newTNDdata_mu1_train2
   
-  newTNDdata_mu1_train2 <- TNDdat2 %>%
+  newTNDdata_mu1_train2 <- TNDdat_train2 %>%
     select(-Y) %>%
-    mutate(V = factor(rep(1, nrow(TNDdat2)), levels = levels(TNDdat$V)))
+    mutate(V = factor(rep(1, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
   
   mu1[-s] <- predict(Out_mu1, TNDdata = newTNDdata_mu1_train2)$predictions[, 2]
   
-  newTNDdata_mu1_train1 <- TNDdat1 %>%
+  # Prédire mu1: P(Y = 1/ V = 1) sur newTNDdata_mu1_train1
+  
+  newTNDdata_mu1_train1 <- TNDdat_train1 %>%
     select(-Y) %>%
-    mutate(V = factor(rep(1, nrow(TNDdat1)), levels = levels(TNDdat$V)))
+    mutate(V = factor(rep(1, nrow(TNDdat_train1)), levels = levels(TNDdat$V)))
+  
   
   mu1[s] <- predict(Out_mu2, TNDdata = newTNDdata_mu1_train1)$predictions[, 2]
   
-  # Prédire mu0: P(Y = 1/ V = 0)
+  # Prédire mu0: P(Y = 1/ V = 0) sur newTNDdata_mu1_train2
   
   newTNDdata_mu0_train2 <- TNDdat2 %>%
     select(-Y) %>%
-    mutate(V = factor(rep(0, nrow(TNDdat2)), levels = levels(TNDdat$V)))
+    mutate(V = factor(rep(0, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
   
   mu0[-s] <- predict(Out_mu1, TNDdata = newTNDdata_mu0_train2)$predictions[, 2]
+  
+  # Prédire mu0: P(Y = 1/ V = 0) sur newTNDdata_mu1_train1
   
   newTNDdata_mu0_train1 <- TNDdat1 %>%
     select(-Y) %>%
