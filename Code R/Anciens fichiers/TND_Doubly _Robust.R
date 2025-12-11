@@ -20,6 +20,8 @@ library(dplyr)
 library(ranger)
 library(earth)
 
+################################################################################
+
 # Définir une fonction pour prédire les probabilités (Forêt aléatoire)
 
 RandomForest <- function(dat) {
@@ -206,6 +208,134 @@ RandomForest <- function(dat) {
   g0 <- 1 - pmin(pmax(g1_cont, 0.0000001), 0.9999999)
   
   return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1, g0 = g0, w1 = m0 / (1 - mu1), w0 = m0 / (1 - mu0)))
+  
+}
+
+################################################################################
+
+# Définir une fonction pour prédire les probabilités (earth_GLM)
+
+Mars <- function(dat){
+  
+  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
+  
+  # Première étape : Diviser aléatoirement le jeu de données en deux parties égales 
+  # Le double cross-fit
+  
+  set.seed(1) # pour que le résultat soit reproductible
+  
+  s <- sample(1:nrow(TNDdat), nrow(TNDdat) / 2)
+  
+  TNDdat_train1 <- TNDdat[s, ]
+  TNDdat_train2 <- TNDdat[-s, ]
+  
+  # Deuxième étape : Estimer les fonctions  P_TND(V = v/ C = c, Y = 0)  
+  ## Entrainement du modèle de forêt aléatoire
+  
+  ### Sur le premier ensemble d'entraînement
+  
+  TNDdat_train_ctr1 <- subset(TNDdat_train1, Y == 0)
+  
+  mod_g1_ctr <- earth(
+    
+    V ~ .,
+    data = subset(TNDdat_train_ctr1, select = -Y),
+    glm = list(family = binomial)
+    
+  )
+  
+  ### Sur le deuxième ensemble d'entraînement
+  
+  TNDdat_train_ctr2 <- subset(TNDdat_train2, Y==0)
+  
+  mod_g2_ctr <- earth(
+    
+    V ~ .,
+    data = subset(TNDdat_train_ctr2, select = -Y),
+    glm = list(family = binomial)
+    
+  )
+  
+  ## Prédire les probabilités sur les ensembles tests 
+  # Stockage des résultats
+  
+  g1_cont <- dat$V
+  g1_cont[-s] <- predict(mod_g1_ctr, type = "response", newdata = as.data.frame(cbind(select(TNDdat_train2, !c(V,Y)), V = rep(1, nrow(TNDdat_train2) ), Y = TNDdat_train2$Y)))
+  g1_cont[s] <- predict(mod_g2_ctr, type = "response", newdata = as.data.frame(cbind(select(TNDdat_train1, !c(V,Y)), V = rep(1, nrow(TNDdat_train1)) , Y = TNDdat_train1$Y)))
+  
+  # Deuxième étape : Estimer les fonctions  P_TND(Y = 1/ V = v, C = c)  
+  ## Entainement du modèle 
+  
+  ### Sur le premier ensemble d'entraînement
+  
+  Out_mu1 <- earth(
+    
+    Y ~ .,
+    data = TNDdat_train1,
+    glm = list(family = binomial)
+    
+  )
+  
+  ### Sur le deuxième ensemble d'entraînement
+  
+  Out_mu2 <- earth(
+    
+    Y ~ .,
+    data = TNDdat_train2,
+    glm = list(family = binomial)
+    
+  )
+  
+  ## Prédire les probabilités sur les ensembles tests 
+  # Stockage des résultats
+  
+  mu1 <- TNDdat_train$Y
+  mu0 <- TNDdat_train$Y
+  
+  mu1[-s] <- predict(Out_mu1, newdata = as.data.frame(cbind(V = 1, select(TNDdat_train2, !c(V,Y)) )), type = "response")
+  mu1[s] <- predict(Out_mu2, newdata = as.data.frame(cbind(V = 1, select(TNDdat_train1, !c(V,Y)) )), type = "response")
+  
+  mu0[-s] <- predict(Out_mu1, newdata=as.data.frame(cbind(V = 0, select(TNDdat_train2, !c(V,Y)) )), type = "response")
+  mu0[s] <- predict(Out_mu2, newdata=as.data.frame(cbind(V = 0, select(TNDdat_train1, !c(V,Y)) )), type = "response")
+  
+  # Deuxième étape : Estimer les fonctions  m0 (1 - Y ou P(Y = 0))   
+  ## Entainement du modèle 
+  
+  ### Sur le premier ensemble d'entraînement
+
+  Out_m1 <- earth(
+    
+    Y ~ .,
+    data = subset(TNDdat_train1, select = -V),
+    glm = list(family = binomial)
+    
+  )
+  
+  ### Sur le deuxième ensemble d'entraînement
+  
+  Out_m2 <- earth(
+    
+    Y ~ .,
+    data = subset(TNDdat_train2, select = -V),
+    glm = list(family = binomial)
+    
+  )
+  
+  ## Prédire les probabilités sur les ensembles tests 
+  # Stockage des résultats
+  
+  m0 <- dat$Y
+  
+  m0[-s] <- 1 - predict(Out_m1, newdata = select(TNDdat_train2, !c(V,Y)), type = "response")
+  m0[s] <- 1 - predict(Out_m2, newdata = select(TNDdat_train1, !c(V,Y)), type = "response")
+  
+  mu1 <- pmin(pmax(mu1, 0.0000001), 0.9999999)
+  mu0 <- pmin(pmax(mu0, 0.0000001), 0.9999999)
+  m0 <- pmin(pmax(m0, 0.0000001), 0.9999999)
+  g1 <- pmin(pmax(g1_cont, 0.0000001), 0.9999999)
+  g0 <- 1 - pmin(pmax(g1_cont, 0.0000001), 0.9999999)
+  
+  return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1,g0 = g0, w1 = m0 / (1 - mu1),w0 = m0 / (1 - mu0)))
   
 }
 
