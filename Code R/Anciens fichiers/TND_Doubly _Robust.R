@@ -63,7 +63,7 @@ RandomForest <- function(dat) {
     
   )
   
-  ### Deuxième ensemble d'entraînement : TNDdat_ctr1
+  ### Deuxième ensemble d'entraînement : TNDdat_ctr2
   
   TNDdat_ctr2 <- subset(TNDdat_train2, Y == 0) # Sous-ensemble : témoins (Y == 0)
   
@@ -240,7 +240,7 @@ RandomForest <- function(dat) {
   # Deuxième étape : Estimer les fonctions  P_TND(V = v/ C = c, Y = 0)  
   ## Entrainement du modèle 
   
-  ### Sur TNDdat_ctr1 
+  ### Premier ensemble d'entraînement : TNDdat_ctr1  
   
   TNDdat_ctr1 <- subset(TNDdat_train1, Y == 0)
   
@@ -254,9 +254,7 @@ RandomForest <- function(dat) {
     
   )
   
-  ### Sur TNDdat_ctr2
-  
-  # Sous-ensemble : témoins (Y == 0)
+  ### Deuxième ensemble d'entraînement : TNDdat_ctr2
   
   TNDdat_ctr2 <- subset(TNDdat_train2, Y == 0)
   
@@ -275,21 +273,21 @@ RandomForest <- function(dat) {
   
   g1_cont <- rep(NA, nrow(TNDdat))  
   
-  # S'assurer que newTNDdata et TNDdata ont la même structure
+  # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
   
-  newTNDdata_train2 <- TNDdat_train2 %>%
+  TNDdata_test1 <- TNDdat_train2 %>%
     mutate(V = factor(rep(1, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
   
-  # Prédire sur newTNDdata_train2 (ensemble autre que celui utilisé pour le premier entraînement du modèle)
+  TNDdata_test2 <- TNDdat_train1 %>%
+    mutate(V = factor(rep(1, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
   
-  g1_cont[-s] <- predict(mod_g1_ctr, TNDdata = newTNDdata_train2)$predictions[, 2]
+  # Prédire sur TNDdata_test1 (ensemble autre que celui utilisé pour le premier entraînement du modèle)
   
-  newTNDdata_train1 <- TNDdat1 %>%
-    mutate(V = factor(rep(1, nrow(TNDdat1)), levels = levels(TNDdat$V)))
+  g1_cont[-s] <- predict(mod_g1_ctr, newx = TNDdata_test1)
   
-  # Prédire sur newTNDdata_train2 (ensemble autre que celui utilisé pour le deuxième entraînement du modèle)
+  # Prédire sur TNDdata_test2 (ensemble autre que celui utilisé pour le deuxième entraînement du modèle)
   
-  g1_cont[s] <- predict(mod_g2_ctr, TNDdata = newTNDdata_train1)$predictions[, 2]
+  g1_cont[s] <- predict(mod_g2_ctr, newx = TNDdata_test2)
   
   # Deuxième étape : Estimer les fonctions  P_TND(Y = 1/ V = v, C = c)  
   ## Entainement du modèle de forêt aléatoire
@@ -330,7 +328,7 @@ RandomForest <- function(dat) {
     select(-Y) %>%
     mutate(V = factor(rep(1, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
   
-  mu1[-s] <- predict(Out_mu1, TNDdata = newTNDdata_mu1_train2)$predictions[, 2]
+  mu1[-s] <- predict(Out_mu1, newx = newTNDdata_mu1_train2)
   
   # Prédire mu1: P(Y = 1/ V = 1) sur newTNDdata_mu1_train1
   
@@ -339,7 +337,7 @@ RandomForest <- function(dat) {
     mutate(V = factor(rep(1, nrow(TNDdat_train1)), levels = levels(TNDdat$V)))
   
   
-  mu1[s] <- predict(Out_mu2, TNDdata = newTNDdata_mu1_train1)$predictions[, 2]
+  mu1[s] <- predict(Out_mu2, newx = newTNDdata_mu1_train1)
   
   # Prédire mu0: P(Y = 1/ V = 0) sur newTNDdata_mu1_train2
   
@@ -347,7 +345,7 @@ RandomForest <- function(dat) {
     select(-Y) %>%
     mutate(V = factor(rep(0, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
   
-  mu0[-s] <- predict(Out_mu1, TNDdata = newTNDdata_mu0_train2)$predictions[, 2]
+  mu0[-s] <- predict(Out_mu1, newx = newTNDdata_mu0_train2)
   
   # Prédire mu0: P(Y = 1/ V = 0) sur newTNDdata_mu1_train1
   
@@ -355,7 +353,7 @@ RandomForest <- function(dat) {
     select(-Y) %>%
     mutate(V = factor(rep(0, nrow(TNDdat1)), levels = levels(TNDdat$V)))
   
-  mu0[s] <- predict(Out_mu2, TNDdata = newTNDdata_mu0_train1)$predictions[, 2]
+  mu0[s] <- predict(Out_mu2, newx = newTNDdata_mu0_train1)
   
   # Deuxième étape : Estimer les fonctions  m0 (1 - Y ou P(Y = 0))  
   ## Entrainement du modèle de forêt aléatoire
@@ -390,8 +388,8 @@ RandomForest <- function(dat) {
   
   # Prédire mu0: P(Y = 0)
   
-  m0[-s] <- 1 - predict(Out_m1, TNDdata = select(TNDdat_ctr2, -c(V, Y)))$predictions[, 2]
-  m0[s] <- 1 - predict(Out_m2, TNDdata = select(TNDdat_ctr1, -c(V, Y)))$predictions[, 2]
+  m0[-s] <- 1 - predict(Out_m1, newx = select(TNDdat_ctr2, -c(V, Y)))
+  m0[s] <- 1 - predict(Out_m2, newx = select(TNDdat_ctr1, -c(V, Y)))
   
   mu1 <- pmin(pmax(mu1, 0.0000001), 0.9999999)
   mu0 <- pmin(pmax(mu0, 0.0000001), 0.9999999)
