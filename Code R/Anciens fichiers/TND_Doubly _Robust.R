@@ -454,9 +454,25 @@ Mars <- function(dat){
   ## Prédire les probabilités sur les ensembles tests 
   # Stockage des résultats
   
-  g1_cont <- dat$V
-  g1_cont[-s] <- predict(mod_g1_ctr, type = "response", newdata = as.data.frame(cbind(select(TNDdat_train2, !c(V,Y)), V = rep(1, nrow(TNDdat_train2) ), Y = TNDdat_train2$Y)))
-  g1_cont[s] <- predict(mod_g2_ctr, type = "response", newdata = as.data.frame(cbind(select(TNDdat_train1, !c(V,Y)), V = rep(1, nrow(TNDdat_train1)) , Y = TNDdat_train1$Y)))
+  g1_cont <- rep(NA, nrow(TNDdat)) 
+  
+  # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
+  
+  TNDdata_test1 <-  newdata = as.data.frame(cbind(select(TNDdat_train2, !c(V,Y)),
+                                                  V = rep(1, nrow(TNDdat_train2) ), 
+                                                  Y = TNDdat_train2$Y))
+  
+  TNDdata_test2 <- newdata = as.data.frame(cbind(select(TNDdat_train1, !c(V,Y)),
+                                                 V = rep(1, nrow(TNDdat_train1) ), 
+                                                 Y = TNDdat_train1$Y))
+  
+  # Prédire sur TNDdata_test1 (ensemble autre que celui utilisé pour le premier entraînement du modèle)
+  
+  g1_cont[-s] <- predict(mod_g1_ctr, type = "response", newdata = TNDdata_test1)
+  
+  # Prédire sur TNDdata_test2 (ensemble autre que celui utilisé pour le deuxième entraînement du modèle)
+  
+  g1_cont[s] <- predict(mod_g2_ctr, type = "response", newdata = TNDdata_test2)
   
   # Deuxième étape : Estimer les fonctions  P_TND(Y = 1/ V = v, C = c)  
   ## Entainement du modèle 
@@ -484,14 +500,40 @@ Mars <- function(dat){
   ## Prédire les probabilités sur les ensembles tests 
   # Stockage des résultats
   
-  mu1 <- TNDdat_train$Y
-  mu0 <- TNDdat_train$Y
+  mu1 <- rep(NA, nrow(TNDdat)) #P_TND(Y = 1/ V = 1, C = c)
   
-  mu1[-s] <- predict(Out_mu1, newdata = as.data.frame(cbind(V = 1, select(TNDdat_train2, !c(V,Y)) )), type = "response")
-  mu1[s] <- predict(Out_mu2, newdata = as.data.frame(cbind(V = 1, select(TNDdat_train1, !c(V,Y)) )), type = "response")
+  # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
   
-  mu0[-s] <- predict(Out_mu1, newdata=as.data.frame(cbind(V = 0, select(TNDdat_train2, !c(V,Y)) )), type = "response")
-  mu0[s] <- predict(Out_mu2, newdata=as.data.frame(cbind(V = 0, select(TNDdat_train1, !c(V,Y)) )), type = "response")
+  TNDdata_mu1_test1 <- as.data.frame(cbind(V = 1, select(TNDdat_train2, !c(V,Y)) ))
+  
+  TNDdata_mu1_test2 <- as.data.frame(cbind(V = 1, select(TNDdat_train1, !c(V,Y)) ))
+  
+  # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test1
+  
+  mu1[-s] <- predict(Out_mu1, newdata = TNDdata_mu1_test1, type = "response")
+  
+  # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test2
+  
+  mu1[s] <- predict(Out_mu2, newdata = TNDdata_mu1_test2, type = "response")
+  
+  ## Prédire les probabilités sur les ensembles tests 
+  # Stockage des résultats
+  
+  mu0 <- rep(NA, nrow(TNDdat)) #P_TND(Y = 1/ V = 0, C = c)
+  
+  # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
+  
+  TNDdata_mu1_test1 <- as.data.frame(cbind(V = 0, select(TNDdat_train2, !c(V,Y)) ))
+  
+  TNDdata_mu1_test2 <- as.data.frame(cbind(V = 0, select(TNDdat_train1, !c(V,Y)) ))
+  
+  # Prédire mu0: P(Y = 1/ V = 0) sur TNDdata_mu1_test1
+  
+  mu0[-s] <- predict(Out_mu1, newdata = TNDdata_mu1_test1, type = "response")
+  
+  # Prédire mu0: P(Y = 1/ V = 0) sur TNDdata_mu1_test2
+  
+  mu0[s] <- predict(Out_mu2, newdata = TNDdata_mu1_test2, type = "response")
   
   # Deuxième étape : Estimer les fonctions  m0 (1 - Y ou P(Y = 0))   
   ## Entainement du modèle 
@@ -519,7 +561,7 @@ Mars <- function(dat){
   ## Prédire les probabilités sur les ensembles tests 
   # Stockage des résultats
   
-  m0 <- dat$Y
+  m0 <- rep(NA, nrow(TNDdat))
   
   m0[-s] <- 1 - predict(Out_m1, newdata = select(TNDdat_train2, !c(V,Y)), type = "response")
   m0[s] <- 1 - predict(Out_m2, newdata = select(TNDdat_train1, !c(V,Y)), type = "response")
