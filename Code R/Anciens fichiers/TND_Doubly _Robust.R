@@ -275,11 +275,13 @@ RandomForest <- function(dat) {
   
   # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
   
-  TNDdata_test1 <- TNDdat_train2 %>%
-    mutate(V = factor(rep(1, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
+  TNDdata_test1 <- data.matrix(as.data.frame(cbind(select(TNDdat_train2, !c(V,Y)),
+                                                    V = rep(1, nrow(TNDdat_train2) ), 
+                                                    Y = TNDdat_train2$Y)))
   
-  TNDdata_test2 <- TNDdat_train1 %>%
-    mutate(V = factor(rep(1, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
+  TNDdata_test2 <- data.matrix(as.data.frame(cbind(select(TNDdat_train2, !c(V,Y)),
+                                                   V = rep(1, nrow(TNDdat_train2) ), 
+                                                   Y = TNDdat_train2$Y)))
   
   # Prédire sur TNDdata_test1 (ensemble autre que celui utilisé pour le premier entraînement du modèle)
   
@@ -319,46 +321,45 @@ RandomForest <- function(dat) {
   ## Prédire les probabilités sur les ensembles tests 
   # Stockage des résultats
   
-  mu1 <- rep(NA, nrow(TNDdat))
-  mu0 <- rep(NA, nrow(TNDdat))
+  mu1 <- rep(NA, nrow(TNDdat)) #P_TND(Y = 1/ V = 1, C = c) 
+  
+  # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
+  
+  TNDdata_mu1_test1 <- data.matrix(as.data.frame(cbind(V = 1, select(TNDdat_train2, !c(V,Y)))))
+  
+  TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 1, select(TNDdat_train1, !c(V,Y)))))
+  
+  # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test1
+  
+  mu1[s] <- predict(Out_mu2, newx = TNDdata_mu1_test1)
   
   # Prédire mu1: P(Y = 1/ V = 1) sur newTNDdata_mu1_train2
   
-  newTNDdata_mu1_train2 <- TNDdat_train2 %>%
-    select(-Y) %>%
-    mutate(V = factor(rep(1, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
+  mu1[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test2)
   
-  mu1[-s] <- predict(Out_mu1, newx = newTNDdata_mu1_train2)
+  ## Prédire les probabilités sur les ensembles tests 
+  # Stockage des résultats
   
-  # Prédire mu1: P(Y = 1/ V = 1) sur newTNDdata_mu1_train1
+  mu0 <- rep(NA, nrow(TNDdat)) #P_TND(Y = 1/ V = 0, C = c) 
   
-  newTNDdata_mu1_train1 <- TNDdat_train1 %>%
-    select(-Y) %>%
-    mutate(V = factor(rep(1, nrow(TNDdat_train1)), levels = levels(TNDdat$V)))
+  # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
   
+  TNDdata_mu1_test1 <- data.matrix(as.data.frame(cbind(V = 0, select(TNDdat_train2, !c(V,Y)))))
   
-  mu1[s] <- predict(Out_mu2, newx = newTNDdata_mu1_train1)
+  TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 0, select(TNDdat_train1, !c(V,Y)))))
   
-  # Prédire mu0: P(Y = 1/ V = 0) sur newTNDdata_mu1_train2
+  # Prédire mu0: P(Y = 1/ V = 0) sur TNDdata_mu1_test1
   
-  newTNDdata_mu0_train2 <- TNDdat2 %>%
-    select(-Y) %>%
-    mutate(V = factor(rep(0, nrow(TNDdat_train2)), levels = levels(TNDdat$V)))
+  mu0[s] <- predict(Out_mu2, newx = TNDdata_mu1_test1)
   
-  mu0[-s] <- predict(Out_mu1, newx = newTNDdata_mu0_train2)
+  # Prédire mu1: P(Y = 1/ V = 0) sur newTNDdata_mu1_train2
   
-  # Prédire mu0: P(Y = 1/ V = 0) sur newTNDdata_mu1_train1
+  mu0[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test2)
   
-  newTNDdata_mu0_train1 <- TNDdat1 %>%
-    select(-Y) %>%
-    mutate(V = factor(rep(0, nrow(TNDdat1)), levels = levels(TNDdat$V)))
+  # Deuxième étape : Estimer les fonctions  m0 (1 - Y ou P(Y = 0))   
+  ## Entainement du modèle 
   
-  mu0[s] <- predict(Out_mu2, newx = newTNDdata_mu0_train1)
-  
-  # Deuxième étape : Estimer les fonctions  m0 (1 - Y ou P(Y = 0))  
-  ## Entrainement du modèle de forêt aléatoire
-  
-  ### Sur TNDdat_ctr1  
+  ### Sur le premier ensemble d'entraînement  
   
   Out_m1 <- cv.glmnet(
     
@@ -370,7 +371,7 @@ RandomForest <- function(dat) {
     
   )
   
-  ### Sur TNDdat_ctr2
+  ### Sur le deuxième ensemble d'entraînement
   
   Out_m1 <- cv.glmnet(
     
@@ -382,14 +383,13 @@ RandomForest <- function(dat) {
     
   )
   
-  # Initialiser m0 pour contenir les prédictions
+  ## Prédire les probabilités sur les ensembles tests 
+  # Stockage des résultats
   
   m0 <- rep(NA, nrow(TNDdat))
   
-  # Prédire mu0: P(Y = 0)
-  
-  m0[-s] <- 1 - predict(Out_m1, newx = select(TNDdat_ctr2, -c(V, Y)))
-  m0[s] <- 1 - predict(Out_m2, newx = select(TNDdat_ctr1, -c(V, Y)))
+  m0[-s] <- 1 - predict(Out_m1, newx = data.matrix(select(TNDdat_train2, !c(V,Y)), type = "response"))
+  m0[s] <- 1 - predict(Out_m2, newx = data.matrix(select(TNDdat_train1, !c(V,Y)), type = "response"))
   
   mu1 <- pmin(pmax(mu1, 0.0000001), 0.9999999)
   mu0 <- pmin(pmax(mu0, 0.0000001), 0.9999999)
