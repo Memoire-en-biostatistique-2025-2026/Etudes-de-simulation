@@ -603,12 +603,12 @@ RN <- function(dat) {
   
   TNDdat_ctr1 <- subset(TNDdat_train1, Y == 0) # Sous-ensemble : témoins (Y == 0)
   
-  mod_g1_ctr <- nnet(
-    
+  mod_g1_ctr <- nnet( # La fonction d’activation par défaut est la fonction sigmoïde
+                      # Cela aide le réseau à introduire la non-linéarité
     V ~ .,
     data = subset(TNDdat_ctr1, select = -Y),
-    size = 5, 
-    maxit = 50
+    size = 5, # Le nombre de nœuds dans la couche cachée
+    maxit = 50 # Le paramètre fixe le nombre maximal d’itérations pour l'e processus d’entraînement'entraînement
     
   )
   
