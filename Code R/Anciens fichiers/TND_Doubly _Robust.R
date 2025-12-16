@@ -20,6 +20,7 @@ library(dplyr)
 library(ranger)
 library(earth)
 library(glmnet)
+library(nnet)
 
 ################################################################################
 
@@ -606,7 +607,8 @@ RN <- function(dat) {
     
     V ~ .,
     data = subset(TNDdat_ctr1, select = -Y),
-    size = 5, maxit = 50
+    size = 5, 
+    maxit = 50
     
   )
   
@@ -618,7 +620,8 @@ RN <- function(dat) {
     
     V ~ .,
     data = subset(TNDdat_ctr2, select = -Y),
-    size = 5, maxit = 50
+    size = 5, 
+    maxit = 50
     
   )
   
@@ -654,7 +657,8 @@ RN <- function(dat) {
     
     Y ~ .,
     data = TNDdat_train1,
-    size = 5, maxit = 50
+    size = 5, 
+    maxit = 50
     
   )
   
@@ -723,7 +727,8 @@ RN <- function(dat) {
     
     Y ~ .,
     data = subset(TNDdat_train1, select = -V),
-    size = 5, maxit = 50
+    size = 5,
+    maxit = 50
     
   )
   
@@ -733,7 +738,8 @@ RN <- function(dat) {
     
     Y ~ .,
     data = subset(TNDdat_train2, select = -V),
-    size = 5, maxit = 50
+    size = 5, 
+    maxit = 50
     
   )
   
@@ -759,5 +765,7 @@ RN <- function(dat) {
 ################################################################################
 ################################################################################
 TNDDR <- function(dat){
+  
+  
   
 }
