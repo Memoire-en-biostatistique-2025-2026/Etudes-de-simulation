@@ -5,9 +5,8 @@
 
 # Deuxième étape : Estimer les fonctions  P_TND(V = v/ C = c, Y = 0) : score de 
                 # propension parmi les témoins et P_TND(Y = 1/ V = v, C = c) en 
-                # appliquant  une méthode d'apprentissage statistique. Je vais  
-                # travailler  dans un premier  temps avec la méthode de la forêt 
-                # d'arbres décisionnels (Random forest) pour la classification.
+                # appliquant  une méthode d'apprentissage statistique : forêt   
+                # aléatoire, régression lasso, earth_GLM et réseaux de neurones. 
 
 # Troisième étape : Estimer le RRM par : 𝜓mRR = 𝜓𝑣∕𝜓𝑣0 qui est un estimateur 
                   # à la fois doublement  robuste et efficace. (Article 03)
@@ -15,7 +14,7 @@
 # Chargement des librairies nécessaires
 
 library(sandwich)
-library(randomForest)
+library(randomFoestimationst)
 library(dplyr)
 library(ranger)
 library(earth)
@@ -26,7 +25,7 @@ library(nnet)
 
 # Définir une fonction pour prédire les probabilités (Forêt aléatoire)
 
-RandomForest <- function(dat) {
+RandomFoest <- function(dat) {
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
   
@@ -55,7 +54,7 @@ RandomForest <- function(dat) {
     
     V ~ .,
     data = subset(TNDdat_ctr1, select = -Y),
-    num.trees = 200,  # Nombre d'arbres = 200
+    num.trees = 200,  # Nombre d'arbestimations = 200
     mtry = 1,         # Set mtry to 1 for 2-3 covariates
     min.node.size = 60,  # Taille minimale d'un noeud
     sample.fraction = 0.33,
@@ -225,7 +224,7 @@ RandomForest <- function(dat) {
 
 # Définir une fonction pour prédire les probabilités (Lasso)
 
-RandomForest <- function(dat) {
+Lasso <- function(dat) {
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
  
@@ -482,7 +481,8 @@ Mars <- function(dat){
     
     Y ~ .,
     data = TNDdat_train1,
-    glm = list(family = binomial)
+    glm = list(family = binomial),
+    degree = 2
     
   )
   
@@ -492,7 +492,8 @@ Mars <- function(dat){
     
     Y ~ .,
     data = TNDdat_train2,
-    glm = list(family = binomial)
+    glm = list(family = binomial),
+    degree = 2
     
   )
   
@@ -700,7 +701,7 @@ RN <- function(dat) {
   
   mu0 <- rep(NA, nrow(TNDdat)) #P_TND(Y = 1/ V = 0, C = c)
   
-  # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
+  # S'assurer à chaque fois que les ensembles d'entraînemnt et de test ont la même structure
   
   TNDdata_mu0_test1 <- TNDdat_train2 %>%
     select(-Y) %>%
@@ -764,8 +765,72 @@ RN <- function(dat) {
   
 ################################################################################
 ################################################################################
+
+# Troisième étape : Estimer le RRM par : 𝜓mRR = 𝜓𝑣∕𝜓𝑣0 qui est un estimateur 
+# à la fois doublement  robuste et efficace. (Article 03)
+# Formules mathématiques utilisées : voir Article 03 : A Double Machine Learning Approach...
+
+# EIF (the efficient influence function) : La fonction d’influence empirique est une mesure 
+# de la dépendance de l’estimateur à la valeur de l’un des points de l’échantillon. C’est 
+# une mesure sans modèle dans le sens où elle repose simplement sur le calcul e l’estimateur 
+# à nouveau avec un autre échantillon.
+
+# D'abord avec la forêt aléatoire
+
 TNDDR <- function(dat){
   
+  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
+  estimations <- RandomFoest(dat)
   
+  # Estimation du 𝜓𝑣: 𝜓𝑣 = 𝜓𝑣(ℙTND)=𝔼TND[𝜇𝑣(𝒄)*𝜔𝑣(𝒄)] avec
+  #  𝜇𝑣(𝒄) = ℙTND (𝑌 = 1|𝑉 = 1,𝑪 = 𝒄),
+  #  𝜔𝑣(𝒄) = 𝜋𝑣(𝒄) / 𝜋0𝑣(𝒄)
+  
+  A.1 <- ((1 - TNDdat$Y)*(TNDdat$V - estimations$g1))/(estimations$g1* (1 -estimations$mu1))
+  psi.1 <- mean(TNDdat$Y*TNDdat$V/estimations$g1 - estimations$mu1*A.1)
+  
+  # Estimation du 𝜓𝑣0 : 𝜓𝑣0(ℙTND)=𝔼TND[𝜇𝑣0(𝒄)*𝜔𝑣0(𝒄)] avec
+  #  𝜇𝑣0(𝒄) = ℙTND (𝑌 = 1|𝑉 = 0,𝑪 = 𝒄),
+
+  A.0 <- ((1 - TNDdat$Y)*((1-TNDdat$V) - estimations$g0))/(estimations$g0* (1 - estimations$mu0))
+  psi.0 <- mean(TNDdat$Y*(1-TNDdat$V)/estimations$g0 - estimations$mu0*A.0)
+  
+  # Estimation du RRM par : 𝜓mRR = 𝜓𝑣∕𝜓𝑣0
+  
+  RRm <- pmin(pmax(psi.1/psi.0, 0.001), 0.999)
+  
+  # Intervalles de confiance
+  
+  ## Méthode 01: Pour l'intervalle de confiance de TNDDR, on peut utiliser une transformation 
+  ## logarithmique pour améliorer la précision de l'approximation normale.
+  
+  ## Estimation de var(ln(𝜓eif mRR)) = var(𝔼𝕀𝔽(ln(𝜓𝑣∕𝜓𝑣0 )))
+  
+  log_eif_RRm <-  ((TNDdat$Y*TNDdat$V/estimations$g1 - estimations$mu1*A.1 - psi.1)/psi.1) - ((TNDdat$Y*(1-TNDdat$V)/estimations$g0 - estimations$mu0*A.0 - psi.0)/ psi.0)
+  var_log_eif_RRm <-  var(log_eif_RRm)/nrow(TNDdat)
+  
+  ## Premier intervalle de confiance pour le RRm
+  
+  IC_inf1 <- exp(log(RRm) - 1.96 * sqrt(var_log_eif_RRm) )
+  IC_sup1 <- exp(log(RRm) + 1.96 * sqrt(var_log_eif_RRm) )
+  
+  eifpsi <- (TNDdat$Y*TNDdat$V/estimations$g1 - estimations$mu1*A.1 - psi.1)/psi.0 - RRm*(TNDdat$Y*(1-TNDdat$V)/estimations$g0 - estimations$mu0*A.0 - psi.0)/psi.0
+  var <- var(eifpsi)/nrow(TNDdat)
+  
+  ## Deuxième intervalle de confiance pour le RRm
+  
+  IC_inf2 <- RRm - 1.96 * sqrt(var)
+  IC_sup2 <- RRm + 1.96 * sqrt(var)
+  
+  varn2 <- mean((RRm* (TNDdat$Y*(1-TNDdat$V)/estimations$g0 - estimations$mu0*A.0) - (TNDdat$Y*TNDdat$V/estimations$g1 - estimations$mu1*A.1) )^2)
+  denJ <- psi.0^2
+  var2 <- varn2/(denJ * nrow(TNDdat))
+  
+  ## Troisième intervalle de confiance pour le RRm
+  
+  IC_inf3 <- RRm - 1.96 * sqrt(var2)
+  IC_sup3 <- RRm + 1.96 * sqrt(var2)
+  
+  return(list( est = RRm, varln = var_log_eif_RRm, var = var, IC1 =  c(IC_inf1,IC_sup1), IC2 =  c(IC_inf2,IC_sup2), CI3 =  c(IC_inf3,IC_sup3)))
   
 }
