@@ -14,7 +14,7 @@
 # Chargement des librairies nécessaires
 
 library(sandwich)
-library(randomFoestimationst)
+library(randomForest)
 library(dplyr)
 library(ranger)
 library(earth)
@@ -25,7 +25,7 @@ library(nnet)
 
 # Définir une fonction pour prédire les probabilités (Forêt aléatoire)
 
-RandomFoest <- function(dat) {
+RandomForest <- function(dat) {
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
   
@@ -43,7 +43,7 @@ RandomFoest <- function(dat) {
   TNDdat_train1 <- TNDdat[s, ]
   TNDdat_train2 <- TNDdat[-s, ]
   
-  # Deuxième étape : Estimer les fonctions  P_TND(V = v/ C = c, Y = 0)  
+  # Deuxième étape : Estimer la fonction  P_TND(V = v/ C = c, Y = 0)  
   ## Entrainement du modèle de forêt aléatoire
   
   ### Premier ensemble d'entraînement : TNDdat_ctr1 
@@ -101,7 +101,7 @@ RandomFoest <- function(dat) {
   
   g1_cont[s] <- predict(mod_g2_ctr, TNDdata = newTNDdata_train1)$predictions[, 2]
   
-  # Deuxième étape : Estimer les fonctions  P_TND(Y = 1/ V = v, C = c)  
+  # Deuxième étape : Estimer la fonction  P_TND(Y = 1/ V = v, C = c)  
   ## Entainement du modèle de forêt aléatoire
   
   ### Sur le premier ensemble d'entraînement
@@ -333,7 +333,7 @@ Lasso <- function(dat) {
   
   mu1[s] <- predict(Out_mu2, newx = TNDdata_mu1_test1)
   
-  # Prédire mu1: P(Y = 1/ V = 1) sur newTNDdata_mu1_train2
+  # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test2
   
   mu1[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test2)
   
@@ -352,7 +352,7 @@ Lasso <- function(dat) {
   
   mu0[s] <- predict(Out_mu2, newx = TNDdata_mu1_test1)
   
-  # Prédire mu1: P(Y = 1/ V = 0) sur newTNDdata_mu1_train2
+  # Prédire mu1: P(Y = 1/ V = 0) sur TNDdata_mu1_test2
   
   mu0[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test2)
   
@@ -605,11 +605,11 @@ RN <- function(dat) {
   TNDdat_ctr1 <- subset(TNDdat_train1, Y == 0) # Sous-ensemble : témoins (Y == 0)
   
   mod_g1_ctr <- nnet( # La fonction d’activation par défaut est la fonction sigmoïde
-                      # Cela aide le réseau à introduire la non-linéarité
+                      # Cela aide le réseau à introduire la non-linéarité.
     V ~ .,
     data = subset(TNDdat_ctr1, select = -Y),
     size = 5, # Le nombre de nœuds dans la couche cachée
-    maxit = 50 # Le paramètre fixe le nombre maximal d’itérations pour l'e processus d’entraînement'entraînement
+    maxit = 50 # Le paramètre fixe le nombre maximal d’itérations pour l'entraînement
     
   )
   
@@ -780,7 +780,7 @@ RN <- function(dat) {
 TNDDR <- function(dat){
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
-  estimations <- RandomFoest(dat)
+  estimations <- RandomForest(dat)
   
   # Estimation du 𝜓𝑣: 𝜓𝑣 = 𝜓𝑣(ℙTND)=𝔼TND[𝜇𝑣(𝒄)*𝜔𝑣(𝒄)] avec
   #  𝜇𝑣(𝒄) = ℙTND (𝑌 = 1|𝑉 = 1,𝑪 = 𝒄),
@@ -821,6 +821,8 @@ TNDDR <- function(dat){
   
   IC_inf2 <- RRm - 1.96 * sqrt(var)
   IC_sup2 <- RRm + 1.96 * sqrt(var)
+  
+  ## Méthode 03 : Intervalle de confiance de WALD
   
   varn2 <- mean((RRm* (TNDdat$Y*(1-TNDdat$V)/estimations$g0 - estimations$mu0*A.0) - (TNDdat$Y*TNDdat$V/estimations$g1 - estimations$mu1*A.1) )^2)
   denJ <- psi.0^2
