@@ -2,6 +2,7 @@
 source("Code R/Génération des données.R")
 source("Code R/Fonc01_RegLog.R")
 source("Code R/Fonc02_IPW.R")
+source("Code R/Fonc03_TNDDR.R")
 
 # Chargements des librairies nécessaires
 
@@ -87,6 +88,19 @@ colnames(resultats2) <- c("RRm",# Risque relatif marginal
                           "IC_inf", # Borne inférieure de l'intervalle de confiance
                           "IC_sup") # Sa borne supérieure
 
+resultats3 <- data.frame(matrix(ncol = 9, 
+                                nrow = nsim))
+
+colnames(resultats3) <- c("RRm",# Risque relatif marginal
+                          "VE",
+                          "var_log_RRm",# Variance du log du risque relatif marginal
+                          "IC_inf1", # Borne inférieure du premier intervalle de confiance
+                          "IC_sup1", # Sa borne supérieure
+                          "IC_inf2", # Borne inférieure du deuxième intervalle de confiance
+                          "IC_sup2", # Sa borne supérieure
+                          "IC_inf3", # Borne inférieure du troisième intervalle de confiance
+                          "IC_sup3")# Sa borne supérieure
+
 
 for (i in 1:nsim) {
   
@@ -94,6 +108,7 @@ for (i in 1:nsim) {
   
   resultats[i,] <- RegLog(dat) # Régression logistique
   resultats2[i,] <- IPW(dat)   # IPW
+  resultats3[i,] <- TNDDR(dat) # Estimateur doublement robuste
 
   # DT : Ajout d'une ligne pour suivre l'avancement
   
@@ -240,8 +255,6 @@ Tab01$`Autres` = list(
   
 )
   
-
-
 kable(Tab01)
 
 #|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
@@ -258,3 +271,64 @@ kable(Tab01)
 # [1] 0.1554226
 # > sd(log(resultats2$RRm))
 # [1] 0.1662523
+
+########################## TNDDR ###############################
+
+Tab01$Methode <- c("TNDDR", "-", "-","-")
+
+##    - statistiques descriptives
+
+summary(resultats3$RRm)
+mean(resultats3$RRm)
+sd(resultats3$RRm)
+
+mean(sqrt(resultats3$var_log_RRm))
+sd(log(resultats3$RRm))
+
+help("calc_absolute") # calculer les différentes mesures de performance
+
+# Ajout de la colonne contenant la vraie valeur du paramètre
+
+resultats3$vrai_param <- rep(mean(l_vraiRRc), nsim)
+
+### MCSE_biais
+
+MCSE_biais <- calc_absolute(resultats3, RRm, vrai_param, criteria = "bias")
+
+### MCSE_var
+
+MCSE_var <- calc_absolute(resultats3, RRm, vrai_param, criteria = "var")
+
+### MCSE_MSE 
+
+MCSE_mse <- calc_absolute(resultats3, RRm, vrai_param, criteria = "mse")
+
+### Coverage
+
+help("calc_coverage")
+
+# Calcul des bornes de l'intervalle de confiance
+
+coverage <- calc_coverage(resultats3, IC_inf, IC_sup, vrai_param)
+
+Tab01$`Erreur de Monte Carlo` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais[3]),
+  list(name = "MCSE_var", value = MCSE_var[3]),
+  list(name = "MCSE_mse", value = MCSE_mse[3]),
+  list(name = "%Cov", value = coverage[2])
+  
+)
+
+Tab01$`Autres` = list(
+  
+  list(name = "Bias", value = MCSE_biais[2]),
+  list(name = "Var", value = MCSE_var[2]),
+  list(name = "Mse", value = MCSE_mse[2]),
+  list(name = "Précision_var", value = sd(log(resultats3$RRm)) - mean(sqrt(resultats3$var_log_RRm)) # Voir si la variance est bien estimée
+       
+  )
+  
+)
+
+kable(Tab01)

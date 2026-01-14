@@ -5,6 +5,7 @@ library(dplyr)
 library(geepack)
 library(geex)
 
+# Définir la fonction pour l'inverse de probabilité de traitement
 
 IPW <- function(dat){
   
