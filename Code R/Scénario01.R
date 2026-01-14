@@ -67,7 +67,7 @@ Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
 ################################################################################
 ########################## Analyse des résultats ###############################
 
-nsim <- 100
+nsim <- 10
 
 # Initialiser des objets pour contenir les resultats
 
@@ -309,7 +309,7 @@ help("calc_coverage")
 
 # Calcul des bornes de l'intervalle de confiance
 
-coverage <- calc_coverage(resultats3, IC_inf, IC_sup, vrai_param)
+coverage <- calc_coverage(resultats3, IC_inf2, IC_sup2, vrai_param)
 
 Tab01$`Erreur de Monte Carlo` = list(
   

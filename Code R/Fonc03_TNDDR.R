@@ -25,7 +25,7 @@ RandomForest <- function(dat) {
   # Première étape : Diviser aléatoirement le jeu de données en deux parties égales 
   # Le double cross-fit
   
-  set.seed(1) # pour que le résultat soit reproductible
+  # set.seed(1) # pour que le résultat soit reproductible
   
   s <- sample(1:nrow(TNDdat), nrow(TNDdat) / 2)
   TNDdat_train1 <- TNDdat[s, ]
@@ -83,11 +83,11 @@ RandomForest <- function(dat) {
   
   # Prédire sur TNDdata_test1 (ensemble autre que celui utilisé pour le premier entraînement du modèle)
   
-  g1_cont[-s] <- predict(mod_g1_ctr, TNDdata = newTNDdata_train2)$predictions[, 2]
+  g1_cont[-s] <- predict(mod_g2_ctr, data = TNDdata_test2)$predictions[, 2]
   
   # Prédire sur TNDdata_test2 (ensemble autre que celui utilisé pour le deuxième entraînement du modèle)
   
-  g1_cont[s] <- predict(mod_g2_ctr, TNDdata = newTNDdata_train1)$predictions[, 2]
+  g1_cont[s] <- predict(mod_g1_ctr, data = TNDdata_test1)$predictions[, 2]
   
   # Deuxième étape : Estimer la fonction  P_TND(Y = 1/ V = v, C = c)  
   ## Entainement du modèle de forêt aléatoire
@@ -97,7 +97,7 @@ RandomForest <- function(dat) {
   Out_mu1 <- ranger(
     
     Y ~ .,
-    TNDdata = TNDdat_train1,
+    data = TNDdat_train1,
     num.trees = 50,  
     mtry = 1,      
     probability = TRUE
@@ -109,7 +109,7 @@ RandomForest <- function(dat) {
   Out_mu2 <- ranger(
     
     Y ~ .,
-    TNDdata = TNDdat_train2,
+    data = TNDdat_train2,
     num.trees = 50,  
     mtry = 1,        
     probability = TRUE
@@ -133,11 +133,11 @@ RandomForest <- function(dat) {
   
   # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test1
   
-  mu1[-s] <- predict(Out_mu1, TNDdata = newTNDdata_mu1_train2)$predictions[, 2]
+  mu1[-s] <- predict(Out_mu2, data = TNDdata_mu1_test2)$predictions[, 2]
   
   # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test2
   
-  mu1[s] <- predict(Out_mu2, TNDdata = newTNDdata_mu1_train1)$predictions[, 2]
+  mu1[s] <- predict(Out_mu1, data = TNDdata_mu1_test1)$predictions[, 2]
   
   ## Prédire les probabilités sur les ensembles tests 
   # Stockage des résultats
@@ -156,11 +156,11 @@ RandomForest <- function(dat) {
   
   # Prédire mu0: P(Y = 1/ V = 0) sur TNDdata_mu0_test1
   
-  mu0[-s] <- predict(Out_mu1, TNDdata = TNDdata_mu0_test1)$predictions[, 2]
+  mu0[-s] <- predict(Out_mu2, data = TNDdata_mu0_test2)$predictions[, 2]
   
   # Prédire mu0: P(Y = 1/ V = 0) sur TNDdata_mu0_test2
   
-  mu0[s] <- predict(Out_mu2, TNDdata = TNDdata_mu0_test2)$predictions[, 2]
+  mu0[s] <- predict(Out_mu1, data = TNDdata_mu0_test1)$predictions[, 2]
   
   # Deuxième étape : Estimer les fonctions  m0 (1 - Y ou P(Y = 0))  
   ## Entrainement du modèle de forêt aléatoire
@@ -170,7 +170,7 @@ RandomForest <- function(dat) {
   Out_m1 <- ranger(
     
     Y ~ .,
-    TNDdata = subset(TNDdat1, select = -V),
+    data = subset(TNDdat_train1, select = -V),
     num.trees = 500,  
     mtry = 1,         
     probability = TRUE
@@ -182,7 +182,7 @@ RandomForest <- function(dat) {
   Out_m2 <- ranger(
     
     Y ~ .,
-    TNDdata = subset(TNDdat2, select = -V),
+    data = subset(TNDdat_train2, select = -V),
     num.trees = 500,  
     mtry = 1,         
     probability = TRUE
@@ -194,8 +194,8 @@ RandomForest <- function(dat) {
   
   m0 <- rep(NA, nrow(TNDdat))
   
-  m0[-s] <- 1 - predict(Out_m1, TNDdata = select(TNDdat_train2, -c(V, Y)))$predictions[, 2]
-  m0[s] <- 1 - predict(Out_m2, TNDdata = select(TNDdat_train1, -c(V, Y)))$predictions[, 2]
+  m0[-s] <- 1 - predict(Out_m2, data = select(TNDdata_test2, -c(V, Y)))$predictions[, 2]
+  m0[s] <- 1 - predict(Out_m1, data = select(TNDdata_test1, -c(V, Y)))$predictions[, 2]
   
   mu1 <- pmin(pmax(mu1, 0.0000001), 0.9999999)
   mu0 <- pmin(pmax(mu0, 0.0000001), 0.9999999)
@@ -809,7 +809,7 @@ TNDDR <- function(dat){
   IC_inf3 <- RRm - 1.96 * sqrt(var2)
   IC_sup3 <- RRm + 1.96 * sqrt(var2)
   
-  l <- list(RRm, 1 - RRM, var_log_eif_RRm, IC_inf1, IC_sup1, 
+  l <- list(RRm, 1 - RRm, var_log_eif_RRm, IC_inf1, IC_sup1, 
              
             IC_inf2, IC_sup2, IC_inf3, IC_sup3)
   
