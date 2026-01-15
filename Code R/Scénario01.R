@@ -101,7 +101,6 @@ colnames(resultats3) <- c("RRm",# Risque relatif marginal
                           "IC_inf3", # Borne inférieure du troisième intervalle de confiance
                           "IC_sup3")# Sa borne supérieure
 
-
 for (i in 1:nsim) {
   
   dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8, popsize = 1*10**6)
@@ -115,6 +114,7 @@ for (i in 1:nsim) {
   if(!(i%%10)) print(data.frame(temps = Sys.time(), iter = i))
   
 }
+
 
 ########################## Régression logistique ###############################
 
