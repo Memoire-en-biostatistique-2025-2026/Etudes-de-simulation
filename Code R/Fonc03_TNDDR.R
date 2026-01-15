@@ -83,11 +83,11 @@ RandomForest <- function(dat) {
   
   # Prédire sur TNDdata_test1 (ensemble autre que celui utilisé pour le premier entraînement du modèle)
   
-  g1_cont[-s] <- predict(mod_g2_ctr, data = TNDdata_test2)$predictions[, 2]
+  g1_cont[-s] <- predict(mod_g1_ctr, data = TNDdata_test1)$predictions[, 2]
   
   # Prédire sur TNDdata_test2 (ensemble autre que celui utilisé pour le deuxième entraînement du modèle)
   
-  g1_cont[s] <- predict(mod_g1_ctr, data = TNDdata_test1)$predictions[, 2]
+  g1_cont[s] <- predict(mod_g2_ctr, data = TNDdata_test2)$predictions[, 2]
   
   # Deuxième étape : Estimer la fonction  P_TND(Y = 1/ V = v, C = c)  
   ## Entainement du modèle de forêt aléatoire
@@ -133,11 +133,11 @@ RandomForest <- function(dat) {
   
   # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test1
   
-  mu1[-s] <- predict(Out_mu2, data = TNDdata_mu1_test2)$predictions[, 2]
+  mu1[-s] <- predict(Out_mu1, data = TNDdata_mu1_test1)$predictions[, 2]
   
   # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test2
   
-  mu1[s] <- predict(Out_mu1, data = TNDdata_mu1_test1)$predictions[, 2]
+  mu1[s] <- predict(Out_mu2, data = TNDdata_mu1_test2)$predictions[, 2]
   
   ## Prédire les probabilités sur les ensembles tests 
   # Stockage des résultats
@@ -156,11 +156,11 @@ RandomForest <- function(dat) {
   
   # Prédire mu0: P(Y = 1/ V = 0) sur TNDdata_mu0_test1
   
-  mu0[-s] <- predict(Out_mu2, data = TNDdata_mu0_test2)$predictions[, 2]
+  mu0[-s] <- predict(Out_mu1, data = TNDdata_mu0_test1)$predictions[, 2]
   
   # Prédire mu0: P(Y = 1/ V = 0) sur TNDdata_mu0_test2
   
-  mu0[s] <- predict(Out_mu1, data = TNDdata_mu0_test1)$predictions[, 2]
+  mu0[s] <- predict(Out_mu2, data = TNDdata_mu0_test2)$predictions[, 2]
   
   # Deuxième étape : Estimer les fonctions  m0 (1 - Y ou P(Y = 0))  
   ## Entrainement du modèle de forêt aléatoire
@@ -194,8 +194,8 @@ RandomForest <- function(dat) {
   
   m0 <- rep(NA, nrow(TNDdat))
   
-  m0[-s] <- 1 - predict(Out_m2, data = select(TNDdata_test2, -c(V, Y)))$predictions[, 2]
-  m0[s] <- 1 - predict(Out_m1, data = select(TNDdata_test1, -c(V, Y)))$predictions[, 2]
+  m0[-s] <- 1 - predict(Out_m1, data = select(TNDdata_test1, -c(V, Y)))$predictions[, 2]
+  m0[s] <- 1 - predict(Out_m2, data = select(TNDdata_test2, -c(V, Y)))$predictions[, 2]
   
   mu1 <- pmin(pmax(mu1, 0.0000001), 0.9999999)
   mu0 <- pmin(pmax(mu0, 0.0000001), 0.9999999)
