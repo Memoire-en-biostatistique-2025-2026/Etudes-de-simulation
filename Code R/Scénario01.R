@@ -346,6 +346,15 @@ kable(Tab01)
 
 # Régression Lasso
 
+#|n    |Methode |Erreur de Monte Carlo                    |Autres                                 |
+#|:----|:-------|:----------------------------------------|:--------------------------------------|
+#|1000 |TNDDR   |MCSE_bias         , 0.0436181384545875   |Bias              , 0.0430271139223537 |
+#|-    |-       |MCSE_var          , 0.00662407462016709  |Var               , 0.0190254200224357 |
+#|-    |-       |MCSE_mse          , 0.00951707242118954  |Mse               , 0.0189742105526793 |
+#|-    |-       |%Cov              , 0.9                  |Précision_var     , 0.0651750510281717 | # Avec CI 1
+#|-    |-       |%Cov              , 0.9                  |Précision_var     , 0.0651750510281717 | # Avec CI 2
+#|-    |-       |%Cov              , 0.9                  |Précision_var     , 0.0651750510281717 | # Avec CI 3
+
 # earth_GLM
 
 #|n    |Methode |Erreur de Monte Carlo                  |Autres                                   |
