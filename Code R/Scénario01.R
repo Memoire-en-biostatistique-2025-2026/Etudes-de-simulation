@@ -107,8 +107,8 @@ for (i in 1:nsim) {
   
   resultats[i,] <- RegLog(dat) # Régression logistique
   resultats2[i,] <- IPW(dat)   # IPW
-  resultats3[i,] <- TNDDR(dat) # Estimateur doublement robuste
-
+  resultats3[i,] <- TNDDR(dat, Lasso) # Estimateur doublement robuste
+  
   # DT : Ajout d'une ligne pour suivre l'avancement
   
   if(!(i%%10)) print(data.frame(temps = Sys.time(), iter = i))
@@ -254,7 +254,7 @@ Tab01$`Autres` = list(
   )
   
 )
-  
+
 kable(Tab01)
 
 #|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
@@ -333,9 +333,38 @@ Tab01$`Autres` = list(
 
 kable(Tab01)
 
-#|n    |Methode |Erreur de Monte Carlo                    |Autres                                   |
-#|:----|:-------|:----------------------------------------|:----------------------------------------|
-#|1000 |TNDDR   |MCSE_bias         , 0.0236873194662105   |Bias              , 0.0662987560680382   |
-#|-    |-       |MCSE_var           , 0.00218745512355362 |Var                , 0.00561089103494314 |
-#|-    |-       |MCSE_mse           , 0.00475058616745741 |Mse                , 0.00944532698761806 |
-#|-    |-       |%Cov, 0.9                                |Précision_var      , -0.0213650322620384 |
+# Avec la méthode de la forêt aléatoire
+
+#|n    |Methode |Erreur de Monte Carlo                    |Autres                                 |
+#|:----|:-------|:----------------------------------------|:--------------------------------------|
+#|1000 |TNDDR   |MCSE_bias         , 0.0335796312251411   |Bias              , 0.0147512586390317 |
+#|-    |-       |MCSE_var          , 0.00297399486832592  |Var               , 0.0112759163321647 |
+#|-    |-       |MCSE_mse          , 0.00328965133748587  |Mse               , 0.0103659243303839 |
+#|-    |-       |%Cov              , 0.9                  |Précision_var     , 0.0789107904397003 | # Avec CI 1
+#|-    |-       |%Cov              , 0.9                  |Précision_var     , 0.0789107904397003 | # Avec CI 2
+#|-    |-       |%Cov              , 0.9                  |Précision_var     , 0.0789107904397003 | # Avec CI 3
+
+# Régression Lasso
+
+# earth_GLM
+
+#|n    |Methode |Erreur de Monte Carlo                  |Autres                                   |
+#|:----|:-------|:--------------------------------------|:----------------------------------------|
+#|1000 |TNDDR   |MCSE_bias         , 0.0451602906669299 |Bias               , -0.0739510311910888 |
+#|-    |-       |MCSE_var          , 0.0105365036425814 |Var                , 0.020394518531216   |
+#|-    |-       |MCSE_mse          , 0.0160031544285782 |Mse                , 0.0238238216923198  |
+#|-    |-       |%Cov              , 0.9                |Précision_var      , 1.68006660404718    | # Avec CI 1
+#|-    |-       |%Cov              , 0.9                |Précision_var      , 1.68006660404718    | # Avec CI 2
+#|-    |-       |%Cov              , 0.9                |Précision_var      , 1.68006660404718    | # Avec CI 3
+
+# Réseaux de neurones
+
+#|n    |Methode |Erreur de Monte Carlo                  |Autres                                   |
+#|:----|:-------|:--------------------------------------|:----------------------------------------|
+#|1000 |TNDDR   |MCSE_bias        , 0.124471845358785   |Bias               , -0.0277326486617437 |
+#|-    |-       |MCSE_var         , 0.0354189421907207  |Var                , 0.154932402870212   |
+#|-    |-       |MCSE_mse         , 0.0326570246907765  |Mse                , 0.140208262384987   |
+#|-    |-       |%Cov             , 1                   |Précision_var      , 1.68598960584829    | # Avec CI 1
+#|-    |-       |%Cov             , 1                   |Précision_var      , 1.68598960584829    | # Avec CI 2
+#|-    |-       |%Cov             , 1                   |Précision_var      , 1.68598960584829    | # Avec CI 3
+

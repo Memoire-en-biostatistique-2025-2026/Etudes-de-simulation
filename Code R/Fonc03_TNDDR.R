@@ -218,7 +218,7 @@ Lasso <- function(dat) {
   # Première étape : Diviser aléatoirement le jeu de données en deux parties égales 
   # Le double cross-fit
   
-  set.seed(1) # pour que le résultat soit reproductible
+  # set.seed(1) # pour que le résultat soit reproductible
   
   s <- sample(1:nrow(TNDdat), nrow(TNDdat) / 2)
   TNDdat_train1 <- TNDdat[s, ]
@@ -231,10 +231,10 @@ Lasso <- function(dat) {
   
   TNDdat_ctr1 <- subset(TNDdat_train1, Y == 0)
   
-  mod_g1_ctr <- cv.glmnet(
-    
-    V,
-    X = data.matrix(subset(TNDdat_ctr1, select = -Y)),
+  mod_g1_ctr <- glmnet( # La fonction cv.glmnet nécessite une série de valeurs lambda 
+    #pour appliquer la validation croisée afin de choisir la valeur optimale 
+    y = TNDdat_ctr1$V,
+    x = data.matrix(subset(TNDdat_ctr1, select = -Y)),
     alpha = 1, 
     lambda = 0.2,
     standardize = TRUE
@@ -245,10 +245,10 @@ Lasso <- function(dat) {
   
   TNDdat_ctr2 <- subset(TNDdat_train2, Y == 0)
   
-  mod_g1_ctr <- cv.glmnet(
+  mod_g2_ctr <- glmnet(
     
-    V,
-    X = data.matrix(subset(TNDdat_ctr2, select = -Y)),
+    y = TNDdat_ctr2$V,
+    x = data.matrix(subset(TNDdat_ctr2, select = -Y)),
     alpha = 1, 
     lambda = 0.2,
     standardize = TRUE
@@ -263,12 +263,12 @@ Lasso <- function(dat) {
   # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
   
   TNDdata_test1 <- data.matrix(as.data.frame(cbind(select(TNDdat_train2, !c(V,Y)),
-                                                   V = rep(1, nrow(TNDdat_train2) ), 
-                                                   Y = TNDdat_train2$Y)))
+                                                   V = rep(1, nrow(TNDdat_train2) ) 
+  )))
   
   TNDdata_test2 <- data.matrix(as.data.frame(cbind(select(TNDdat_train2, !c(V,Y)),
-                                                   V = rep(1, nrow(TNDdat_train2) ), 
-                                                   Y = TNDdat_train2$Y)))
+                                                   V = rep(1, nrow(TNDdat_train2) ) 
+  )))
   
   # Prédire sur TNDdata_test1 (ensemble autre que celui utilisé pour le premier entraînement du modèle)
   
@@ -283,10 +283,10 @@ Lasso <- function(dat) {
   
   ### Sur TNDdat_train1
   
-  Out_mu1 <- cv.glmnet(
+  Out_mu1 <- glmnet(
     
-    Y,
-    X = data.matrix(TNDdat_train1),
+    y = TNDdat_train1$Y,
+    x = data.matrix(TNDdat_train1),
     alpha = 1, 
     lambda = 0.2,
     standardize = TRUE
@@ -295,10 +295,10 @@ Lasso <- function(dat) {
   
   ### Sur TNDdat_train2
   
-  Out_mu1 <- cv.glmnet(
+  Out_mu2 <- glmnet(
     
-    Y,
-    X = data.matrix(TNDdat_train1),
+    y = TNDdat_train2$Y,
+    x = data.matrix(TNDdat_train2),
     alpha = 1, 
     lambda = 0.2,
     standardize = TRUE
@@ -312,9 +312,9 @@ Lasso <- function(dat) {
   
   # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
   
-  TNDdata_mu1_test1 <- data.matrix(as.data.frame(cbind(V = 1, select(TNDdat_train2, !c(V,Y)))))
+  TNDdata_mu1_test1 <- data.matrix(as.data.frame(cbind(V = 1, select(TNDdat_train2, !c(Y)))))
   
-  TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 1, select(TNDdat_train1, !c(V,Y)))))
+  TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 1, select(TNDdat_train1, !c(Y)))))
   
   # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test1
   
@@ -331,9 +331,9 @@ Lasso <- function(dat) {
   
   # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
   
-  TNDdata_mu1_test1 <- data.matrix(as.data.frame(cbind(V = 0, select(TNDdat_train2, !c(V,Y)))))
+  TNDdata_mu1_test1 <- data.matrix(as.data.frame(cbind(V = 0, select(TNDdat_train2, !c(Y)))))
   
-  TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 0, select(TNDdat_train1, !c(V,Y)))))
+  TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 0, select(TNDdat_train1, !c(Y)))))
   
   # Prédire mu0: P(Y = 1/ V = 0) sur TNDdata_mu1_test1
   
@@ -348,10 +348,10 @@ Lasso <- function(dat) {
   
   ### Sur le premier ensemble d'entraînement  
   
-  Out_m1 <- cv.glmnet(
+  Out_m1 <- glmnet(
     
-    Y,
-    X <- data.matrix(subset(TNDdat_ctr1, select = -V)),
+    y = TNDdat_train1$Y,
+    x = data.matrix(subset(TNDdat_train1, select = -c(Y, V), drop = FALSE)), # drop = FALSE pour que R ne transforme pas x en un vecteur
     alpha = 1, 
     lambda = 0.2,
     standardize = TRUE
@@ -360,10 +360,10 @@ Lasso <- function(dat) {
   
   ### Sur le deuxième ensemble d'entraînement
   
-  Out_m1 <- cv.glmnet(
+  Out_m2 <- glmnet(
     
-    Y,
-    X <- data.matrix(subset(TNDdat_ctr2, select = -V)),
+    y = TNDdat_train2$Y,
+    x = data.matrix(subset(TNDdat_train2, select = -c(Y, V), drop = FALSE)),
     alpha = 1, 
     lambda = 0.2,
     standardize = TRUE
@@ -375,8 +375,8 @@ Lasso <- function(dat) {
   
   m0 <- rep(NA, nrow(TNDdat))
   
-  m0[-s] <- 1 - predict(Out_m1, newx = data.matrix(select(TNDdat_train2, !c(V,Y)), type = "response"))
-  m0[s] <- 1 - predict(Out_m2, newx = data.matrix(select(TNDdat_train1, !c(V,Y)), type = "response"))
+  m0[-s] <- 1 - predict(Out_m1, newx = data.matrix(select(TNDdat_train2, !c(V,Y))))
+  m0[s] <- 1 - predict(Out_m2, newx = data.matrix(select(TNDdat_train1, !c(V,Y))))
   
   mu1 <- pmin(pmax(mu1, 0.0000001), 0.9999999)
   mu0 <- pmin(pmax(mu0, 0.0000001), 0.9999999)
@@ -399,7 +399,7 @@ Mars <- function(dat){
   # Première étape : Diviser aléatoirement le jeu de données en deux parties égales 
   # Le double cross-fit
   
-  set.seed(1) # pour que le résultat soit reproductible
+  # set.seed(1) # pour que le résultat soit reproductible
   
   s <- sample(1:nrow(TNDdat), nrow(TNDdat) / 2)
   
@@ -423,7 +423,7 @@ Mars <- function(dat){
   
   ### Sur le deuxième ensemble d'entraînement
   
-  TNDdat_train_ctr2 <- subset(TNDdat_train2, Y==0)
+  TNDdat_train_ctr2 <- subset(TNDdat_train2, Y == 0)
   
   mod_g2_ctr <- earth(
     
@@ -440,13 +440,13 @@ Mars <- function(dat){
   
   # S'assurer à chaque fois que les ensemble d'entraînemnt et de test ont la même structure
   
-  TNDdata_test1 <-  newdata = as.data.frame(cbind(select(TNDdat_train2, !c(V,Y)),
-                                                  V = rep(1, nrow(TNDdat_train2) ), 
-                                                  Y = TNDdat_train2$Y))
+  TNDdata_test1 <- as.data.frame(cbind(select(TNDdat_train2, !c(V,Y)),
+                                       V = rep(1, nrow(TNDdat_train2) ), 
+                                       Y = TNDdat_train2$Y))
   
-  TNDdata_test2 <- newdata = as.data.frame(cbind(select(TNDdat_train1, !c(V,Y)),
-                                                 V = rep(1, nrow(TNDdat_train1) ), 
-                                                 Y = TNDdat_train1$Y))
+  TNDdata_test2 <- as.data.frame(cbind(select(TNDdat_train1, !c(V,Y)),
+                                       V = rep(1, nrow(TNDdat_train1) ), 
+                                       Y = TNDdat_train1$Y))
   
   # Prédire sur TNDdata_test1 (ensemble autre que celui utilisé pour le premier entraînement du modèle)
   
@@ -576,7 +576,7 @@ RN <- function(dat) {
   # Première étape : Diviser aléatoirement le jeu de données en deux parties égales 
   # Le double cross-fit
   
-  set.seed(1) # pour que le résultat soit reproductible
+  # set.seed(1) # pour que le résultat soit reproductible
   
   s <- sample(1:nrow(TNDdat), nrow(TNDdat) / 2)
   TNDdat_train1 <- TNDdat[s, ]
@@ -753,10 +753,10 @@ RN <- function(dat) {
 
 # Définir la fonction pour l'estimateur doublement robuste 
 
-TNDDR <- function(dat){
+TNDDR <- function(dat, methode){
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
-  estimations <- RandomForest(dat)
+  estimations <- methode(dat)
   
   # Estimation du 𝜓𝑣: 𝜓𝑣 = 𝜓𝑣(ℙTND)=𝔼TND[𝜇𝑣(𝒄)*𝜔𝑣(𝒄)] avec
   #  𝜇𝑣(𝒄) = ℙTND (𝑌 = 1|𝑉 = 1,𝑪 = 𝒄),
@@ -810,7 +810,7 @@ TNDDR <- function(dat){
   IC_sup3 <- RRm + 1.96 * sqrt(var2)
   
   l <- list(RRm, 1 - RRm, var_log_eif_RRm, IC_inf1, IC_sup1, 
-             
+            
             IC_inf2, IC_sup2, IC_inf3, IC_sup3)
   
   return(l)
