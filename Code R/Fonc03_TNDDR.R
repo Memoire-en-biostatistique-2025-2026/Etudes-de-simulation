@@ -599,7 +599,8 @@ RN <- function(dat) {
     V ~ .,
     data = subset(TNDdat_ctr1, select = -Y),
     size = 5, # Le nombre de nœuds dans la couche cachée
-    maxit = 50 # Le paramètre fixe le nombre maximal d’itérations pour l'entraînement
+    maxit = 50, # Le paramètre fixe le nombre maximal d’itérations pour l'entraînement
+    trace = FALSE
     
   )
   
@@ -612,7 +613,8 @@ RN <- function(dat) {
     V ~ .,
     data = subset(TNDdat_ctr2, select = -Y),
     size = 5, 
-    maxit = 50
+    maxit = 50,
+    trace = FALSE
     
   )
   
@@ -633,11 +635,11 @@ RN <- function(dat) {
   
   # Prédire sur TNDdata_test1 (ensemble autre que celui utilisé pour le premier entraînement du modèle)
   
-  g1_cont[-s] <- predict(mod_g1_ctr, TNDdata = newTNDdata_train2, type = "raw")
+  g1_cont[-s] <- predict(mod_g1_ctr, newdata = TNDdata_test1, type = "raw")
   
   # Prédire sur TNDdata_test2 (ensemble autre que celui utilisé pour le deuxième entraînement du modèle)
   
-  g1_cont[s] <- predict(mod_g2_ctr, TNDdata = newTNDdata_train1, type = "raw")
+  g1_cont[s] <- predict(mod_g2_ctr, newdata = TNDdata_test2, type = "raw")
   
   # Deuxième étape : Estimer les fonctions  P_TND(Y = 1/ V = v, C = c)  
   ## Entainement du modèle de forêt aléatoire
@@ -649,7 +651,8 @@ RN <- function(dat) {
     Y ~ .,
     data = TNDdat_train1,
     size = 5, 
-    maxit = 50
+    maxit = 50,
+    trace = FALSE
     
   )
   
@@ -659,7 +662,8 @@ RN <- function(dat) {
     
     Y ~ .,
     data = TNDdat_train2,
-    size = 5, maxit = 50
+    size = 5, maxit = 50,
+    trace = FALSE
     
   )
   
@@ -680,11 +684,11 @@ RN <- function(dat) {
   
   # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test1
   
-  mu1[-s] <- predict(Out_mu1, TNDdata = newTNDdata_mu1_train2, type = "raw")
+  mu1[-s] <- predict(Out_mu1, newdata = TNDdata_mu1_test1, type = "raw")
   
   # Prédire mu1: P(Y = 1/ V = 1) sur TNDdata_mu1_test2
   
-  mu1[s] <- predict(Out_mu2, TNDdata = newTNDdata_mu1_train1, type = "raw")
+  mu1[s] <- predict(Out_mu2, newdata = TNDdata_mu1_test2, type = "raw")
   
   ## Prédire les probabilités sur les ensembles tests 
   # Stockage des résultats
@@ -703,11 +707,11 @@ RN <- function(dat) {
   
   # Prédire mu0: P(Y = 1/ V = 0) sur TNDdata_mu0_test1
   
-  mu0[-s] <- predict(Out_mu1, TNDdata = TNDdata_mu0_test1, type = "raw")
+  mu0[-s] <- predict(Out_mu1, newdata = TNDdata_mu0_test1, type = "raw")
   
   # Prédire mu0: P(Y = 1/ V = 0) sur TNDdata_mu0_test2
   
-  mu0[s] <- predict(Out_mu2, TNDdata = TNDdata_mu0_test2, type = "raw")
+  mu0[s] <- predict(Out_mu2, newdata = TNDdata_mu0_test2, type = "raw")
   
   # Deuxième étape : Estimer les fonctions  m0 (1 - Y ou P(Y = 0))  
   ## Entrainement du modèle de forêt aléatoire
@@ -719,7 +723,8 @@ RN <- function(dat) {
     Y ~ .,
     data = subset(TNDdat_train1, select = -V),
     size = 5,
-    maxit = 50
+    maxit = 50,
+    trace = FALSE
     
   )
   
@@ -730,7 +735,8 @@ RN <- function(dat) {
     Y ~ .,
     data = subset(TNDdat_train2, select = -V),
     size = 5, 
-    maxit = 50
+    maxit = 50,
+    trace = FALSE
     
   )
   
@@ -739,8 +745,8 @@ RN <- function(dat) {
   
   m0 <- rep(NA, nrow(TNDdat))
   
-  m0[-s] <- 1 - predict(Out_m1, TNDdata = select(TNDdat_train2, -c(V, Y)), type = "raw")
-  m0[s] <- 1 - predict(Out_m2, TNDdata = select(TNDdat_train1, -c(V, Y)), type = "raw")
+  m0[-s] <- 1 - predict(Out_m1, newdata = select(TNDdat_train2, -c(V, Y)), type = "raw")
+  m0[s] <- 1 - predict(Out_m2, newdata = select(TNDdat_train1, -c(V, Y)), type = "raw")
   
   mu1 <- pmin(pmax(mu1, 0.0000001), 0.9999999)
   mu0 <- pmin(pmax(mu0, 0.0000001), 0.9999999)
