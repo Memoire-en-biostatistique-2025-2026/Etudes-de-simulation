@@ -242,7 +242,11 @@ Lasso <- function(dat) {
     y = TNDdat_ctr1$V,
     x = as.matrix(subset(TNDdat_ctr1, select = -V)),
     alpha = 1, # régression Lasso
-    lambda = 0.2,
+    lambda = cv.glmnet(y = TNDdat_ctr1$V,
+                       x = as.matrix(subset(TNDdat_ctr1, select = -V)),
+                       alpha = 1,
+                       family = "binomial")$lambda.min, # Validation croisée
+    
     family = "binomial" # variable dépendante catégorielle
     
   )
@@ -256,7 +260,11 @@ Lasso <- function(dat) {
     y = TNDdat_ctr2$V,
     x = as.matrix(subset(TNDdat_ctr2, select = -V)),
     alpha = 1, 
-    lambda = 0.2,
+    lambda = cv.glmnet(y = TNDdat_ctr2$V,
+                       x = as.matrix(subset(TNDdat_ctr2, select = -V)),
+                       alpha = 1,
+                       family = "binomial")$lambda.min, # Validation croisée,
+    
     family = "binomial"
     
   )
@@ -293,7 +301,11 @@ Lasso <- function(dat) {
     y = TNDdat_train1$Y,
     x = data.matrix(subset(TNDdat_train1, select = -Y)),
     alpha = 1, 
-    lambda = 0.2,
+    lambda = cv.glmnet(y = TNDdat_train1$Y,
+                       x = data.matrix(subset(TNDdat_train1, select = -Y)),
+                       alpha = 1,
+                       family = "binomial")$lambda.min, # Validation croisée,
+    
     family = "binomial" 
     
   )
@@ -305,7 +317,11 @@ Lasso <- function(dat) {
     y = TNDdat_train2$Y,
     x = data.matrix(subset(TNDdat_train2, select = -Y)),
     alpha = 1, 
-    lambda = 0.2,
+    lambda = cv.glmnet(y = TNDdat_train2$Y,
+                       x = data.matrix(subset(TNDdat_train2, select = -Y)),
+                       alpha = 1,
+                       family = "binomial")$lambda.min, # Validation croisée,
+    
     family = "binomial"
     
   )
@@ -358,7 +374,11 @@ Lasso <- function(dat) {
     y = TNDdat_train1$Y,
     x = cbind(data.matrix(subset(TNDdat_train1, select = -c(Y, V))), 0),
     alpha = 1, 
-    lambda = 0.2,
+    lambda = cv.glmnet(y = TNDdat_train1$Y,
+                       x = cbind(data.matrix(subset(TNDdat_train1, select = -c(Y, V))), 0),
+                       alpha = 1,
+                       family = "binomial")$lambda.min, # Validation croisée,
+    
     family = "binomial"
     
   )
@@ -370,7 +390,11 @@ Lasso <- function(dat) {
     y = TNDdat_train2$Y,
     x = cbind(data.matrix(subset(TNDdat_train1, select = -c(Y, V))), 0),
     alpha = 1, 
-    lambda = 0.2,
+    lambda = cv.glmnet(y = TNDdat_train2$Y,
+                       x = cbind(data.matrix(subset(TNDdat_train1, select = -c(Y, V))), 0),
+                       alpha = 1,
+                       family = "binomial")$lambda.min, # Validation croisée,
+    
     family = "binomial"
     
   )

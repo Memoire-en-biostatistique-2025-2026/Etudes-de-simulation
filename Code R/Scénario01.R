@@ -17,7 +17,7 @@ library(kableExtra)
 
 set.seed(1) # Pour avoir toujours les mêmes germes
 
-nsim <- 10
+nsim <- 100 # Nombre de réplications
 
 seeds_list <- sample(1:1000000, size = nsim)
 
@@ -66,8 +66,6 @@ Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
 
 ################################################################################
 ########################## Analyse des résultats ###############################
-
-nsim <- 10
 
 # Initialiser des objets pour contenir les resultats
 
