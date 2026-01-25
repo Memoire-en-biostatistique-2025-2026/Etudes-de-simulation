@@ -17,7 +17,7 @@ library(kableExtra)
 
 set.seed(1) # Pour avoir toujours les mêmes germes
 
-nsim <- 100 # Nombre de réplications
+nsim <- 500 # Nombre de réplications
 
 seeds_list <- sample(1:1000000, size = nsim)
 
@@ -105,7 +105,7 @@ for (i in 1:nsim) {
   
   resultats[i,] <- RegLog(dat) # Régression logistique
   resultats2[i,] <- IPW(dat)   # IPW
-  resultats3[i,] <- TNDDR(dat, Lasso) # Estimateur doublement robuste
+  resultats3[i,] <- TNDDR(dat, RandomForest) # Estimateur doublement robuste
   
   # DT : Ajout d'une ligne pour suivre l'avancement
   
@@ -180,14 +180,14 @@ kable(Tab01)
 
 #|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
 #|:----|:-------|:------------------------------------------|:------------------------------------------|
-#|1000 |RegLog  |MCSE_bias         , 0.00623855694294518    |Bias               , -0.00294756569120641  |
-#|-    |-       |MCSE_var          , 0.000576833475532091   |Var                , 0.000576833475532091  |
-#|-    |-       |MCSE_mse          , 0.00057370636241932    |Mse                , 0.00057370636241932   |
-#|-    |-       |%Cov              , 0.94                   |Précision_var      , -0.00285743039950165  |
+#|1000 |RegLog  |MCSE_bias          , 0.00295418588667984   |Bias               , 0.00729010837813915   |
+#|-    |-       |MCSE_var           , 0.000284378344670318  |Var                , 0.000284378344670318  |
+#|-    |-       |MCSE_mse           , 0.000298196850968069  |Mse                , 0.000298196850968069  |
+#|-    |-       |%Cov               , 0.956                 |Précision_var      , -0.00133713826292561  |
 
-# K_coverage coverage coverage_mcse width width_mcse
-# <int>    <dbl>         <dbl> <dbl>      <dbl>
-#   1       1000    0.936       0.00774 0.429    0.00148
+#K_coverage coverage coverage_mcse width width_mcse
+#<int>    <dbl>         <dbl> <dbl>      <dbl>
+#  1        500    0.956       0.00917 0.265    0.00181
 # > mean(resultats$err_reg)
 # > sd(resultats$coe_reg))
 
@@ -255,20 +255,20 @@ Tab01$`Autres` = list(
 
 kable(Tab01)
 
-#|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
-#|:----|:-------|:------------------------------------------|:------------------------------------------|
-#|1000 |IPW     |MCSE_bias          , 0.0063372338483292    |Bias               , -0.00185081536583087  |
-#|-    |IPW     |MCSE_var           , 0.000610640374502568  |Var                , 0.00401605328484094   |
-#|-    |IPW     |MCSE_mse           , 0.00057370636241932   |Mse                , 0.00386172782381055   |
-#|-    |IPW     |%Cov               , 0.93                  |Précision_var      , 0.00162356305486544   |
+#|n    |Methode |Erreur de Monte Carlo                      |Autres                                   |
+#|:----|:-------|:------------------------------------------|:----------------------------------------|
+#|1000 |IPW     |MCSE_bias          , 0.00309524943623309   |Bias               , 0.00617727884141961 |
+#|-    |IPW     |MCSE_var           , 0.000337155855902644  |Var                , 0.00479028453625063 |
+#|-    |IPW     |MCSE_mse           , 0.000298196850968069  |Mse                , 0.00440802559244113 |
+#|-    |IPW     |%Cov               , 0.93                  |Précision_var      , 0.0089665270230341  |
 
-# K_coverage coverage coverage_mcse width width_mcse
-# <int>    <dbl>         <dbl> <dbl>      <dbl>
-#   1       1000    0.936       0.00774 0.429    0.00148
+#  K_coverage coverage coverage_mcse width width_mcse
+#<int>    <dbl>         <dbl> <dbl>      <dbl>
+#  1        500     0.93        0.0114 0.258    0.00170
 # > mean(sqrt(resultats2$var_log_RRm))
-# [1] 0.1554226
+# [1] 0.1492768
 # > sd(log(resultats2$RRm))
-# [1] 0.1662523
+# [1] 0.1582433
 
 ########################## TNDDR ###############################
 
@@ -333,14 +333,14 @@ kable(Tab01)
 
 # Avec la méthode de la forêt aléatoire
 
-#|n    |Methode |Erreur de Monte Carlo                    |Autres                                 |
-#|:----|:-------|:----------------------------------------|:--------------------------------------|
-#|1000 |TNDDR   |MCSE_bias         , 0.0335796312251411   |Bias              , 0.0147512586390317 |
-#|-    |-       |MCSE_var          , 0.00297399486832592  |Var               , 0.0112759163321647 |
-#|-    |-       |MCSE_mse          , 0.00328965133748587  |Mse               , 0.0103659243303839 |
-#|-    |-       |%Cov              , 0.9                  |Précision_var     , 0.0789107904397003 | # Avec CI 1
-#|-    |-       |%Cov              , 0.9                  |Précision_var     , 0.0789107904397003 | # Avec CI 2
-#|-    |-       |%Cov              , 0.9                  |Précision_var     , 0.0789107904397003 | # Avec CI 3
+#|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
+#|:----|:-------|:------------------------------------------|:------------------------------------------|
+#|1000 |TNDDR   |MCSE_bias          , 0.00315932660029385   |Bias               , 0.0160141383783473    |
+#|-    |-       |MCSE_var           , 0.000331549017625076  |Var                , 0.00499067228366214   |
+#|-    |-       |MCSE_mse           , 0.000372952913256951  |Mse                , 0.00523714356709567   |
+#|-    |-       |%Cov               , 0.968                 |Précision_var      , -0.00595712229257123  | # Avec CI 1
+#|-    |-       |%Cov               , 0.968                 |Précision_var      , 0.0789107904397003    | # Avec CI 2
+#|-    |-       |%Cov               , 0.968                 |Précision_var      , 0.0789107904397003    | # Avec CI 3
 
 # Régression Lasso
 
