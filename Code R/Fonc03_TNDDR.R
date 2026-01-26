@@ -42,10 +42,10 @@ RandomForest <- function(dat) {
     
     V ~ .,
     data = subset(TNDdat_ctr1, select = -Y),
-    num.trees = 200,  # Nombre d'arbestimations = 200
-    mtry = 1,         # Set mtry to 1 for 2-3 covariates
-    min.node.size = 60,  # Taille minimale d'un noeud
-    sample.fraction = 0.33,
+    num.trees = 500,  # Nombre d'arbres dans la forêt aléatoire
+    mtry = 1,         # variables de division candidates à chaque division: Set mtry to 1 for 2-3 covariates
+    min.node.size = 49,  # Taille minimale d'un noeud
+    sample.fraction = 0.8,
     splitrule = "extratrees",  # "Augmenter"  la part de l'aléatoire dans de la construction de l'arbre
     probability = TRUE
     
@@ -59,10 +59,10 @@ RandomForest <- function(dat) {
     
     V ~ .,
     data = subset(TNDdat_ctr2, select = -Y),
-    num.trees = 200,  
+    num.trees = 500,  
     mtry = 1,         
-    min.node.size = 60,  
-    sample.fraction = 0.33,
+    min.node.size = 49,  
+    sample.fraction = 0.8,
     splitrule = "extratrees",  
     probability = TRUE
     
@@ -99,7 +99,8 @@ RandomForest <- function(dat) {
     Y ~ .,
     data = TNDdat_train1,
     num.trees = 50,  
-    mtry = 1,      
+    mtry = 1,
+    min.node.size = 11,
     probability = TRUE
     
   )
@@ -111,7 +112,8 @@ RandomForest <- function(dat) {
     Y ~ .,
     data = TNDdat_train2,
     num.trees = 50,  
-    mtry = 1,        
+    mtry = 1,   
+    min.node.size = 11,
     probability = TRUE
     
   )
@@ -172,7 +174,8 @@ RandomForest <- function(dat) {
     Y ~ .,
     data = subset(TNDdat_train1, select = -V),
     num.trees = 500,  
-    mtry = 1,         
+    mtry = 1,  
+    min.node.size = 49,
     probability = TRUE
     
   )
@@ -184,7 +187,8 @@ RandomForest <- function(dat) {
     Y ~ .,
     data = subset(TNDdat_train2, select = -V),
     num.trees = 500,  
-    mtry = 1,         
+    mtry = 1,  
+    min.node.size = 49,
     probability = TRUE
     
   )
