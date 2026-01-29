@@ -17,7 +17,7 @@ library(kableExtra)
 
 set.seed(1) # Pour avoir toujours les mêmes germes
 
-nsim <- 500 # Nombre de réplications
+nsim <- 10 # Nombre de réplications
 
 seeds_list <- sample(1:1000000, size = nsim)
 
@@ -66,7 +66,7 @@ Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
 
 ################################################################################
 ########################## Analyse des résultats ###############################
-
+nsim <- 500
 # Initialiser des objets pour contenir les resultats
 
 resultats <- data.frame(matrix(ncol = 4, 
@@ -178,12 +178,12 @@ Tab01$`Autres` = list(
 
 kable(Tab01)
 
-#|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
-#|:----|:-------|:------------------------------------------|:------------------------------------------|
-#|1000 |RegLog  |MCSE_bias          , 0.00295418588667984   |Bias               , 0.00729010837813915   |
-#|-    |-       |MCSE_var           , 0.000284378344670318  |Var                , 0.000284378344670318  |
-#|-    |-       |MCSE_mse           , 0.000298196850968069  |Mse                , 0.000298196850968069  |
-#|-    |-       |%Cov               , 0.956                 |Précision_var      , -0.00133713826292561  |
+#   |n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
+#   |:----|:-------|:------------------------------------------|:------------------------------------------|
+#   |1000 |RegLog  |MCSE_bias          , 0.00217543056861132   |Bias               , 0.00764669727604417   |
+#   |-    |-       |MCSE_var            , 0.000206153565076863 |Var                 , 0.000206153565076863 |
+#   |-    |-       |MCSE_mse            , 0.000216246580241676 |Mse                 , 0.000216246580241676 |
+#   |-    |-       |%Cov , 0.943                               |Précision_var      , 0.00742922342628116   |
 
 #K_coverage coverage coverage_mcse width width_mcse
 #<int>    <dbl>         <dbl> <dbl>      <dbl>
@@ -255,14 +255,14 @@ Tab01$`Autres` = list(
 
 kable(Tab01)
 
-#|n    |Methode |Erreur de Monte Carlo                      |Autres                                   |
-#|:----|:-------|:------------------------------------------|:----------------------------------------|
-#|1000 |IPW     |MCSE_bias          , 0.00309524943623309   |Bias               , 0.00617727884141961 |
-#|-    |IPW     |MCSE_var           , 0.000337155855902644  |Var                , 0.00479028453625063 |
-#|-    |IPW     |MCSE_mse           , 0.000298196850968069  |Mse                , 0.00440802559244113 |
-#|-    |IPW     |%Cov               , 0.93                  |Précision_var      , 0.0089665270230341  |
+#   |n    |Methode |Erreur de Monte Carlo                      |Autres                                   |
+#   |:----|:-------|:------------------------------------------|:----------------------------------------|
+#   |1000 |IPW     |MCSE_bias          , 0.00221880724759409   |Bias               , 0.00549099716653684 |
+#   |-    |IPW     |MCSE_var            , 0.000211872879723978 |Var                , 0.00492310560197607 |
+#   |-    |IPW     |MCSE_mse            , 0.000216246580241676 |Mse                , 0.00478623763992119 |
+#   |-    |IPW     |%Cov , 0.921                               |Précision_var     , 0.0150996663466512   |
 
-#  K_coverage coverage coverage_mcse width width_mcse
+  #  K_coverage coverage coverage_mcse width width_mcse
 #<int>    <dbl>         <dbl> <dbl>      <dbl>
 #  1        500     0.93        0.0114 0.258    0.00170
 # > mean(sqrt(resultats2$var_log_RRm))
@@ -331,7 +331,12 @@ Tab01$`Autres` = list(
 
 kable(Tab01)
 
+
+
+
+
 # Avec la méthode de la forêt aléatoire
+
 
 #|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
 #|:----|:-------|:------------------------------------------|:------------------------------------------|
@@ -375,3 +380,18 @@ kable(Tab01)
 #|-    |-       |%Cov               , 0.86                |Précision_var        , 0.586977884654825  | # Avec CI 2
 #|-    |-       |%Cov               , 0.86                |Précision_var        , 0.586977884654825  | # Avec CI 3
 
+## RN avec 1000 replications
+#   |n    |Methode |Erreur de Monte Carlo                    |Autres                                   |
+#   |:----|:-------|:----------------------------------------|:----------------------------------------|
+#   |1000 |TNDDR   |MCSE_bias          , 0.00881153017434929 |Bias               , -0.0937663268196102 |
+#   |-    |-       |MCSE_var           , 0.00373582186236799 |Var               , 0.0776430640134681   |
+#   |-    |-       |MCSE_mse          , 0.0033289690698872   |Mse               , 0.0863575449946966   |
+#   |-    |-       |%Cov , 0.861                             |Précision_var   , 1.80797415493798       |
+
+# RN, 500 replications, plus de troncation
+#   |n    |Methode |Erreur de Monte Carlo                    |Autres                                   |
+#   |:----|:-------|:----------------------------------------|:----------------------------------------|
+#   |1000 |TNDDR   |MCSE_bias          , 0.00777007509386557 |Bias               , -0.0170976621893679 |
+#   |-    |-       |MCSE_var           , 0.00276525309482966 |Var              , 0.030187033482155     |
+#   |-    |-       |MCSE_mse           , 0.00278017839460818 |Mse               , 0.0304189894675324   |
+#   |-    |-       |%Cov , 0.914                             |Précision_var   , 1.15696399459045       |
