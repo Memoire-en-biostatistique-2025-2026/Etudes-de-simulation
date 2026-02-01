@@ -9,6 +9,11 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
                     
                     popsize = 150000, co_inf_para1 = 0, co_inf_para2 = 0,
                     
+                    CV = 0.33, # Couverture vaccinale
+                    I1_prev = 0.15, # Prévalence de I1
+                    I2_prev = 0.5, # Prévalence de I2
+                                   # Valeurs par défaut pour le scénario de base
+                    
                     return_full = FALSE) { # Pour choisir entre population et échantillon
   
   
@@ -18,7 +23,20 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   # Génération du statut vaccinal V : V ~ Bernoulli(logit(a0 + a1*C))
   
-  V <- rbinom(n = popsize, size = 1, prob = plogis(-1.18 + 0.3*C)) # Couverture vaccinale ~33%
+  a <- 1/0.87
+  # Définir la fonction en b0 (en calculant l'intégrale) pour V
+  
+  f_I1 <- function (b0) {
+    
+    a*(log(1 + exp(b0 + 3*b1)) - log(1 + exp(b0 + 0.1*b1))) -
+      
+      CV # Contrainte pour la probabilité marginale
+    
+  }
+  
+  b0 <- uniroot(f_I1, c(-10, 10))$root
+  
+  V <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.3*C)) # Couverture vaccinale (hyperparamètre)
   # Voir fichier Anciens fichiers\Génération des variables
   # pour la valeur de b0 
   
@@ -41,7 +59,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
               
             log(1 + exp(b0 + 0.1*0.35 - co_inf_para1)) - log(1 + exp(b0 + 0.1*0.35 + co_inf_para1))) - 
       
-      0.15 # Contrainte pour la probabilité marginale
+      I1_prev # Contrainte pour la probabilité marginale
     
   }
   
@@ -68,7 +86,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   f_I2 <- function(b0){
     
-    integrate(P_I2, 0.1, 3, b0)$value - 0.50 # Contrainte pour la probabilité marginale
+    integrate(P_I2, 0.1, 3, b0)$value - I2_prev # Contrainte pour la probabilité marginale
     
   }
   
