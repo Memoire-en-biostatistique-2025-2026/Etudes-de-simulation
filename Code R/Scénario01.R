@@ -66,7 +66,9 @@ Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
 
 ################################################################################
 ########################## Analyse des résultats ###############################
+
 nsim <- 500
+
 # Initialiser des objets pour contenir les resultats
 
 resultats <- data.frame(matrix(ncol = 4, 
@@ -86,18 +88,37 @@ colnames(resultats2) <- c("RRm",# Risque relatif marginal
                           "IC_inf", # Borne inférieure de l'intervalle de confiance
                           "IC_sup") # Sa borne supérieure
 
-resultats3 <- data.frame(matrix(ncol = 9, 
+resultats3 <- data.frame(matrix(ncol = 36, 
                                 nrow = nsim))
 
-colnames(resultats3) <- c("RRm",# Risque relatif marginal
-                          "VE",
-                          "var_log_RRm",# Variance du log du risque relatif marginal
-                          "IC_inf1", # Borne inférieure du premier intervalle de confiance
-                          "IC_sup1", # Sa borne supérieure
-                          "IC_inf2", # Borne inférieure du deuxième intervalle de confiance
-                          "IC_sup2", # Sa borne supérieure
-                          "IC_inf3", # Borne inférieure du troisième intervalle de confiance
-                          "IC_sup3")# Sa borne supérieure
+colnames(resultats3) <- c("RRm_RF", "VE_RF", "var_log_RRm-RF", "IC_inf1-RF", "IC_sup1-RF", "IC_inf2-RF", "IC_sup2-RF", 
+                                                                  "IC_inf3-RF", "IC_sup3-RF",# Forêt aléatoire
+                             
+                             "RRm_Lasso", "VE_Lasso","var_log_RRm-Lasso", "IC_inf1-Lasso", "IC_sup1-Lasso", 
+                                                                          "IC_inf2-Lasso", "IC_sup2-Lasso", 
+                                                                          "IC_inf3-Lasso", "IC_sup3-Lasso",# Régression Lasso
+                             
+                             "RRm_Mars", "VE_Mars","var_log_RRm-Mars", "IC_inf1-Mars", "IC_sup1-Mars", 
+                                                                       "IC_inf2-Mars", "IC_sup2-Mars", 
+                                                                       "IC_inf3-Mars", "IC_sup3-Mars",# Régression avec splines
+                             
+                             "RRm_RN", "VE_RN","var_log_RRm-RN", "IC_inf1-RN", "IC_sup1-RN", 
+                                                                 "IC_inf2-RN", "IC_sup2-RN", 
+                                                                 "IC_inf3-RN", "IC_sup3-RN"# Réseaux de neurones
+                             
+                             
+                          # Risque relatid marginal   
+                          # Variance du log du risque relatif marginal
+                          # Borne inférieure du premier intervalle de confiance
+                          # Sa borne supérieure
+                          # Borne inférieure du deuxième intervalle de confiance
+                          # Sa borne supérieure
+                          # Borne inférieure du troisième intervalle de confiance
+                          # Sa borne supérieure
+                       
+)
+
+methode <- list(RandomForest, Lasso, Mars, RN)
 
 for (i in 1:nsim) {
   
@@ -105,7 +126,18 @@ for (i in 1:nsim) {
   
   resultats[i,] <- RegLog(dat) # Régression logistique
   resultats2[i,] <- IPW(dat)   # IPW
-  resultats3[i,] <- TNDDR(dat, RN) # Estimateur doublement robuste
+  
+  l <- list()
+  
+  for(j in methode) {
+    
+    k <- TNDDR(dat, j) # Liste des résultats pour la méthode j
+    l <- append(l, k) # Combiner les résultats des différentes méthodes
+    
+  }
+  
+  resultats3[i,] <- l
+  
   
   # DT : Ajout d'une ligne pour suivre l'avancement
   
@@ -272,16 +304,16 @@ kable(Tab01)
 
 ########################## TNDDR ###############################
 
-Tab01$Methode <- c("TNDDR", "-", "-","-")
+Tab01$Methode <- c("TNDDR_RF", "-", "-","-")
 
 ##    - statistiques descriptives
 
-summary(resultats3$RRm)
-mean(resultats3$RRm)
-sd(resultats3$RRm)
+summary(resultats3$RRm_RF)
+mean(resultats3$RRm_RF)
+sd(resultats3$RRm_RF)
 
-mean(sqrt(resultats3$var_log_RRm))
-sd(log(resultats3$RRm))
+mean(sqrt(resultats3$`var_log_RRm-RF`))
+sd(log(resultats3$RRm_RF))
 
 help("calc_absolute") # calculer les différentes mesures de performance
 
@@ -291,15 +323,15 @@ resultats3$vrai_param <- rep(mean(l_vraiRRc), nsim)
 
 ### MCSE_biais
 
-MCSE_biais <- calc_absolute(resultats3, RRm, vrai_param, criteria = "bias")
+MCSE_biais <- calc_absolute(resultats3, RRm_RF, vrai_param, criteria = "bias")
 
 ### MCSE_var
 
-MCSE_var <- calc_absolute(resultats3, RRm, vrai_param, criteria = "var")
+MCSE_var <- calc_absolute(resultats3, RRm_RF, vrai_param, criteria = "var")
 
 ### MCSE_MSE 
 
-MCSE_mse <- calc_absolute(resultats3, RRm, vrai_param, criteria = "mse")
+MCSE_mse <- calc_absolute(resultats3, RRm_RF, vrai_param, criteria = "mse")
 
 ### Coverage
 
@@ -307,7 +339,7 @@ help("calc_coverage")
 
 # Calcul des bornes de l'intervalle de confiance
 
-coverage <- calc_coverage(resultats3, IC_inf2, IC_sup2, vrai_param)
+coverage <- calc_coverage(resultats3, `IC_inf2-RF`, `IC_sup2-RF`, vrai_param)
 
 Tab01$`Erreur de Monte Carlo` = list(
   
@@ -323,20 +355,13 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[2]),
   list(name = "Mse", value = MCSE_mse[2]),
-  list(name = "Précision_var", value = sd(log(resultats3$RRm)) - mean(sqrt(resultats3$var_log_RRm)) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(log(resultats3$RRm_RF)) - mean(sqrt(resultats3$`var_log_RRm-RF`)) # Voir si la variance est bien estimée
        
   )
   
 )
 
 kable(Tab01)
-
-
-
-
-
-# Avec la méthode de la forêt aléatoire
-
 
 #|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
 #|:----|:-------|:------------------------------------------|:------------------------------------------|
@@ -347,7 +372,64 @@ kable(Tab01)
 #|-    |-       |%Cov               , 0.932                 |Précision_var      , 0.0789107904397003    | # Avec CI 2
 #|-    |-       |%Cov               , 0.932                 |Précision_var      , 0.0789107904397003    | # Avec CI 3
 
+################################################################################
+
 # Régression Lasso
+
+Tab01$Methode <- c("TNDDR_Lasso", "-", "-","-")
+
+##    - statistiques descriptives
+
+summary(resultats3$RRm_Lasso)
+mean(resultats3$RRm_Lasso)
+sd(resultats3$RRm_Lasso)
+
+mean(sqrt(resultats3$`var_log_RRm-Lasso`))
+sd(log(resultats3$RRm_Lasso))
+
+help("calc_absolute") # calculer les différentes mesures de performance
+
+### MCSE_biais
+
+MCSE_biais <- calc_absolute(resultats3, RRm_Lasso, vrai_param, criteria = "bias")
+
+### MCSE_var
+
+MCSE_var <- calc_absolute(resultats3, RRm_Lasso, vrai_param, criteria = "var")
+
+### MCSE_MSE 
+
+MCSE_mse <- calc_absolute(resultats3, RRm_Lasso, vrai_param, criteria = "mse")
+
+### Coverage
+
+help("calc_coverage")
+
+# Calcul des bornes de l'intervalle de confiance
+
+coverage <- calc_coverage(resultats3, `IC_inf2-Lasso`, `IC_sup2-Lasso`, vrai_param)
+
+Tab01$`Erreur de Monte Carlo` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais[3]),
+  list(name = "MCSE_var", value = MCSE_var[3]),
+  list(name = "MCSE_mse", value = MCSE_mse[3]),
+  list(name = "%Cov", value = coverage[2])
+  
+)
+
+Tab01$`Autres` = list(
+  
+  list(name = "Bias", value = MCSE_biais[2]),
+  list(name = "Var", value = MCSE_var[2]),
+  list(name = "Mse", value = MCSE_mse[2]),
+  list(name = "Précision_var", value = sd(log(resultats3$RRm_Lasso)) - mean(sqrt(resultats3$`var_log_RRm-Lasso`)) # Voir si la variance est bien estimée
+       
+  )
+  
+)
+
+kable(Tab01)
 
 #|n    |Methode |Erreur de Monte Carlo                      |Autres                                   |
 #|:----|:-------|:------------------------------------------|:----------------------------------------|
@@ -358,7 +440,65 @@ kable(Tab01)
 #|-    |-       |%Cov               , 0.74                  |Précision_var      , 0.0651750510281717  | # Avec CI 2
 #|-    |-       |%Cov               , 0.74                  |Précision_var      , 0.0651750510281717  | # Avec CI 3
 
+################################################################################
+
 # earth_GLM
+
+Tab01$Methode <- c("TNDDR_Mars", "-", "-","-")
+
+##    - statistiques descriptives
+
+summary(resultats3$RRm_Mars)
+mean(resultats3$RRm_Mars)
+sd(resultats3$RRm_Mars)
+
+mean(sqrt(resultats3$`var_log_RRm-Mars`))
+sd(log(resultats3$RRm_Mars))
+
+help("calc_absolute") # calculer les différentes mesures de performance
+
+### MCSE_biais
+
+MCSE_biais <- calc_absolute(resultats3, RRm_Mars, vrai_param, criteria = "bias")
+
+### MCSE_var
+
+MCSE_var <- calc_absolute(resultats3, RRm_Mars, vrai_param, criteria = "var")
+
+### MCSE_MSE 
+
+MCSE_mse <- calc_absolute(resultats3, RRm_Mars, vrai_param, criteria = "mse")
+
+### Coverage
+
+help("calc_coverage")
+
+# Calcul des bornes de l'intervalle de confiance
+
+coverage <- calc_coverage(resultats3, `IC_inf2-Mars`, `IC_sup2-Mars`, vrai_param)
+
+Tab01$`Erreur de Monte Carlo` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais[3]),
+  list(name = "MCSE_var", value = MCSE_var[3]),
+  list(name = "MCSE_mse", value = MCSE_mse[3]),
+  list(name = "%Cov", value = coverage[2])
+  
+)
+
+Tab01$`Autres` = list(
+  
+  list(name = "Bias", value = MCSE_biais[2]),
+  list(name = "Var", value = MCSE_var[2]),
+  list(name = "Mse", value = MCSE_mse[2]),
+  list(name = "Précision_var", value = sd(log(resultats3$RRm_Mars)) - mean(sqrt(resultats3$`var_log_RRm-Mars`)) # Voir si la variance est bien estimée
+       
+  )
+  
+)
+
+kable(Tab01)
+
 
 #|n    |Methode |Erreur de Monte Carlo                    |Autres                                     |
 #|:----|:-------|:----------------------------------------|:----------------------------------------  |
@@ -369,7 +509,65 @@ kable(Tab01)
 #|-    |-       |%Cov               , 0.914               |Précision_var        , 0.677366581382007   | # Avec CI 2
 #|-    |-       |%Cov               , 0.914               |Précision_var        , 0.677366581382007   | # Avec CI 3
 
+################################################################################
+
 # Réseaux de neurones
+
+Tab01$Methode <- c("TNDDR_RN", "-", "-","-")
+
+##    - statistiques descriptives
+
+summary(resultats3$RRm_RN)
+mean(resultats3$RRm_RN)
+sd(resultats3$RRm_RN)
+
+mean(sqrt(resultats3$`var_log_RRm-RN`))
+sd(log(resultats3$RRm_RN))
+
+help("calc_absolute") # calculer les différentes mesures de performance
+
+### MCSE_biais
+
+MCSE_biais <- calc_absolute(resultats3, RRm_RN, vrai_param, criteria = "bias")
+
+### MCSE_var
+
+MCSE_var <- calc_absolute(resultats3, RRm_RN, vrai_param, criteria = "var")
+
+### MCSE_MSE 
+
+MCSE_mse <- calc_absolute(resultats3, RRm_RN, vrai_param, criteria = "mse")
+
+### Coverage
+
+help("calc_coverage")
+
+# Calcul des bornes de l'intervalle de confiance
+
+coverage <- calc_coverage(resultats3, `IC_inf2-RN`, `IC_sup2-RN`, vrai_param)
+
+Tab01$`Erreur de Monte Carlo` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais[3]),
+  list(name = "MCSE_var", value = MCSE_var[3]),
+  list(name = "MCSE_mse", value = MCSE_mse[3]),
+  list(name = "%Cov", value = coverage[2])
+  
+)
+
+Tab01$`Autres` = list(
+  
+  list(name = "Bias", value = MCSE_biais[2]),
+  list(name = "Var", value = MCSE_var[2]),
+  list(name = "Mse", value = MCSE_mse[2]),
+  list(name = "Précision_var", value = sd(log(resultats3$RRm_RN)) - mean(sqrt(resultats3$`var_log_RRm-RN`)) # Voir si la variance est bien estimée
+       
+  )
+  
+)
+
+kable(Tab01)
+
 
 #|n    |Methode |Erreur de Monte Carlo                    |Autres                                    |
 #|:----|:-------|:----------------------------------------|:--------------------------------------   |
