@@ -26,15 +26,15 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   a <- 1/0.87
   # Définir la fonction en b0 (en calculant l'intégrale) pour V
   
-  f_I1 <- function (b0) {
+  f_V <- function (b0) {
     
-    a*(log(1 + exp(b0 + 3*b1)) - log(1 + exp(b0 + 0.1*b1))) -
+    a*(log(1 + exp(b0 + 3*0.3)) - log(1 + exp(b0 + 0.1*0.3))) - CV
       
-      CV # Contrainte pour la probabilité marginale
+       # Contrainte pour la probabilité marginale
     
   }
   
-  b0 <- uniroot(f_I1, c(-10, 10))$root
+  b0 <- uniroot(f_V, c(-10, 10))$root
   
   V <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.3*C)) # Couverture vaccinale (hyperparamètre)
   # Voir fichier Anciens fichiers\Génération des variables
