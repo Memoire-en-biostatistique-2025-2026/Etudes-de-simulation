@@ -13,21 +13,36 @@ library(knitr)
 library(dplyr)
 library(kableExtra)
 
+################################################################################
+# Scénario 02 (co-infection ~ 10% dans l'échantillon): Sous-scénario 01 : CV = 33%, 50% et 70% 
+#                                                                         I1_prev = 15% et 
+#                                                                         I2_rev = 50%
+################################################################################
+
+# Listes des valeurs à tester (à discuter)
+
+CV_liste <- c(0.33, 0.5, 0.7)
+
 # Calcul des vraies valeurs 
 
 set.seed(1) # Pour avoir toujours les mêmes germes
 
 nsim <- 10 # Nombre de réplications
 
-seeds_list <- sample(1:1000000, size = nsim)
+seeds_list <- sample(1:1000000, size = nsim*3)
 
-l_vraiRRc <- rep(NA, nsim)
-l_vraiRRm <- rep(NA, nsim)
+l_vraiRRc <- rep(NA, nsim*3)
+l_vraiRRm <- rep(NA, nsim*3)
 
-for (i in 1:nsim) {
+d <- 1
+f <- nsim
+
+for(j in CV_liste) {
+  
+  for (i in d:f) {
   
   dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000,
-                      co_inf_para1 = 2, co_inf_para2 = -2)
+                      co_inf_para1 = 2, co_inf_para2 = -2, CV = j)
   
   summary(dat)
   
@@ -44,19 +59,30 @@ for (i in 1:nsim) {
   l_vraiRRm[i] <- mean(dat1$Y)/mean(dat0$Y)
   
   print(data.frame(Sys.time(), i))
+  }
   
+  d <- d + nsim
+  f <- f + nsim
+ 
 }
 
-l_vraiRRc
+Tab <- data.frame( 
+  
+  `Couverture vaccinale` = c(0.33, 0.5, 0.7),
+  Mean_l_vraiRRc = c(mean(l_vraiRRc[1:nsim]), mean(l_vraiRRc[(nsim + 1):(2*nsim)]), mean(l_vraiRRc[(2*nsim + 1):(3*nsim)])) ,
+  SD_l_vraiRRc = c(sd(l_vraiRRc[1:nsim]), sd(l_vraiRRc[(nsim + 1):(2*nsim)]),sd(l_vraiRRc[(2*nsim + 1):(3*nsim)])),
+  Mean_l_vraiRRm =  c(mean(l_vraiRRm[1:nsim]), mean(l_vraiRRm[(nsim + 1):(2*nsim)]), mean(l_vraiRRm[(2*nsim + 1):(3*nsim)])),
+  SD_l_vraiRRm = c(sd(l_vraiRRm[1:nsim]), sd(l_vraiRRm[(nsim + 1):(2*nsim)]), sd(l_vraiRRm[(2*nsim + 1):(3*nsim)]))
+  
+)
 
-mean(l_vraiRRc)
-sd(l_vraiRRc)
+kable(Tab)
 
-
-l_vraiRRm
-
-mean(l_vraiRRm)
-sd(l_vraiRRm)
+#| Couverture.vaccinale| Mean_l_vraiRRc| SD_l_vraiRRc| Mean_l_vraiRRm| SD_l_vraiRRm|
+#|--------------------:|--------------:|------------:|--------------:|------------:|
+#|                 0.33|      0.4116813|    0.0076165|      0.4180096|    0.0076286|
+#|                 0.50|      0.4131110|    0.0111406|      0.4194260|    0.0111263|
+#|                 0.70|      0.4143477|    0.0104384|      0.4206930|    0.0104321|
 
 ################################################################################
 # Initialiser des objets pour contenir les resultats
@@ -64,19 +90,9 @@ sd(l_vraiRRm)
 Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
 
 ################################################################################
-# Scénario 02 (co-infection ~ 10% dans l'échantillon): Sous-scénario 01 : CV = 33%, 50% et 70% 
-#                                                                         I1_prev = 15% et 
-#                                                                         I2_rev = 50%
-################################################################################
-
-################################################################################
 ########################## Analyse des résultats ###############################
 
 nsim <- 500
-
-# Listes des valeurs à tester (à discuter)
-
-CV_liste <- c(0.33, 0.5, 0.7)
 
 # Initialiser des objets pour contenir les resultats
 
@@ -213,7 +229,7 @@ help("calc_absolute") # calculer les différentes mesures de performance
 
 # Ajout de la colonne contenant la vraie valeur du paramètre
 
-resultats$vrai_param <- rep(mean(l_vraiRRc), nsim*3)
+resultats$vrai_param <- rep(mean(l_vraiRRc[1:nsim]), nsim, mean(l_vraiRRc[(nsim + 1):(2*nsim)]), nsim, mean(l_vraiRRc[(2*nsim + 1):(3*nsim)]), nsim)
 
 ### Biais et MCSE_biais
 

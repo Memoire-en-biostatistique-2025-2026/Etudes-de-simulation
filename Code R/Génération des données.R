@@ -194,16 +194,35 @@ sum(dat_full$W2 == 1)/sum(dat_full$Infec_RSV == 1) * 100 # Prévalence symptomat
 
 datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
                          
-                         co_inf_para1 = 0, co_inf_para2 = 0) {
+                         co_inf_para1 = 0, co_inf_para2 = 0,
+                         
+                         CV = 0.33, # Couverture vaccinale
+                         I1_prev = 0.15, # Prévalence de I1
+                         I2_prev = 0.5 # Prévalence de I2
+                                       # Valeurs par défaut pour le scénario de base
+                         ) {
   
   
   # Génération du facteur de confusion continu C 
   
   C <- runif(n = popsize, 0.1, 3); # On commence par les noeuds racines de notre DAG
   
-  # Génération du statut vaccinal V : V ~ Bernoulli(logit(a0 + a1*C))
+  # Génération du statut vaccinal V : V ~ Bernoulli(logit(b0 + b1*C))
   
-  V <- rbinom(n = popsize, size = 1, prob = plogis(-1.18 + 0.3*C)) # Couverture vaccinale ~33%
+  a <- 1/0.87
+  # Définir la fonction en b0 (en calculant l'intégrale) pour V
+  
+  f_V <- function (b0) {
+    
+    a*(log(1 + exp(b0 + 3*0.3)) - log(1 + exp(b0 + 0.1*0.3))) - 
+      
+      CV # Contrainte pour la probabilité marginale
+    
+  }
+  
+  b0 <- uniroot(f_V, c(-10, 10))$root
+  
+  V <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.3*C)) # Couverture vaccinale (hyperparamètre)
   # Voir fichier Anciens fichiers\Génération des variables
   # pour la valeur de b0 
   
@@ -225,9 +244,9 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
     (a/0.35)*(log(1 + exp(b0 + 3*0.35 - co_inf_para1)) + log(1 + exp(b0 + 3*0.35 + co_inf_para1)) - 
                 
-                log(1 + exp(b0 + 0.1*0.35 - co_inf_para1)) - log(1 + exp(b0 + 0.1*0.35 + co_inf_para1))) - 
+              log(1 + exp(b0 + 0.1*0.35 - co_inf_para1)) - log(1 + exp(b0 + 0.1*0.35 + co_inf_para1))) - 
       
-      0.15 # Contrainte pour la probabilité marginale
+      I1_prev # Contrainte pour la probabilité marginale
     
   }
   
@@ -254,7 +273,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   f_I2 <- function(b0){
     
-    integrate(P_I2, 0.1, 3, b0)$value - 0.50 # Contrainte pour la probabilité marginale
+    integrate(P_I2, 0.1, 3, b0)$value - I2_prev # Contrainte pour la probabilité marginale
     
   }
   
