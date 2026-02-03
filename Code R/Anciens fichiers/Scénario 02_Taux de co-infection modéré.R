@@ -27,15 +27,15 @@ CV_liste <- c(0.33, 0.5, 0.7)
 
 set.seed(1) # Pour avoir toujours les mêmes germes
 
-nsim <- 10 # Nombre de réplications
+nsim1 <- 10 # Nombre de réplications
 
-seeds_list <- sample(1:1000000, size = nsim*3)
+seeds_list <- sample(1:1000000, size = nsim1*3)
 
-l_vraiRRc <- rep(NA, nsim*3)
-l_vraiRRm <- rep(NA, nsim*3)
+l_vraiRRc <- rep(NA, nsim1*3)
+l_vraiRRm <- rep(NA, nsim1*3)
 
 d <- 1
-f <- nsim
+f <- nsim1
 
 for(j in CV_liste) {
   
@@ -61,18 +61,18 @@ for(j in CV_liste) {
   print(data.frame(Sys.time(), i))
   }
   
-  d <- d + nsim
-  f <- f + nsim
+  d <- d + nsim1
+  f <- f + nsim1
  
 }
 
 Tab <- data.frame( 
   
   `Couverture vaccinale` = c(0.33, 0.5, 0.7),
-  Mean_l_vraiRRc = c(mean(l_vraiRRc[1:nsim]), mean(l_vraiRRc[(nsim + 1):(2*nsim)]), mean(l_vraiRRc[(2*nsim + 1):(3*nsim)])) ,
-  SD_l_vraiRRc = c(sd(l_vraiRRc[1:nsim]), sd(l_vraiRRc[(nsim + 1):(2*nsim)]),sd(l_vraiRRc[(2*nsim + 1):(3*nsim)])),
-  Mean_l_vraiRRm =  c(mean(l_vraiRRm[1:nsim]), mean(l_vraiRRm[(nsim + 1):(2*nsim)]), mean(l_vraiRRm[(2*nsim + 1):(3*nsim)])),
-  SD_l_vraiRRm = c(sd(l_vraiRRm[1:nsim]), sd(l_vraiRRm[(nsim + 1):(2*nsim)]), sd(l_vraiRRm[(2*nsim + 1):(3*nsim)]))
+  Mean_l_vraiRRc = c(mean(l_vraiRRc[1:nsim1]), mean(l_vraiRRc[(nsim1 + 1):(2*nsim1)]), mean(l_vraiRRc[(2*nsim1 + 1):(3*nsim1)])) ,
+  SD_l_vraiRRc = c(sd(l_vraiRRc[1:nsim1]), sd(l_vraiRRc[(nsim1 + 1):(2*nsim1)]),sd(l_vraiRRc[(2*nsim1 + 1):(3*nsim1)])),
+  Mean_l_vraiRRm =  c(mean(l_vraiRRm[1:nsim1]), mean(l_vraiRRm[(nsim1 + 1):(2*nsim1)]), mean(l_vraiRRm[(2*nsim1 + 1):(3*nsim1)])),
+  SD_l_vraiRRm = c(sd(l_vraiRRm[1:nsim1]), sd(l_vraiRRm[(nsim1 + 1):(2*nsim1)]), sd(l_vraiRRm[(2*nsim1 + 1):(3*nsim1)]))
   
 )
 
@@ -220,16 +220,15 @@ kable(Tab)
 
 #|n    |Methode | Couverture.vaccinale|  Mean_RRC|    SD_RRc| Mean_err_reg| SD_coe_reg|
 #|:----|:-------|--------------------:|---------:|---------:|------------:|----------:|
-#|1000 |RegLog  |                 0.33| 0.4212605| 0.0682139|    0.1563792|  0.1628824|
-#|-    |-       |                 0.50| 0.4179514| 0.0653131|    0.1429863|  0.1571389|
-#|-    |-       |                 0.70| 0.4132689| 0.0665789|    0.1506853|  0.1595833|
-
+#|1000 |RegLog  |                 0.33| 0.4250327| 0.0696351|    0.1565009|  0.1632441|
+#|-    |-       |                 0.50| 0.4169054| 0.0615427|    0.1429681|  0.1466785|
+#|-    |-       |                 0.70| 0.4210229| 0.0681662|    0.1508180|  0.1627938|
 
 help("calc_absolute") # calculer les différentes mesures de performance
 
 # Ajout de la colonne contenant la vraie valeur du paramètre
 
-resultats$vrai_param <- rep(mean(l_vraiRRc[1:nsim]), nsim, mean(l_vraiRRc[(nsim + 1):(2*nsim)]), nsim, mean(l_vraiRRc[(2*nsim + 1):(3*nsim)]), nsim)
+resultats$vrai_param <- rep(c(mean(l_vraiRRc[1:nsim1]), mean(l_vraiRRc[(nsim1 + 1):(2*nsim1)]), mean(l_vraiRRc[(2*nsim1 + 1):(3*nsim1)])), each = nsim)
 
 ### Biais et MCSE_biais
 
@@ -347,10 +346,10 @@ kable(Tab01)
 
 #|n    |Erreur de Monte Carlo_(33%, 50%, 70%)                                                  |Autres_(33%, 50%, 70%)                                                             |
 #|:----|:--------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------|
-#|1000 |MCSE_bias           , 0.0030506192632158  , 0.00292089198434559 , 0.00297749824016017  |Bias               , 0.0100561657004745 , 0.00674706278663784, 0.00206460353176613 |
-#|-    |MCSE_var            , 0.000286405506939696, 0.000332666063649741, 0.000290356058999759 |Var                , 0.00465313894455165, 0.00426580499210716, 0.00443274788507847 |
-#|-    |MCSE_mse            , 0.000305770856111197, 0.000344078140135048, 0.000294679654568066 |Mse                , 0.00474495913525794, 0.00430279623836978, 0.00442814497705169 |
-#|-    |%Cov                , 0.938               , 0.926               , 0.94                 |Précision_var      , 0.0065031303654183 , 0.014152594497378  , 0.00889800193210399 |
+#|1000 |MCSE_bias           , 0.00311417455701115 , 0.0027522727612552  , 0.00304848435162244  |Bias               , 0.013351380490392  , 0.00379441865524693, 0.00667521202457666 |
+#|-    |MCSE_var            , 0.000359514377450476, 0.000275031648173041, 0.00028651440389443  |Var                , 0.00484904158576781, 0.00378750267617366, 0.00464662842104345 |
+#|-    |MCSE_mse            , 0.000392656213308733, 0.000282029975280511, 0.000298258029974906 |Mse                , 0.0050176028635955 , 0.0037943252837526 , 0.00468189361977442 |
+#|-    |%Cov                , 0.944               , 0.928               , 0.934                |Précision_var      , 0.00674322617009104, 0.00371037544669611, 0.0119757823668358  |
 
 ################################## IPW #########################################
 
@@ -371,15 +370,15 @@ kable(Tab)
 
 #|n    |Methode | Couverture.vaccinale|  Mean_RRC|    SD_RRc| Mean_sd_LOgRRm| SD_log_RRm|
 #|:----|:-------|--------------------:|---------:|---------:|--------------:|----------:|
-#|1000 |IPW     |                 0.33| 0.4260927| 0.0697170|      0.1517822|  0.1642351|
-#|-    |-       |                 0.50| 0.4222360| 0.0687975|      0.1448313|  0.1626683|
-#|-    |-       |                 0.70| 0.4169679| 0.0701039|      0.1621426|  0.1689092|
+#|1000 |IPW     |                 0.33| 0.4300749| 0.0726145|      0.1519213|  0.1680536|
+#|-    |-       |                 0.50| 0.4218344| 0.0639344|      0.1445933|  0.1502887|
+#|-    |-       |                 0.70| 0.4252008| 0.0715944|      0.1617404|  0.1706173|
 
 help("calc_absolute") # calculer les différentes mesures de performance
 
 # Ajout de la colonne contenant la vraie valeur du paramètre
 
-resultats2$vrai_param <- rep(mean(l_vraiRRm), nsim*3)
+resultats2$vrai_param <- rep(c(mean(l_vraiRRm[1:nsim1]), mean(l_vraiRRm[(nsim1 + 1):(2*nsim1)]), mean(l_vraiRRm[(2*nsim1 + 1):(3*nsim1)])), each = nsim)
 
 ### Biais et MCSE_biais
 
@@ -477,13 +476,540 @@ Tab01$`Autres_(33%, 50%, 70%)` = list(
   
 )
 
+kable(Tab01)
+
+#|n    |Erreur de Monte Carlo_(33%, 50%, 70%)                                                  |Autres_(33%, 50%, 70%)                                                             |
+#|:----|:--------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------|
+#|1000 |MCSE_bias           , 0.00324741913753016 , 0.00285923299128673 , 0.00320179753718091  |Bias               , 0.0120652988263494 , 0.00240838918096647, 0.00450778088755277 |
+#|-    |MCSE_var            , 0.000417375084519998, 0.000306690569254914, 0.000317385307111493 |Var                , 0.00527286552739855, 0.00408760664923124, 0.00512575373454888 |
+#|-    |MCSE_mse            , 0.000448079748970355, 0.000311334600598532, 0.000323753244639615 |Mse                , 0.00540789123211286, 0.00408523177437977, 0.00513582231560997 |
+#|-    |%Cov                , 0.93                , 0.948               , 0.938                |Précision_var      , 0.0161323057523936 , 0.00569548461175934, 0.00887681522278336 |
+
+################################## TNDDR #######################################
+
+# Avec forêt aléatoire
+
+Tab <- data.frame( 
+  
+  n = c("1000", "-", "-"), Methode = c("TNDDR_FR", "-", "-"),
+  `Couverture vaccinale` = c(0.33, 0.5, 0.7),
+  Mean_RRC = c(mean(resultats3$RRm_RF[1:nsim]), mean(resultats3$RRm_RF[(nsim + 1):(2*nsim)]), mean(resultats3$RRm_RF[(2*nsim + 1):(3*nsim)])) ,
+  SD_RRc = c(sd(resultats3$RRm_RF[1:nsim]), sd(resultats3$RRm_RF[(nsim + 1):(2*nsim)]),sd(resultats3$RRm_RF[(2*nsim + 1):(3*nsim)])),
+  Mean_sd_LOgRRm =  c(mean(sqrt(resultats3$`var_log_RRm-RF`[1:nsim])), mean(sqrt(resultats3$`var_log_RRm-RF`[(nsim + 1):(2*nsim)])), mean(sqrt(resultats3$`var_log_RRm-RF`[(2*nsim + 1):(3*nsim)]))),
+  SD_log_RRm = c(sd(log(resultats3$RRm_RF[1:nsim])), sd(log(resultats3$RRm_RF[(nsim + 1):(2*nsim)])), sd(log(resultats3$RRm_RF[(2*nsim + 1):(3*nsim)])))
+  
+)
+
+kable(Tab)
+
+#|n    |Methode  | Couverture.vaccinale|  Mean_RRC|    SD_RRc| Mean_sd_LOgRRm| SD_log_RRm|
+#|:----|:--------|--------------------:|---------:|---------:|--------------:|----------:|
+#|1000 |TNDDR_FR |                 0.33| 0.4198753| 0.0773074|      0.1740871|  0.1823423|
+#|-    |-        |                 0.50| 0.4245751| 0.0648730|      0.1520627|  0.1524510|
+#|-    |-        |                 0.70| 0.4500305| 0.0954087|      0.1870237|  0.2018623|
+  
+help("calc_absolute") # calculer les différentes mesures de performance
+
+# Ajout de la colonne contenant la vraie valeur du paramètre
+
+resultats3$vrai_param <- rep(c(mean(l_vraiRRm[1:nsim1]), mean(l_vraiRRm[(nsim1 + 1):(2*nsim1)]), mean(l_vraiRRm[(2*nsim1 + 1):(3*nsim1)])), each = nsim)
+
+### Biais et MCSE_biais
+
+Biais <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RF, vrai_param, criteria = "bias")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RF, vrai_param, criteria = "bias")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RF, vrai_param, criteria = "bias")[2]
+  
+)
+
+MCSE_biais <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RF, vrai_param, criteria = "bias")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RF, vrai_param, criteria = "bias")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RF, vrai_param, criteria = "bias")[3]
+  
+)
+
+### Var et MCSE_var
+
+Var <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RF, vrai_param, criteria = "var")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RF, vrai_param, criteria = "var")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RF, vrai_param, criteria = "var")[2]
+  
+)
+
+MCSE_var <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RF, vrai_param, criteria = "var")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RF, vrai_param, criteria = "var")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RF, vrai_param, criteria = "var")[3]
+  
+)
+
+### MSE et MCSE_MSE 
+
+Mse <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RF, vrai_param, criteria = "mse")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RF, vrai_param, criteria = "mse")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RF, vrai_param, criteria = "mse")[2]
+  
+)
+
+MCSE_mse <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RF, vrai_param, criteria = "mse")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RF, vrai_param, criteria = "mse")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RF, vrai_param, criteria = "mse")[3]
+  
+)
+
+### Coverage
+
+help("calc_coverage")
+
+# Calcul des bornes de l'intervalle de confiance
+
+coverage <- c(
+  
+  calc_coverage(resultats3[1:nsim,], `IC_inf2-RF`, `IC_sup2-RF`, vrai_param)[2],
+  calc_coverage(resultats3[(nsim + 1):(2*nsim), ], `IC_inf2-RF`, `IC_sup2-RF`, vrai_param)[2],
+  calc_coverage(resultats3[(2*nsim + 1):(3*nsim), ], `IC_inf2-RF`, `IC_sup2-RF`, vrai_param)[2]
+  
+)
+
+Precision_var <- c(
+  
+  sd(log(resultats3$RRm_RF[1:nsim])) - mean(sqrt(resultats3$`var_log_RRm-RF`[1:nsim])),
+  sd(log(resultats3$RRm_RF[(nsim + 1):(2*nsim)])) - mean(sqrt(resultats3$`var_log_RRm-RF`[(nsim + 1):(2*nsim)])),
+  sd(log(resultats3$RRm_RF[(2*nsim + 1):(3*nsim)])) - mean(sqrt(resultats3$`var_log_RRm-RF`[(2*nsim + 1):(3*nsim)]))
+  
+)
+
+Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
+
+Tab01$`Erreur de Monte Carlo_(33%, 50%, 70%)` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais),
+  list(name = "MCSE_var", value = MCSE_var),
+  list(name = "MCSE_mse", value = MCSE_mse),
+  list(name = "%Cov", value = coverage)
+  
+)
+
+Tab01$`Autres_(33%, 50%, 70%)` = list(
+  
+  list(name = "Bias", value = Biais),
+  list(name = "Var", value = Var),
+  list(name = "Mse", value = Mse),
+  list(name = "Précision_var", value = Precision_var) # Voir si la variance est bien estimée
+  
+)
+
 
 
 kable(Tab01)
 
-#|n    |Erreur de Monte Carlo_(33%, 50%, 70%)                                                  |Autres_(33%, 50%, 70%)                                                                     |
-#|:----|:--------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------|
-#|1000 |MCSE_bias           , 0.003117838855277   , 0.00307671594679665 , 0.00313514007446058  |Bias               , 0.00856349457012273, 0.00470677955550375, -0.000561345770700106       |
-#|-    |MCSE_var            , 0.000310725243287536, 0.00038298999047105 , 0.00031858485991509  |Var                , 0.00486045956373749, 0.00473309050863641, 0.00491455164324435         |
-#|-    |MCSE_mse            , 0.000327805247248346, 0.000392615290677629, 0.000317751616317672 |Mse                , 0.00492407208386253, 0.00474577810140324, 0.00490503764903215         |
-#|-    |%Cov                , 0.916               , 0.932               , 0.944                |Précision_var      , 0.0124528669461754 , 0.0178370739476885 , 0.00676658729652366         |
+#|n    |Erreur de Monte Carlo_(33%, 50%, 70%)                                                 |Autres_(33%, 50%, 70%)                                                               |
+#|:----|:-------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------|
+#|1000 |MCSE_bias           , 0.00345729323153052 , 0.00290120962926638 , 0.00426680881737249 |Bias               , 0.00186573984695027, 0.00514913155843261 , 0.0293375374869498   |
+#|-    |MCSE_var            , 0.00051242062296961 , 0.000294922815895986, 0.00108977663136514 |Var                , 0.00597643824439338, 0.00420850865647398 , 0.00910282874200379  |
+#|-    |MCSE_mse            , 0.000517147268648621, 0.000304522652524815, 0.00123583529151197 |Mse                , 0.00596796635308109, 0.00422660519496708 , 0.00994531419031797  |
+#|-    |%Cov                , 0.936               , 0.928               , 0.95                |Précision_var      , 0.00825521485448824, 0.000388280672584451, 0.0148385806456601   |
+  
+################################################################################
+# Régression Lasso
+
+Tab <- data.frame( 
+  
+  n = c("1000", "-", "-"), Methode = c("TNDDR_Lasso", "-", "-"),
+  `Couverture vaccinale` = c(0.33, 0.5, 0.7),
+  Mean_RRC = c(mean(resultats3$RRm_Lasso[1:nsim]), mean(resultats3$RRm_Lasso[(nsim + 1):(2*nsim)]), mean(resultats3$RRm_Lasso[(2*nsim + 1):(3*nsim)])) ,
+  SD_RRc = c(sd(resultats3$RRm_Lasso[1:nsim]), sd(resultats3$RRm_Lasso[(nsim + 1):(2*nsim)]),sd(resultats3$RRm_Lasso[(2*nsim + 1):(3*nsim)])),
+  Mean_sd_LOgRRm =  c(mean(sqrt(resultats3$`var_log_RRm-Lasso`[1:nsim])), mean(sqrt(resultats3$`var_log_RRm-Lasso`[(nsim + 1):(2*nsim)])), mean(sqrt(resultats3$`var_log_RRm-Lasso`[(2*nsim + 1):(3*nsim)]))),
+  SD_log_RRm = c(sd(log(resultats3$RRm_Lasso[1:nsim])), sd(log(resultats3$RRm_Lasso[(nsim + 1):(2*nsim)])), sd(log(resultats3$RRm_Lasso[(2*nsim + 1):(3*nsim)])))
+  
+)
+
+kable(Tab)
+
+#|n    |Methode     | Couverture.vaccinale|  Mean_RRC|    SD_RRc| Mean_sd_LOgRRm| SD_log_RRm|
+#|:----|:-----------|--------------------:|---------:|---------:|--------------:|----------:|
+#|1000 |TNDDR_Lasso |                 0.33| 0.4434795| 0.0753724|      0.0947451|  0.1694810|
+#|-    |-           |                 0.50| 0.4323497| 0.0705614|      0.0851761|  0.1570158|
+#|-    |-           |                 0.70| 0.4298705| 0.0777833|      0.0871757|  0.4194302|
+  
+help("calc_absolute") # calculer les différentes mesures de performance
+
+### Biais et MCSE_biais
+
+Biais <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Lasso, vrai_param, criteria = "bias")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Lasso, vrai_param, criteria = "bias")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Lasso, vrai_param, criteria = "bias")[2]
+  
+)
+
+MCSE_biais <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Lasso, vrai_param, criteria = "bias")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Lasso, vrai_param, criteria = "bias")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Lasso, vrai_param, criteria = "bias")[3]
+  
+)
+
+### Var et MCSE_var
+
+Var <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Lasso, vrai_param, criteria = "var")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Lasso, vrai_param, criteria = "var")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Lasso, vrai_param, criteria = "var")[2]
+  
+)
+
+MCSE_var <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Lasso, vrai_param, criteria = "var")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Lasso, vrai_param, criteria = "var")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Lasso, vrai_param, criteria = "var")[3]
+  
+)
+
+### MSE et MCSE_MSE 
+
+Mse <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Lasso, vrai_param, criteria = "mse")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Lasso, vrai_param, criteria = "mse")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Lasso, vrai_param, criteria = "mse")[2]
+  
+)
+
+MCSE_mse <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Lasso, vrai_param, criteria = "mse")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Lasso, vrai_param, criteria = "mse")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Lasso, vrai_param, criteria = "mse")[3]
+  
+)
+
+### Coverage
+
+help("calc_coverage")
+
+# Calcul des bornes de l'intervalle de confiance
+
+coverage <- c(
+  
+  calc_coverage(resultats3[1:nsim,], `IC_inf2-Lasso`, `IC_sup2-Lasso`, vrai_param)[2],
+  calc_coverage(resultats3[(nsim + 1):(2*nsim), ], `IC_inf2-Lasso`, `IC_sup2-Lasso`, vrai_param)[2],
+  calc_coverage(resultats3[(2*nsim + 1):(3*nsim), ], `IC_inf2-Lasso`, `IC_sup2-Lasso`, vrai_param)[2]
+  
+)
+
+Precision_var <- c(
+  
+  sd(log(resultats3$RRm_RF[1:nsim])) - mean(sqrt(resultats3$`var_log_RRm-Lasso`[1:nsim])),
+  sd(log(resultats3$RRm_RF[(nsim + 1):(2*nsim)])) - mean(sqrt(resultats3$`var_log_RRm-Lasso`[(nsim + 1):(2*nsim)])),
+  sd(log(resultats3$RRm_RF[(2*nsim + 1):(3*nsim)])) - mean(sqrt(resultats3$`var_log_RRm-Lasso`[(2*nsim + 1):(3*nsim)]))
+  
+)
+
+Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
+
+Tab01$`Erreur de Monte Carlo_(33%, 50%, 70%)` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais),
+  list(name = "MCSE_var", value = MCSE_var),
+  list(name = "MCSE_mse", value = MCSE_mse),
+  list(name = "%Cov", value = coverage)
+  
+)
+
+Tab01$`Autres_(33%, 50%, 70%)` = list(
+  
+  list(name = "Bias", value = Biais),
+  list(name = "Var", value = Var),
+  list(name = "Mse", value = Mse),
+  list(name = "Précision_var", value = Precision_var) # Voir si la variance est bien estimée
+  
+)
+
+
+
+kable(Tab01)
+
+#|n    |Erreur de Monte Carlo_(33%, 50%, 70%)                                                  |Autres_(33%, 50%, 70%)                                                             |
+#|:----|:--------------------------------------------------------------------------------------|:----------------------------------------------------------------------------------|
+#|1000 |MCSE_bias           , 0.00337075643716001 , 0.00315560248004053 , 0.00347857615780419  |Bias               , 0.0254698996814597 , 0.0129236922962461 , 0.00917754525032521 |
+#|-    |MCSE_var            , 0.000412658863956251, 0.000702958774133771, 0.000600978346807581 |Var                , 0.00568099947932782, 0.00497891350601897, 0.00605024604282189 |
+#|-    |MCSE_mse            , 0.000492699334485432, 0.00074147893721484 , 0.000590798600292211 |Mse                , 0.00631835327015279, 0.00513597750157498, 0.00612237288755801 |
+#|-    |%Cov                , 0.746               , 0.728               , 0.664                |Précision_var      , 0.0875971980647791 , 0.0672749622587076 , 0.114686626050516   |
+  
+################################################################################
+# Régression avec splines: MARS
+
+Tab <- data.frame( 
+  
+  n = c("1000", "-", "-"), Methode = c("TNDDR_Mars", "-", "-"),
+  `Couverture vaccinale` = c(0.33, 0.5, 0.7),
+  Mean_RRC = c(mean(resultats3$RRm_Mars[1:nsim]), mean(resultats3$RRm_Mars[(nsim + 1):(2*nsim)]), mean(resultats3$RRm_Mars[(2*nsim + 1):(3*nsim)])) ,
+  SD_RRc = c(sd(resultats3$RRm_Mars[1:nsim]), sd(resultats3$RRm_Mars[(nsim + 1):(2*nsim)]),sd(resultats3$RRm_Mars[(2*nsim + 1):(3*nsim)])),
+  Mean_sd_LOgRRm =  c(mean(sqrt(resultats3$`var_log_RRm-Mars`[1:nsim])), mean(sqrt(resultats3$`var_log_RRm-Mars`[(nsim + 1):(2*nsim)])), mean(sqrt(resultats3$`var_log_RRm-Mars`[(2*nsim + 1):(3*nsim)]))),
+  SD_log_RRm = c(sd(log(resultats3$RRm_Mars[1:nsim])), sd(log(resultats3$RRm_Mars[(nsim + 1):(2*nsim)])), sd(log(resultats3$RRm_Mars[(2*nsim + 1):(3*nsim)])))
+  
+)
+
+kable(Tab)
+
+#|n    |Methode    | Couverture.vaccinale|  Mean_RRC|    SD_RRc| Mean_sd_LOgRRm| SD_log_RRm|
+#|:----|:----------|--------------------:|---------:|---------:|--------------:|----------:|
+#|1000 |TNDDR_Mars |                 0.33| 0.3941600| 0.1669337|      0.6128052|   1.535539|
+#|-    |-          |                 0.50| 0.4103104| 0.1550793|      0.3909655|   1.332055|
+#|-    |-          |                 0.70| 0.4293446| 0.1719070|      0.4679842|   1.401758|
+  
+help("calc_absolute") # calculer les différentes mesures de performance
+
+### Biais et MCSE_biais
+
+Biais <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Mars, vrai_param, criteria = "bias")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Mars, vrai_param, criteria = "bias")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Mars, vrai_param, criteria = "bias")[2]
+  
+)
+
+MCSE_biais <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Mars, vrai_param, criteria = "bias")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Mars, vrai_param, criteria = "bias")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Mars, vrai_param, criteria = "bias")[3]
+  
+)
+
+### Var et MCSE_var
+
+Var <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Mars, vrai_param, criteria = "var")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Mars, vrai_param, criteria = "var")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Mars, vrai_param, criteria = "var")[2]
+  
+)
+
+MCSE_var <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Mars, vrai_param, criteria = "var")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Mars, vrai_param, criteria = "var")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Mars, vrai_param, criteria = "var")[3]
+  
+)
+
+### MSE et MCSE_MSE 
+
+Mse <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Mars, vrai_param, criteria = "mse")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Mars, vrai_param, criteria = "mse")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Mars, vrai_param, criteria = "mse")[2]
+  
+)
+
+MCSE_mse <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_Mars, vrai_param, criteria = "mse")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_Mars, vrai_param, criteria = "mse")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_Mars, vrai_param, criteria = "mse")[3]
+  
+)
+
+### Coverage
+
+help("calc_coverage")
+
+# Calcul des bornes de l'intervalle de confiance
+
+coverage <- c(
+  
+  calc_coverage(resultats3[1:nsim,], `IC_inf2-Mars`, `IC_sup2-Mars`, vrai_param)[2],
+  calc_coverage(resultats3[(nsim + 1):(2*nsim), ], `IC_inf2-Mars`, `IC_sup2-Mars`, vrai_param)[2],
+  calc_coverage(resultats3[(2*nsim + 1):(3*nsim), ], `IC_inf2-Mars`, `IC_sup2-Mars`, vrai_param)[2]
+  
+)
+
+Precision_var <- c(
+  
+  sd(log(resultats3$RRm_Mars[1:nsim])) - mean(sqrt(resultats3$`var_log_RRm-Mars`[1:nsim])),
+  sd(log(resultats3$RRm_Mars[(nsim + 1):(2*nsim)])) - mean(sqrt(resultats3$`var_log_RRm-Mars`[(nsim + 1):(2*nsim)])),
+  sd(log(resultats3$RRm_Mars[(2*nsim + 1):(3*nsim)])) - mean(sqrt(resultats3$`var_log_RRm-Mars`[(2*nsim + 1):(3*nsim)]))
+  
+)
+
+Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
+
+Tab01$`Erreur de Monte Carlo_(33%, 50%, 70%)` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais),
+  list(name = "MCSE_var", value = MCSE_var),
+  list(name = "MCSE_mse", value = MCSE_mse),
+  list(name = "%Cov", value = coverage)
+  
+)
+
+Tab01$`Autres_(33%, 50%, 70%)` = list(
+  
+  list(name = "Bias", value = Biais),
+  list(name = "Var", value = Var),
+  list(name = "Mse", value = Mse),
+  list(name = "Précision_var", value = Precision_var) # Voir si la variance est bien estimée
+  
+)
+
+
+
+kable(Tab01)
+
+#|n    |Erreur de Monte Carlo_(33%, 50%, 70%)                                              |Autres_(33%, 50%, 70%)                                                                |
+#|:----|:----------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------|
+#|1000 |MCSE_bias          , 0.00746550214269901, 0.00693535492990164, 0.00768791307027893 |Bias              , -0.0238496142561721 , -0.00911560066542072, 0.00865160874681725   |
+#|-    |MCSE_var           , 0.00285731409307373, 0.00277850796670404, 0.00290655062233337 |Var               , 0.0278668611213218  , 0.0240495740018555  , 0.0295520036880828    |
+#|-    |MCSE_mse           , 0.00286367622884166, 0.00276572854575415, 0.00291896796453859 |Mse               , 0.0283799314992473  , 0.0240845690293432  , 0.0295677500146146    |
+#|-    |%Cov               , 0.926              , 0.894              , 0.918               |Précision_var     , 0.922734095980471   , 0.941089057731959   , 0.933774327268879     |
+  
+################################################################################
+# Réseaux de neurones
+
+Tab <- data.frame( 
+  
+  n = c("1000", "-", "-"), Methode = c("TNDDR_RN", "-", "-"),
+  `Couverture vaccinale` = c(0.33, 0.5, 0.7),
+  Mean_RRC = c(mean(resultats3$RRm_RN[1:nsim]), mean(resultats3$RRm_RN[(nsim + 1):(2*nsim)]), mean(resultats3$RRm_RN[(2*nsim + 1):(3*nsim)])) ,
+  SD_RRc = c(sd(resultats3$RRm_RN[1:nsim]), sd(resultats3$RRm_RN[(nsim + 1):(2*nsim)]),sd(resultats3$RRm_RN[(2*nsim + 1):(3*nsim)])),
+  Mean_sd_LOgRRm =  c(mean(sqrt(resultats3$`var_log_RRm-RN`[1:nsim])), mean(sqrt(resultats3$`var_log_RRm-RN`[(nsim + 1):(2*nsim)])), mean(sqrt(resultats3$`var_log_RRm-RN`[(2*nsim + 1):(3*nsim)]))),
+  SD_log_RRm = c(sd(log(resultats3$RRm_RN[1:nsim])), sd(log(resultats3$RRm_RN[(nsim + 1):(2*nsim)])), sd(log(resultats3$RRm_RN[(2*nsim + 1):(3*nsim)])))
+  
+)
+
+kable(Tab)
+
+#|n    |Methode  | Couverture.vaccinale|  Mean_RRC|    SD_RRc| Mean_sd_LOgRRm| SD_log_RRm|
+#|:----|:--------|--------------------:|---------:|---------:|--------------:|----------:|
+#|1000 |TNDDR_RN |                 0.33| 0.3892476| 0.1719195|    176.2534003|   1.721679|
+#|-    |-        |                 0.50| 0.4169466| 0.1668164|      0.3355555|   1.510608|
+#|-    |-        |                 0.70| 0.4401697| 0.2121747|      0.7360616|   1.854088|
+  
+help("calc_absolute") # calculer les différentes mesures de performance
+
+### Biais et MCSE_biais
+
+Biais <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RN, vrai_param, criteria = "bias")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RN, vrai_param, criteria = "bias")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RN, vrai_param, criteria = "bias")[2]
+  
+)
+
+MCSE_biais <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RN, vrai_param, criteria = "bias")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RN, vrai_param, criteria = "bias")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RN, vrai_param, criteria = "bias")[3]
+  
+)
+
+### Var et MCSE_var
+
+Var <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RN, vrai_param, criteria = "var")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RN, vrai_param, criteria = "var")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RN, vrai_param, criteria = "var")[2]
+  
+)
+
+MCSE_var <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RN, vrai_param, criteria = "var")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RN, vrai_param, criteria = "var")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RN, vrai_param, criteria = "var")[3]
+  
+)
+
+### MSE et MCSE_MSE 
+
+Mse <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RN, vrai_param, criteria = "mse")[2],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RN, vrai_param, criteria = "mse")[2],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RN, vrai_param, criteria = "mse")[2]
+  
+)
+
+MCSE_mse <- c(
+  
+  calc_absolute(resultats3[1:nsim,], RRm_RN, vrai_param, criteria = "mse")[3],
+  calc_absolute(resultats3[(nsim + 1):(2*nsim),], RRm_RN, vrai_param, criteria = "mse")[3],
+  calc_absolute(resultats3[(2*nsim + 1):(3*nsim),], RRm_RN, vrai_param, criteria = "mse")[3]
+  
+)
+
+### Coverage
+
+help("calc_coverage")
+
+# Calcul des bornes de l'intervalle de confiance
+
+coverage <- c(
+  
+  calc_coverage(resultats3[1:nsim,], `IC_inf2-RN`, `IC_sup2-RN`, vrai_param)[2],
+  calc_coverage(resultats3[(nsim + 1):(2*nsim), ], `IC_inf2-RN`, `IC_sup2-RN`, vrai_param)[2],
+  calc_coverage(resultats3[(2*nsim + 1):(3*nsim), ], `IC_inf2-RN`, `IC_sup2-RN`, vrai_param)[2]
+  
+)
+
+Precision_var <- c(
+  
+  sd(log(resultats3$RRm_RF[1:nsim])) - mean(sqrt(resultats3$`var_log_RRm-RN`[1:nsim])),
+  sd(log(resultats3$RRm_RF[(nsim + 1):(2*nsim)])) - mean(sqrt(resultats3$`var_log_RRm-RN`[(nsim + 1):(2*nsim)])),
+  sd(log(resultats3$RRm_RF[(2*nsim + 1):(3*nsim)])) - mean(sqrt(resultats3$`var_log_RRm-RN`[(2*nsim + 1):(3*nsim)]))
+  
+)
+
+Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
+
+Tab01$`Erreur de Monte Carlo_(33%, 50%, 70%)` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais),
+  list(name = "MCSE_var", value = MCSE_var),
+  list(name = "MCSE_mse", value = MCSE_mse),
+  list(name = "%Cov", value = coverage)
+  
+)
+
+Tab01$`Autres_(33%, 50%, 70%)` = list(
+  
+  list(name = "Bias", value = Biais),
+  list(name = "Var", value = Var),
+  list(name = "Mse", value = Mse),
+  list(name = "Précision_var", value = Precision_var) # Voir si la variance est bien estimée
+  
+)
+
+
+
+kable(Tab01)
+
+#|n    |Erreur de Monte Carlo_(33%, 50%, 70%)                                              |Autres_(33%, 50%, 70%)                                                               |
+#|:----|:----------------------------------------------------------------------------------|:------------------------------------------------------------------------------------|
+#|1000 |MCSE_bias          , 0.00768847217963582, 0.00746025719887422, 0.00948874273516016 |Bias              , -0.0287619645011096 , -0.00247936584959296, 0.0194767289126385   |
+#|-    |MCSE_var           , 0.00249312727815207, 0.00281292460561937, 0.00368024362570194 |Var               , 0.029556302228517   , 0.0278277187366774  , 0.0450181193470273   |
+#|-    |MCSE_mse           , 0.00260251462196271, 0.00281195143507694, 0.00372133806848298 |Mse               , 0.0303244402260231  , 0.0277782105542201  , 0.0453074260774697   |
+#|-    |%Cov               , 0.924              , 0.91               , 0.902               |Précision_var     , -176.071057961019   , -0.183104484824173  , -0.534199321462821   |

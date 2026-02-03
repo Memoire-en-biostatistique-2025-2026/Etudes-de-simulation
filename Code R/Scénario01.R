@@ -319,7 +319,7 @@ help("calc_absolute") # calculer les différentes mesures de performance
 
 # Ajout de la colonne contenant la vraie valeur du paramètre
 
-resultats3$vrai_param <- rep(mean(l_vraiRRc), nsim)
+resultats3$vrai_param <- rep(mean(l_vraiRRm), nsim)
 
 ### MCSE_biais
 
