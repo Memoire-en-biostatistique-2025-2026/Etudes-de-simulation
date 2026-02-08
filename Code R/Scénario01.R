@@ -201,8 +201,8 @@ Tab01$`Erreur de Monte Carlo` = list(
 Tab01$`Autres` = list(
   
   list(name = "Bias", value = MCSE_biais[2]),
-  list(name = "Var", value = MCSE_var[3]),
-  list(name = "Mse", value = MCSE_mse[3]),
+  list(name = "Var", value = MCSE_var[2]),
+  list(name = "Mse", value = MCSE_mse[2]),
   list(name = "Précision_var", value = sd(resultats$coe_reg) - mean(resultats$err_reg)) # Voir si la variance est bien estimée
   
 )
@@ -222,8 +222,8 @@ kable(Tab01)
 #|n    |Methode |Erreur de Monte Carlo                      |Autres                                     |
 #|:----|:-------|:------------------------------------------|:------------------------------------------|
 #|1000 |RegLog  |MCSE_bias          , 0.00224878305814408   |Bias               , 0.00702369696067728   |
-#|-    |-       |MCSE_var            , 0.000262567204955348 |Var                 , 0.000262567204955348 |
-#|-    |-       |MCSE_mse            , 0.000273568955521611 |Mse                 , 0.000273568955521611 |
+#|-    |-       |MCSE_var            , 0.000262567204955348 |Var                 , 0.00505702524259585  |
+#|-    |-       |MCSE_mse            , 0.000273568955521611 |Mse                 , 0.00510130053634868  |
 #|-    |-       |%Cov , 0.932                               |Précision_var     , 0.0110046029698764     |
 ################################ IPW ###########################################
 
