@@ -3,6 +3,11 @@
 library(ggplot2)
 library(patchwork)
 library(kableExtra)
+install.packages("gridExtra")
+library("gridExtra")
+library("cowplot")
+library(ggpubr)
+library(Rmisc)
 
 # Chargement des résultats pour les trois scénarios
 
@@ -159,3 +164,33 @@ comparaison02$`Scénario03_70%` <- c(
 )
 
 View(comparaison02)
+################################################################################
+
+dat <- data.frame(x_biais = c(comparaison01$Scénario01[[1]], comparaison01$Scénario02[[1]], comparaison01$Scénario03[[1]],
+                   comparaison01$Scénario01[[6]], comparaison01$Scénario02[[6]], comparaison01$Scénario03[[6]],
+                   comparaison01$Scénario01[[11]], comparaison01$Scénario02[[11]], comparaison01$Scénario03[[11]],
+                  comparaison01$Scénario01[[16]], comparaison01$Scénario02[[16]], comparaison01$Scénario03[[16]],
+                  comparaison01$Scénario01[[21]], comparaison01$Scénario02[[21]], comparaison01$Scénario03[[21]],
+                  comparaison01$Scénario01[[26]], comparaison01$Scénario02[[26]], comparaison01$Scénario03[[26]]),
+                  Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 3),
+                  Scénario = c(1, 2, 3))
+                               
+
+dat$Scénario <- as.factor(dat$Scénario)
+dat$Méthode<- as.factor(dat$Méthode)
+
+
+x <- ggplot(dat,aes(x = Scénario, y = x_biais, fill = Méthode))
+y <- x + geom_bar(position = position_dodge(), stat = "identity")
+
+y + labs(y = "Biais")
+
+x <- ggplot(dat,aes(x = Scénario, y = x_biais, fill = Méthode))
+y <- x + geom_point()
+y + labs(y = "Moyenne de la masse corporelle (g)")
+ 
+ggplot(dat) +
+  aes(x = Scénario, y = x_biais) +
+  geom_col(fill = "#112446") +
+  theme_minimal() +
+  facet_wrap(vars(Méthode))
