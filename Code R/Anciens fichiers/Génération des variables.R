@@ -1,6 +1,6 @@
+
 # Charger les librairies nécessaires
 
-install.packages("stats")
 library("stats")
 library(rje)
 
@@ -25,6 +25,8 @@ f_I1 <- function (b0) {
 uniroot(f_I1, c(-10, 10))
 
 help("uniroot")
+
+################################################################################
 
 # Définir la fonction en b0 (en calculant l'intégrale) pour I2
 
@@ -62,6 +64,7 @@ f_I2 <- function(b0){
 }
 
 uniroot(f_I2, c(-10, 10))
+################################################################################
 
 # Définir la fonction en b0 (en calculant l'intégrale) pour V
 
@@ -77,7 +80,7 @@ f_V <- function (b0) {
 }
 
 uniroot(f_V, c(-10, 10))
-
+################################################################################
 # Définir la fonction en b0 (en calculant l'intégrale) pour W1
 
 a <- 1/2.9
@@ -92,6 +95,7 @@ f_W1 <- function (b0) {
 }
 
 uniroot(f_W1, c(-10, 10))
+################################################################################
 
 # Définir la fonction en b0 (en calculant l'intégrale) pour W2
 
@@ -129,20 +133,3 @@ f_W2 <- function(b0){
 
 uniroot(f_W2, c(-10, 10))
 ################################################################################
-
-# On pose:
-
-a <- 1/0.87
-b1 <- 0.3
-
-# Définir la fonction en b0 (en calculant l'intégrale) pour V
-
-f_I1 <- function (b0) {
-  
-  a*(log(1 + exp(b0 + 3*b1)) - log(1 + exp(b0 + 0.1*b1))) -
-    
-    0.33 # Contrainte pour la probabilité marginale
-  
-}
-
-uniroot(f_I1, c(-10, 10))

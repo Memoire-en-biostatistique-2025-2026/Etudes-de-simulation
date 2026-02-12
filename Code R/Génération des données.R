@@ -12,6 +12,8 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
                     CV = 0.33, # Couverture vaccinale
                     I1_prev = 0.15, # Prévalence de I1
                     I2_prev = 0.5, # Prévalence de I2
+                    W1_prev = 0.05,# Prévalence de W1
+                    W2_prev = 0.02, # Prévalence de W2
                                    # Valeurs par défaut pour le scénario de base
                     
                     return_full = FALSE) { # Pour choisir entre population et échantillon
@@ -97,15 +99,66 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
   
+  # Définir la fonction en b0 (en calculant l'intégrale) pour W1
+  
+  a <- 1/2.9
+  b1 <- 0.5
+  
+  f_W1 <- function (b0) {
+    
+    (a/b1)*(log(1 + exp(b0 + 3*b1 ))  - log(1 + exp(b0 + 0.1*b1))) - 
+      
+      W1_prev # Contrainte pour la probabilité marginale
+    
+  }
+  
+  b0 <- uniroot(f_W1, c(-10, 10))$root 
+  
   W1 <- rep(0, popsize) # W1 = 0 si I1 = 0, donc:
   
   W1[I1 == 1] <- rbinom(
     
     n = sum(I1 == 1),
     size = 1,
-    prob = plogis(-3.8 + 0.5 * C[I1 == 1])
+    prob = plogis(b0 + 0.5 * C[I1 == 1])
     
   ) # W1 = 1 ~ 4%-5%
+  
+  # Définir la fonction en b0 (en calculant l'intégrale) pour W2
+  
+  # On pose:
+  
+  a <- 0.5/2.9
+  a0 <- -1.18
+  a1 <- 0.3
+  b1 <- 2
+  b2 <- -0.91
+  
+  P_W2 <- function(c,b0) { # Probabilité conjointe pour W2
+    
+    a*(expit(b0 + b1*c + b2)*expit(a0 + a1*c) + 
+         
+         expit(b0 + b1*c)*expit(a0 + a1*c) + 
+         
+         expit(b0 + b1*c + b2)*expit(a0 + a1*c) + 
+         
+         expit(b0 + b1*c )*expit(a0 + a1*c)
+    )
+    
+  }
+  
+  help(integrate)
+  # ...	
+  # additional arguments to be passed to f : on utilise cet argument pour passer 
+  # la valeur b0 à la fonction P_I2 dans ce cas.
+  
+  f_W2 <- function(b0){
+    
+    integrate(P_W2, 0.1, 3, b0)$value - W2_prev # Contrainte pour la probabilité marginale
+    
+  }
+  
+  b0 <- uniroot(f_W2, c(-10, 10))$root 
    
   W2 <- rep(0, popsize) # W2_0 = 0 si I2_0 = 0, donc:
   
@@ -113,7 +166,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
     n = sum(I2 == 1),
     size = 1,
-    prob = plogis(-7.5 + 2*C[I2 == 1] - 0.91*V[I2 == 1])
+    prob = plogis(b0 + 2*C[I2 == 1] - 0.91*V[I2 == 1])
     
   ) # W2 = 1 ~ 3%
   
@@ -198,8 +251,10 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
                          
                          CV = 0.33, # Couverture vaccinale
                          I1_prev = 0.15, # Prévalence de I1
-                         I2_prev = 0.5 # Prévalence de I2
-                                       # Valeurs par défaut pour le scénario de base
+                         I2_prev = 0.5,  # Prévalence de I2
+                         W1_prev = 0.05, # Prévalence de W1
+                         W2_prev = 0.02 # Prévalence de W2
+                                         # Valeurs par défaut pour le scénario de base
                          ) {
   
   
@@ -285,15 +340,65 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
   
+  # Définir la fonction en b0 (en calculant l'intégrale) pour W1
+  
+  a <- 1/2.9
+  b1 <- 0.5
+  
+  f_W1 <- function (b0) {
+    
+    (a/b1)*(log(1 + exp(b0 + 3*b1 ))  - log(1 + exp(b0 + 0.1*b1))) - 
+      
+      W1_prev # Contrainte pour la probabilité marginale
+    
+  }
+  
+  b0 <- uniroot(f_W1, c(-10, 10))$root
   W1 <- rep(0, popsize) # W1 = 0 si I1 = 0, donc:
   
   W1[I1 == 1] <- rbinom(
     
     n = sum(I1 == 1),
     size = 1,
-    prob = plogis(-3.8 + 0.5 * C[I1 == 1])
+    prob = plogis(b0 + 0.5 * C[I1 == 1])
     
   )
+  
+  # Définir la fonction en b0 (en calculant l'intégrale) pour W2
+  
+  # On pose:
+  
+  a <- 0.5/2.9
+  a0 <- -1.18
+  a1 <- 0.3
+  b1 <- 2
+  b2 <- -0.91
+  
+  P_W2 <- function(c,b0) { # Probabilité conjointe pour W2
+    
+    a*(expit(b0 + b1*c + b2)*expit(a0 + a1*c) + 
+         
+         expit(b0 + b1*c)*expit(a0 + a1*c) + 
+         
+         expit(b0 + b1*c + b2)*expit(a0 + a1*c) + 
+         
+         expit(b0 + b1*c )*expit(a0 + a1*c)
+    )
+    
+  }
+  
+  help(integrate)
+  # ...	
+  # additional arguments to be passed to f : on utilise cet argument pour passer 
+  # la valeur b0 à la fonction P_I2 dans ce cas.
+  
+  f_W2 <- function(b0){
+    
+    integrate(P_W2, 0.1, 3, b0)$value - W2_prev # Contrainte pour la probabilité marginale
+    
+  }
+  
+  b0 <- uniroot(f_W2, c(-10, 10))$root
   
   W2_0 <- rep(0, popsize) # W2_0 = 0 si I2_0 = 0, donc:
   W2_1 <- rep(0, popsize) # W2_1 = 0 si I2_1 = 0, donc:
@@ -302,7 +407,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
     n = sum(I2_0 == 1),
     size = 1,
-    prob = plogis(-7.5 + 2*C[I2_0 == 1] - 0.91*0) # V[I2_0 == 1]
+    prob = plogis(b0 + 2*C[I2_0 == 1] - 0.91*0) # V[I2_0 == 1]
     
   )
   
@@ -310,7 +415,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
     n = sum(I2_1 == 1), 
     size = 1,
-    prob = plogis(-7.5 + 2*C[I2_1 == 1] - 0.91*1) # V[I2_1 == 1]
+    prob = plogis(b0 + 2*C[I2_1 == 1] - 0.91*1) # V[I2_1 == 1]
     
   )
   
