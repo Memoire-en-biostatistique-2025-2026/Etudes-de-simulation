@@ -14,10 +14,11 @@ load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/A
 load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario02.RData")
 load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario03.RData")
 load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario03_40%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario03_60%.RData")
 
 # Tableau de comparaison 
 
-comparaison01 <- data.frame(matrix(ncol = 6, 
+comparaison01 <- data.frame(matrix(ncol = 7, 
                                    nrow = 30))
 
 colnames(comparaison01) <- c(
@@ -26,7 +27,8 @@ colnames(comparaison01) <- c(
   "Scénario01",
   "Scénario02",
   "Scénario03_20%",
-  "Scénario03_40%"
+  "Scénario03_40%",
+  "Scénario03_60%"
 )
 
 comparaison01$Estimation <- c("RegLog", "-", "-", "-", "-", "IPW", "-", "-", "-", "-", 
@@ -79,18 +81,30 @@ comparaison01$`Scénario03_40%` <- c(
   
 )
 
+comparaison01$`Scénario03_60%` <- c(
+  
+  tab1_5$Autres, tab1_5$`Erreur de Monte Carlo`[4],
+  tab2_5$Autres, tab2_5$`Erreur de Monte Carlo`[4],
+  tab3_5$Autres[1:4], tab3_5$`Erreur de Monte Carlo`[4],
+  tab3_5$Autres[5:8], tab3_5$`Erreur de Monte Carlo`[8],
+  tab3_5$Autres[9:12], tab3_5$`Erreur de Monte Carlo`[12],
+  tab3_5$Autres[13:16], tab3_5$`Erreur de Monte Carlo`[16]
+  
+)
+
 # nsim = 1000, couverture vaccinale  ~ 33% : Scénarios 01, 02 et 03
 
 comparaison01$Scénario01 <- sapply(comparaison01$Scénario01, FUN = function(x)x[[2]])
 comparaison01$Scénario02 <- sapply(comparaison01$Scénario02, FUN = function(x)x[[2]][[1]])
 comparaison01$`Scénario03_20%` <- sapply(comparaison01$`Scénario03_20%`, FUN = function(x)x[[2]][[1]])
 comparaison01$`Scénario03_40%` <- sapply(comparaison01$`Scénario03_40%`, FUN = function(x)x[[2]][[1]])
+comparaison01$`Scénario03_60%` <- sapply(comparaison01$`Scénario03_60%`, FUN = function(x)x[[2]][[1]])
 
 View(comparaison01)
 
 # nsim = 1000, coouverture vaccinale  ~ 33%, 50% et 70% : Scénarios 02 et 03
 
-comparaison02 <- data.frame(matrix(ncol = 11, 
+comparaison02 <- data.frame(matrix(ncol = 14, 
                                    nrow = 30))
 
 colnames(comparaison02) <- c(
@@ -104,7 +118,10 @@ colnames(comparaison02) <- c(
   "Scénario03_70%",
   "Scénario04_33%",
   "Scénario04_50%",
-  "Scénario04_70%"
+  "Scénario04_70%",
+  "Scénario05_33%",
+  "Scénario05_50%",
+  "Scénario05_70%"
 )
 
 comparaison02$Estimation <- c("RegLog", "-", "-", "-", "-", "IPW", "-", "-", "-", "-", 
@@ -212,17 +229,50 @@ comparaison02$`Scénario04_70%` <- c(
   
 )
 
+comparaison02$`Scénario05_33%` <- c(
+  
+  sapply(tab1_5$Autres, function(x) x[[2]][[1]]), tab1_5$`Erreur de Monte Carlo`[[4]][[2]][[1]],
+  sapply(tab1_5$Autres, function(x) x[[2]][[1]]), tab2_5$`Erreur de Monte Carlo`[[4]][[2]][[1]],
+  sapply(tab3_5$Autres[1:4],function(x) x[[2]][[1]]) , tab3_5$`Erreur de Monte Carlo`[[4]][[2]][[1]],
+  sapply(tab3_5$Autres[5:8],function(x) x[[2]][[1]]), tab3_5$`Erreur de Monte Carlo`[[8]][[2]][[1]],
+  sapply(tab3_5$Autres[9:12],function(x) x[[2]][[1]]), tab3_5$`Erreur de Monte Carlo`[[12]][[2]][[1]],
+  sapply(tab3_5$Autres[13:16],function(x) x[[2]][[1]]), tab3_5$`Erreur de Monte Carlo`[[16]][[2]][[1]]
+  
+)
+
+comparaison02$`Scénario05_50%` <- c(
+  
+  sapply(tab1_5$Autres, function(x) x[[2]][[2]]), tab1_5$`Erreur de Monte Carlo`[[4]][[2]][[2]],
+  sapply(tab1_5$Autres, function(x) x[[2]][[2]]), tab2_5$`Erreur de Monte Carlo`[[4]][[2]][[2]],
+  sapply(tab3_5$Autres[1:4],function(x) x[[2]][[2]]) , tab3_5$`Erreur de Monte Carlo`[[4]][[2]][[2]],
+  sapply(tab3_5$Autres[5:8],function(x) x[[2]][[2]]), tab3_5$`Erreur de Monte Carlo`[[8]][[2]][[2]],
+  sapply(tab3_5$Autres[9:12],function(x) x[[2]][[2]]), tab3_5$`Erreur de Monte Carlo`[[12]][[2]][[2]],
+  sapply(tab3_5$Autres[13:16],function(x) x[[2]][[2]]), tab3_5$`Erreur de Monte Carlo`[[16]][[2]][[2]]
+  
+)
+
+comparaison02$`Scénario05_70%` <- c(
+  
+  sapply(tab1_5$Autres, function(x) x[[2]][[3]]), tab1_5$`Erreur de Monte Carlo`[[4]][[2]][[3]],
+  sapply(tab1_5$Autres, function(x) x[[2]][[3]]), tab2_5$`Erreur de Monte Carlo`[[4]][[2]][[3]],
+  sapply(tab3_5$Autres[1:4],function(x) x[[2]][[3]]) , tab3_5$`Erreur de Monte Carlo`[[4]][[2]][[3]],
+  sapply(tab3_5$Autres[5:8],function(x) x[[2]][[3]]), tab3_5$`Erreur de Monte Carlo`[[8]][[2]][[3]],
+  sapply(tab3_5$Autres[9:12],function(x) x[[2]][[3]]), tab3_5$`Erreur de Monte Carlo`[[12]][[2]][[3]],
+  sapply(tab3_5$Autres[13:16],function(x) x[[2]][[3]]), tab3_5$`Erreur de Monte Carlo`[[16]][[2]][[3]]
+  
+)
+
 View(comparaison02)
 ################################################################################
 
-dat <- data.frame(x_biais = c(comparaison01$Scénario01[[1]], comparaison01$Scénario02[[1]], comparaison01$Scénario03[[1]],
-                   comparaison01$Scénario01[[6]], comparaison01$Scénario02[[6]], comparaison01$Scénario03[[6]],
-                   comparaison01$Scénario01[[11]], comparaison01$Scénario02[[11]], comparaison01$Scénario03[[11]],
-                  comparaison01$Scénario01[[16]], comparaison01$Scénario02[[16]], comparaison01$Scénario03[[16]],
-                  comparaison01$Scénario01[[21]], comparaison01$Scénario02[[21]], comparaison01$Scénario03[[21]],
-                  comparaison01$Scénario01[[26]], comparaison01$Scénario02[[26]], comparaison01$Scénario03[[26]]),
-                  Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 3),
-                  Scénario = c(1, 2, 3))
+dat <- data.frame(x_biais = c(comparaison01$Scénario01[[1]], comparaison01$Scénario02[[1]], comparaison01$`Scénario03_20%`[[1]], comparaison01$`Scénario03_40%`[[1]], comparaison01$`Scénario03_60%`[[1]],
+                   comparaison01$Scénario01[[6]], comparaison01$Scénario02[[6]], comparaison01$`Scénario03_20%`[[6]], comparaison01$`Scénario03_40%`[[6]], comparaison01$`Scénario03_60%`[[6]],
+                   comparaison01$Scénario01[[11]], comparaison01$Scénario02[[11]], comparaison01$`Scénario03_20%`[[11]], comparaison01$`Scénario03_40%`[[11]], comparaison01$`Scénario03_60%`[[11]],
+                  comparaison01$Scénario01[[16]], comparaison01$Scénario02[[16]], comparaison01$`Scénario03_20%`[[16]], comparaison01$`Scénario03_40%`[[16]], comparaison01$`Scénario03_60%`[[16]],
+                  comparaison01$Scénario01[[21]], comparaison01$Scénario02[[21]], comparaison01$`Scénario03_20%`[[21]], comparaison01$`Scénario03_40%`[[21]], comparaison01$`Scénario03_60%`[[21]],
+                  comparaison01$Scénario01[[26]], comparaison01$Scénario02[[26]], comparaison01$`Scénario03_20%`[[26]], comparaison01$`Scénario03_40%`[[26]], comparaison01$`Scénario03_60%`[[26]]),
+                  Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 5),
+                  Scénario = c(1, 2, 3, 4, 5))
                                
 
 dat$Scénario <- as.factor(dat$Scénario)
@@ -234,9 +284,6 @@ y <- x + geom_bar(position = position_dodge(), stat = "identity")
 
 y + labs(y = "Biais")
 
-x <- ggplot(dat,aes(x = Scénario, y = x_biais, fill = Méthode))
-y <- x + geom_point()
-y + labs(y = "Moyenne de la masse corporelle (g)")
  
 ggplot(dat) +
   aes(x = Scénario, y = x_biais) +
