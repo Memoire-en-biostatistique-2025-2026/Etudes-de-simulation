@@ -23,11 +23,11 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   C <- runif(n = popsize, 0.1, 3) # On commence par les noeuds racines de notre DAG
   
-  # Génération du statut vaccinal V : V ~ Bernoulli(logit(a0 + a1*C))
+  # Génération du statut vaccinal V : V ~ Bernoulli(logit(b0 + b1*C))
+  
+  ## Définir la fonction en b0 (en calculant l'intégrale) pour V
   
   a <- 1/0.87
-  # Définir la fonction en b0 (en calculant l'intégrale) pour V
-  
   f_V <- function (b0) {
     
     a*(log(1 + exp(b0 + 3*0.3)) - log(1 + exp(b0 + 0.1*0.3))) - CV
@@ -52,16 +52,14 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   # On pose:
   
   a <- 0.5/2.9
-
-  # P(I1 = 1) - 0.15
   
-  f_I1 <- function (b0) {
+  f_I1 <- function (b0) { # P(I1 = 1) - 0.15
     
     (a/0.35)*(log(1 + exp(b0 + 3*0.35 - co_inf_para1)) + log(1 + exp(b0 + 3*0.35 + co_inf_para1)) - 
               
-            log(1 + exp(b0 + 0.1*0.35 - co_inf_para1)) - log(1 + exp(b0 + 0.1*0.35 + co_inf_para1))) - 
+    log(1 + exp(b0 + 0.1*0.35 - co_inf_para1)) - log(1 + exp(b0 + 0.1*0.35 + co_inf_para1))) - 
       
-      I1_prev # Contrainte pour la probabilité marginale
+    I1_prev # Contrainte pour la probabilité marginale
     
   }
   
@@ -84,9 +82,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
   }
   
-  # P(I2 = 2) - 0.50
-  
-  f_I2 <- function(b0){
+  f_I2 <- function(b0){ # P(I2 = 2) - 0.50
     
     integrate(P_I2, 0.1, 3, b0)$value - I2_prev # Contrainte pour la probabilité marginale
     
@@ -96,10 +92,10 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   I2 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.15*C - 0.1*V + co_inf_para2*C2)) # Pour une prévalence ~ 
   
-  # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
-  #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
+  # Génération des symptomes W1: W1~Bernoulli(logit(b0 + b1*C[I1 = 1]))  et 
+  #                          W2: W2~Bernoulli(logit(b0 + b1*C[I2 == 1] + b2*V[I2 == 1]))
   
-  # Définir la fonction en b0 (en calculant l'intégrale) pour W1
+  ## Définir la fonction en b0 (en calculant l'intégrale) pour W1
   
   a <- 1/2.9
   b1 <- 0.5
@@ -124,7 +120,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
   ) # W1 = 1 ~ 4%-5%
   
-  # Définir la fonction en b0 (en calculant l'intégrale) pour W2
+  ## Définir la fonction en b0 (en calculant l'intégrale) pour W2
   
   # On pose:
   
@@ -230,7 +226,6 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
 }  
 
-# dat <- datagen(ssize = 5000, co_inf_para1 = 8, co_inf_para2 = -8)
 dat_full <- datagen(return_full = TRUE)
 
 sum(dat_full$V == 1)/nrow(dat_full) * 100 # Couverture vaccinale
@@ -264,9 +259,9 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   # Génération du statut vaccinal V : V ~ Bernoulli(logit(b0 + b1*C))
   
-  a <- 1/0.87
-  # Définir la fonction en b0 (en calculant l'intégrale) pour V
+  ## Définir la fonction en b0 (en calculant l'intégrale) pour V
   
+  a <- 1/0.87
   f_V <- function (b0) {
     
     a*(log(1 + exp(b0 + 3*0.3)) - log(1 + exp(b0 + 0.1*0.3))) - 
@@ -293,9 +288,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   a <- 0.5/2.9
   
-  # P(I1 = 1) - 0.15
-  
-  f_I1 <- function (b0) {
+  f_I1 <- function (b0) { # P(I1 = 1) - 0.15
     
     (a/0.35)*(log(1 + exp(b0 + 3*0.35 - co_inf_para1)) + log(1 + exp(b0 + 3*0.35 + co_inf_para1)) - 
                 
@@ -324,9 +317,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
   }
   
-  # P(I2 = 2) - 0.50
-  
-  f_I2 <- function(b0){
+  f_I2 <- function(b0){ # P(I2 = 2) - 0.50
     
     integrate(P_I2, 0.1, 3, b0)$value - I2_prev # Contrainte pour la probabilité marginale
     
@@ -340,7 +331,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
   #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
   
-  # Définir la fonction en b0 (en calculant l'intégrale) pour W1
+  ## Définir la fonction en b0 (en calculant l'intégrale) pour W1
   
   a <- 1/2.9
   b1 <- 0.5
@@ -364,7 +355,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
   )
   
-  # Définir la fonction en b0 (en calculant l'intégrale) pour W2
+  ## Définir la fonction en b0 (en calculant l'intégrale) pour W2
   
   # On pose:
   
@@ -452,5 +443,3 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   return(dat)
 }
-
-# nsim <- 10 # Fixer le nombre de réplications
