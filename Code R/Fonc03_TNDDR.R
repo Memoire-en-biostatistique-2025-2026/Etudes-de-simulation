@@ -15,7 +15,7 @@ library(nnet)
 
 RandomForest <- function(dat) {
   
-  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
+  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
   # Transformer les variables V et Y (variables réponses) en facteurs pour la classification
   
@@ -217,7 +217,7 @@ RandomForest <- function(dat) {
 
 Lasso <- function(dat) {
   
-  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
+  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
   # Transformer les variables V et Y (variables réponses) en facteurs 
   
@@ -249,6 +249,7 @@ Lasso <- function(dat) {
     lambda = cv.glmnet(y = TNDdat_ctr1$V,
                        x = as.matrix(subset(TNDdat_ctr1, select = -V)),
                        alpha = 1,
+                       nfolds = 5,
                        family = "binomial")$lambda.min, # Validation croisée
     
     family = "binomial" # variable dépendante catégorielle
@@ -427,7 +428,7 @@ Lasso <- function(dat) {
 
 Mars <- function(dat){
   
-  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
+  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
   # Première étape : Diviser aléatoirement le jeu de données en deux parties égales 
   # Le double cross-fit
@@ -599,7 +600,7 @@ Mars <- function(dat){
 
 RN <- function(dat) {
   
-  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
+  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
   # Transformer les variables V et Y (variables réponses) en facteurs pour la classification
   
@@ -794,7 +795,7 @@ RN <- function(dat) {
 
 TNDDR <- function(dat, methode){
   
-  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
+  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   estimations <- methode(dat)
   
   # Estimation du 𝜓𝑣: 𝜓𝑣 = 𝜓𝑣(ℙTND)=𝔼TND[𝜇𝑣(𝒄)*𝜔𝑣(𝒄)] avec

@@ -7,7 +7,7 @@ library(dplyr)
 
 RegLog <- function(dat){
   
-  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV*dat$W2*dat$H)
+  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
  
   # Analyse avec regression logistique
   
