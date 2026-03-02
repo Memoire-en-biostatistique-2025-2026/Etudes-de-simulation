@@ -28,6 +28,8 @@ library(kableExtra)
 # Pour I2_prev = 10% : co_inf_para1 = 3, co_inf_para2 = 5
 # Proportion de co-infection ~30%
 
+set.seed(1) # Pour avoir toujours les mêmes germes
+
 nsim <- 10 # Nombre de réplications
 
 seeds_list <- sample(1:1000000, size = nsim)
