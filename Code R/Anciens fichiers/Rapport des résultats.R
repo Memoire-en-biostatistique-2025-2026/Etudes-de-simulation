@@ -89,6 +89,7 @@ comparaison01$`Scénario04_40%` <- sapply(comparaison01$`Scénario04_40%`, FUN =
 
 View(comparaison01)
 ################################################################################
+
 load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario05_10%.RData")
 load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario05_15%.RData")
 load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario05_30%.RData")
@@ -151,6 +152,70 @@ comparaison02$`Scénario05_30%` <- sapply(comparaison02$`Scénario05_30%`, FUN =
 
 View(comparaison02)
 ################################################################################
+
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario06_15%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario06_50%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario06_70%.RData")
+
+# nsim = 1000, Scénarios 06 couverture vaccinale  ~ 15%, 50% et 70%, taux de co-infection ~30%-40%
+
+comparaison03 <- data.frame(matrix(ncol = 5, 
+                                   nrow = 30))
+
+colnames(comparaison03) <- c(
+  "Estimation", 
+  "Performance",
+  "Scénario06_15%",
+  "Scénario06_50%",
+  "Scénario06_70%"
+)
+
+comparaison03$Estimation <- c("RegLog", "-", "-", "-", "-", "IPW", "-", "-", "-", "-", 
+                              "TNDDR_RF", "-", "-", "-", "-", "TNDDR_Lasso", "-", "-", "-", "-",
+                              "TNDDR_Mars", "-", "-", "-", "-", "TNDDR_RN", "-", "-", "-", "-")
+
+comparaison03$Performance <- rep(c("Biais", "Variance", "MSE", "Précision", "%Cov"), 6)
+
+comparaison03$`Scénario06_15%` <- c(
+  
+  Tab_6_1$Autres, Tab_6_1$`Erreur de Monte Carlo`[4],
+  Tab2_6_1$Autres, Tab2_6_1$`Erreur de Monte Carlo`[4],
+  Tab3_6_1$Autres[1:4], Tab3_6_1$`Erreur de Monte Carlo`[4],
+  Tab3_6_1$Autres[5:8], Tab3_6_1$`Erreur de Monte Carlo`[8],
+  Tab3_6_1$Autres[9:12], Tab3_6_1$`Erreur de Monte Carlo`[12],
+  Tab3_6_1$Autres[13:16], Tab3_6_1$`Erreur de Monte Carlo`[16]
+  
+)
+
+comparaison03$`Scénario06_50%` <- c(
+  
+  Tab_6_2$Autres, Tab_6_2$`Erreur de Monte Carlo`[4],
+  Tab2_6_2$Autres, Tab2_6_2$`Erreur de Monte Carlo`[4],
+  Tab3_6_2$Autres[1:4], Tab3_6_2$`Erreur de Monte Carlo`[4],
+  Tab3_6_2$Autres[5:8], Tab3_6_2$`Erreur de Monte Carlo`[8],
+  Tab3_6_2$Autres[9:12], Tab3_6_2$`Erreur de Monte Carlo`[12],
+  Tab3_6_2$Autres[13:16], Tab3_6_2$`Erreur de Monte Carlo`[16]
+  
+)
+
+comparaison03$`Scénario06_70%` <- c(
+  
+  Tab_6_3$Autres, Tab_6_3$`Erreur de Monte Carlo`[4],
+  Tab2_6_3$Autres, Tab2_6_3$`Erreur de Monte Carlo`[4],
+  Tab3_6_3$Autres[1:4], Tab3_6_3$`Erreur de Monte Carlo`[4],
+  Tab3_6_3$Autres[5:8], Tab3_6_3$`Erreur de Monte Carlo`[8],
+  Tab3_6_3$Autres[9:12], Tab3_6_3$`Erreur de Monte Carlo`[12],
+  Tab3_6_3$Autres[13:16], Tab3_6_3$`Erreur de Monte Carlo`[16]
+  
+)
+
+comparaison03$`Scénario06_15%` <- sapply(comparaison03$`Scénario06_15%`, FUN = function(x)x[[2]])
+comparaison03$`Scénario06_50%` <- sapply(comparaison03$`Scénario06_50%`, FUN = function(x)x[[2]])
+comparaison03$`Scénario06_70%` <- sapply(comparaison03$`Scénario06_70%`, FUN = function(x)x[[2]])
+
+View(comparaison03)
+
+################################################################################
 ####################   Représentations graphiques  #############################
 ################################################################################
 ## Scénarios avec différents taux de co-infection
@@ -192,6 +257,28 @@ dat1$Méthode<- as.factor(dat1$Méthode)
 
 
 ggplot(dat1) +
+  aes(x = Scénario, y = x_biais) +
+  geom_col(fill = "#112446") +
+  theme_minimal() +
+  facet_wrap(vars(Méthode))
+
+## Scénarios avec différentes valeurs de couverture vaccinale et un taux de co-infection entre 30% et 40%
+
+dat2 <- data.frame(x_biais = c(comparaison03$`Scénario06_15%`[[1]], comparaison03$`Scénario06_50%`[[1]], comparaison03$`Scénario06_70%`[[1]],
+                               comparaison03$`Scénario06_15%`[[6]], comparaison03$`Scénario06_50%`[[6]], comparaison03$`Scénario06_70%`[[6]],
+                               comparaison03$`Scénario06_15%`[[11]], comparaison03$`Scénario06_50%`[[11]], comparaison03$`Scénario06_70%`[[11]],
+                               comparaison03$`Scénario06_15%`[[16]], comparaison03$`Scénario06_50%`[[16]], comparaison03$`Scénario06_70%`[[16]],
+                               comparaison03$`Scénario06_15%`[[21]], comparaison03$`Scénario06_50%`[[21]], comparaison03$`Scénario06_70%`[[21]],
+                               comparaison03$`Scénario06_15%`[[26]], comparaison03$`Scénario06_50%`[[26]], comparaison03$`Scénario06_70%`[[26]]),
+                   Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 3),
+                   Scénario = c(1, 2, 3))
+
+
+dat2$Scénario <- as.factor(dat2$Scénario)
+dat2$Méthode<- as.factor(dat2$Méthode)
+
+
+ggplot(dat2) +
   aes(x = Scénario, y = x_biais) +
   geom_col(fill = "#112446") +
   theme_minimal() +
