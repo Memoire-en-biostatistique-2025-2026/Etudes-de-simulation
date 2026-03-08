@@ -201,11 +201,11 @@ RandomForest <- function(dat) {
   m0[-s] <- 1 - predict(Out_m1, data = select(TNDdata_test1, -c(V, Y)))$predictions[, 2]
   m0[s] <- 1 - predict(Out_m2, data = select(TNDdata_test2, -c(V, Y)))$predictions[, 2]
   
-  mu1 <- pmin(pmax(mu1, 0.0000001), 0.9999999)
-  mu0 <- pmin(pmax(mu0, 0.0000001), 0.9999999)
-  m0 <- pmin(pmax(m0, 0.0000001), 0.9999999)
-  g1 <- pmin(pmax(g1_cont, 0.0000001), 0.9999999)
-  g0 <- 1 - pmin(pmax(g1_cont, 0.0000001), 0.9999999)
+  mu1 <- pmin(pmax(mu1, 0.01), 0.99)
+  mu0 <- pmin(pmax(mu0, 0.01), 0.99)
+  m0 <- pmin(pmax(m0, 0.01), 0.99)
+  g1 <- pmin(pmax(g1_cont, 0.01), 0.99)
+  g0 <- 1 - pmin(pmax(g1_cont, 0.01), 0.99)
   
   return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1, g0 = g0, w1 = m0 / (1 - mu1), w0 = m0 / (1 - mu0)))
   
@@ -412,11 +412,11 @@ Lasso <- function(dat) {
   m0[-s] <- 1 - predict(Out_m1, newx = cbind(data.matrix(select(TNDdat_train2, !c(V,Y))), 0))
   m0[s] <- 1 - predict(Out_m2, newx = cbind(data.matrix(select(TNDdat_train1, !c(V,Y))), 0))
   
-  mu1 <- pmin(pmax(mu1, 0.0000001), 0.9999999)
-  mu0 <- pmin(pmax(mu0, 0.0000001), 0.9999999)
-  m0 <- pmin(pmax(m0, 0.0000001), 0.9999999)
-  g1 <- pmin(pmax(g1_cont, 0.0000001), 0.9999999)
-  g0 <- 1 - pmin(pmax(g1_cont, 0.0000001), 0.9999999)
+  mu1 <- pmin(pmax(mu1, 0.01), 0.99)
+  mu0 <- pmin(pmax(mu0, 0.01), 0.99)
+  m0 <- pmin(pmax(m0, 0.01), 0.99)
+  g1 <- pmin(pmax(g1_cont, 0.01), 0.99)
+  g0 <- 1 - pmin(pmax(g1_cont, 0.01), 0.99)
   
   return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1, g0 = g0, w1 = m0 / (1 - mu1), w0 = m0 / (1 - mu0)))
   
@@ -584,11 +584,11 @@ Mars <- function(dat){
   m0[-s] <- 1 - predict(Out_m1, newdata = select(TNDdat_train2, !c(V,Y)), type = "response")
   m0[s] <- 1 - predict(Out_m2, newdata = select(TNDdat_train1, !c(V,Y)), type = "response")
   
-  mu1 <- pmin(pmax(mu1, 0.0000001), 0.9999999)
-  mu0 <- pmin(pmax(mu0, 0.0000001), 0.9999999)
-  m0 <- pmin(pmax(m0, 0.0000001), 0.9999999)
-  g1 <- pmin(pmax(g1_cont, 0.0000001), 0.9999999)
-  g0 <- 1 - pmin(pmax(g1_cont, 0.0000001), 0.9999999)
+  mu1 <- pmin(pmax(mu1, 0.01), 0.99)
+  mu0 <- pmin(pmax(mu0, 0.01), 0.99)
+  m0 <- pmin(pmax(m0, 0.01), 0.99)
+  g1 <- pmin(pmax(g1_cont, 0.01), 0.99)
+  g0 <- 1 - pmin(pmax(g1_cont, 0.01), 0.99)
   
   return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1,g0 = g0, w1 = m0 / (1 - mu1),w0 = m0 / (1 - mu0)))
   
