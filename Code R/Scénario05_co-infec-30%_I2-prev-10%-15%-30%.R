@@ -165,6 +165,10 @@ for (i in 1:nsim) {
 }
 
 # Combien de réplications avec des NA
+
+sum(rowSums(is.na(resultats)) > 0)
+sum(rowSums(is.na(resultats2)) > 0)
+
 sum(rowSums(is.na(resultats3[,1:9])) > 0)
 sum(rowSums(is.na(resultats3[,10:18])) > 0)
 sum(rowSums(is.na(resultats3[,19:27])) > 0)
@@ -709,6 +713,10 @@ for (i in 1:nsim) {
 }
 
 # Combien de réplications avec des NA
+
+sum(rowSums(is.na(resultats)) > 0)
+sum(rowSums(is.na(resultats2)) > 0)
+
 sum(rowSums(is.na(resultats3[,1:9])) > 0)
 sum(rowSums(is.na(resultats3[,10:18])) > 0)
 sum(rowSums(is.na(resultats3[,19:27])) > 0)
@@ -1246,6 +1254,10 @@ for (i in 1:nsim) {
 }
 
 # Combien de réplications avec des NA
+
+sum(rowSums(is.na(resultats)) > 0)
+sum(rowSums(is.na(resultats2)) > 0)
+
 sum(rowSums(is.na(resultats3[,1:9])) > 0)
 sum(rowSums(is.na(resultats3[,10:18])) > 0)
 sum(rowSums(is.na(resultats3[,19:27])) > 0)

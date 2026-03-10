@@ -50,13 +50,16 @@ for (i in 1:nsim) {
 l_vraiRRc
 
 mean(l_vraiRRc)
+# 0.4028634
 sd(l_vraiRRc)
-
+# 0.005337532
 
 l_vraiRRm
 
 mean(l_vraiRRm)
+# 0.409657
 sd(l_vraiRRm)
+# 0.005357595
 
 ################################################################################
 # Initialiser des objets pour contenir les resultats
@@ -149,6 +152,10 @@ for (i in 1:nsim) {
   
 }
 # Combien de réplications avec des NA
+
+sum(rowSums(is.na(resultats)) > 0)
+sum(rowSums(is.na(resultats2)) > 0)
+
 sum(rowSums(is.na(resultats3[,1:9])) > 0)
 sum(rowSums(is.na(resultats3[,10:18])) > 0)
 sum(rowSums(is.na(resultats3[,19:27])) > 0)

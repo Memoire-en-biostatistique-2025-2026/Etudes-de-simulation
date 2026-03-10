@@ -250,10 +250,11 @@ Lasso <- function(dat) {
                        x = as.matrix(subset(TNDdat_ctr1, select = -V)),
                        alpha = 1,
                        nfolds = 5,
+                       penality.factor = 0,
                        family = "binomial")$lambda.min, # Validation croisée
     
-    family = "binomial" # variable dépendante catégorielle
-    
+    family = "binomial", # variable dépendante catégorielle
+    penality.factor = 0
   )
   
   ### Deuxième ensemble d'entraînement : TNDdat_ctr2
@@ -268,9 +269,11 @@ Lasso <- function(dat) {
     lambda = cv.glmnet(y = TNDdat_ctr2$V,
                        x = as.matrix(subset(TNDdat_ctr2, select = -V)),
                        alpha = 1,
+                       penality.factor = 0,
                        family = "binomial")$lambda.min, # Validation croisée,
     
-    family = "binomial"
+    family = "binomial",
+    penality.factor = 0
     
   )
   
@@ -382,9 +385,11 @@ Lasso <- function(dat) {
     lambda = cv.glmnet(y = TNDdat_train1$Y,
                        x = cbind(data.matrix(subset(TNDdat_train1, select = -c(Y, V))), 0),
                        alpha = 1,
+                       penality.factor = 0,
                        family = "binomial")$lambda.min, # Validation croisée,
     
-    family = "binomial"
+    family = "binomial",
+    penality.factor = 0
     
   )
   
@@ -398,9 +403,11 @@ Lasso <- function(dat) {
     lambda = cv.glmnet(y = TNDdat_train2$Y,
                        x = cbind(data.matrix(subset(TNDdat_train1, select = -c(Y, V))), 0),
                        alpha = 1,
+                       penality.factor = 0,
                        family = "binomial")$lambda.min, # Validation croisée,
     
-    family = "binomial"
+    family = "binomial",
+    penality.factor = 0
     
   )
   
