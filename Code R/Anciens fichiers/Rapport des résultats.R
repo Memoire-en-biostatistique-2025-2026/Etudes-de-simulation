@@ -94,6 +94,7 @@ comparaison01$`Scénario04_40%` <- sapply(comparaison01$`Scénario04_40%`, FUN =
 View(comparaison01)
 ####################### Représentation graphique ###############################
 
+# Biais
 dat <- data.frame(x_biais = c(comparaison01$`Scénario01_0%`[[1]], comparaison01$`Scénario02_10%`[[1]], comparaison01$`Scénario03_20%`[[1]], comparaison01$`Scénario04_40%`[[1]],
                               comparaison01$`Scénario01_0%`[[6]], comparaison01$`Scénario02_10%`[[6]], comparaison01$`Scénario03_20%`[[6]], comparaison01$`Scénario04_40%`[[6]],
                               comparaison01$`Scénario01_0%`[[11]], comparaison01$`Scénario02_10%`[[11]], comparaison01$`Scénario03_20%`[[11]], comparaison01$`Scénario04_40%`[[11]],
@@ -113,6 +114,28 @@ ggplot(dat) +
   geom_col(fill = "#112446") +
   theme_minimal() +
   facet_wrap(vars(Méthode))
+
+# Couverture
+dat <- data.frame(x_cov = c(comparaison01$`Scénario01_0%`[[5]], comparaison01$`Scénario02_10%`[[5]], comparaison01$`Scénario03_20%`[[5]], comparaison01$`Scénario04_40%`[[5]],
+                              comparaison01$`Scénario01_0%`[[10]], comparaison01$`Scénario02_10%`[[10]], comparaison01$`Scénario03_20%`[[10]], comparaison01$`Scénario04_40%`[[10]],
+                              comparaison01$`Scénario01_0%`[[15]], comparaison01$`Scénario02_10%`[[15]], comparaison01$`Scénario03_20%`[[15]], comparaison01$`Scénario04_40%`[[15]],
+                              comparaison01$`Scénario01_0%`[[20]], comparaison01$`Scénario02_10%`[[20]], comparaison01$`Scénario03_20%`[[20]], comparaison01$`Scénario04_40%`[[20]],
+                              comparaison01$`Scénario01_0%`[[25]], comparaison01$`Scénario02_10%`[[25]], comparaison01$`Scénario03_20%`[[25]], comparaison01$`Scénario04_40%`[[25]],
+                              comparaison01$`Scénario01_0%`[[30]], comparaison01$`Scénario02_10%`[[30]], comparaison01$`Scénario03_20%`[[30]], comparaison01$`Scénario04_40%`[[30]]),
+                  Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 4),
+                  Scénario = c(1, 2, 3, 4))
+
+
+dat$Scénario <- as.factor(dat$Scénario)
+dat$Méthode<- as.factor(dat$Méthode)
+
+
+ggplot(dat) +
+  aes(x = Scénario, y = x_cov) +
+  geom_col(fill = "#112446") +
+  theme_minimal() +
+  facet_wrap(vars(Méthode))
+
 ################################################################################
 # Scénarios avec différentes valeurs de prévalence de I2 et un taux de co-infection entre 30% et 40%
 
@@ -182,6 +205,7 @@ View(comparaison02)
 
 ####################### Représentation graphique ###############################
 
+# Biais
 dat1 <- data.frame(x_biais = c(comparaison02$`Scénario05_10%`[[1]], comparaison02$`Scénario05_15%`[[1]], comparaison02$`Scénario05_30%`[[1]],
                                comparaison02$`Scénario05_10%`[[6]], comparaison02$`Scénario05_15%`[[6]], comparaison02$`Scénario05_30%`[[6]],
                                comparaison02$`Scénario05_10%`[[11]], comparaison02$`Scénario05_15%`[[11]], comparaison02$`Scénario05_30%`[[11]],
@@ -201,6 +225,28 @@ ggplot(dat1) +
   geom_col(fill = "#112446") +
   theme_minimal() +
   facet_wrap(vars(Méthode))
+
+# Couverture
+dat1 <- data.frame(x_cov = c(comparaison02$`Scénario05_10%`[[5]], comparaison02$`Scénario05_15%`[[5]], comparaison02$`Scénario05_30%`[[5]],
+                               comparaison02$`Scénario05_10%`[[10]], comparaison02$`Scénario05_15%`[[10]], comparaison02$`Scénario05_30%`[[10]],
+                               comparaison02$`Scénario05_10%`[[15]], comparaison02$`Scénario05_15%`[[15]], comparaison02$`Scénario05_30%`[[15]],
+                               comparaison02$`Scénario05_10%`[[20]], comparaison02$`Scénario05_15%`[[20]], comparaison02$`Scénario05_30%`[[20]],
+                               comparaison02$`Scénario05_10%`[[25]], comparaison02$`Scénario05_15%`[[25]], comparaison02$`Scénario05_30%`[[25]],
+                               comparaison02$`Scénario05_10%`[[30]], comparaison02$`Scénario05_15%`[[30]], comparaison02$`Scénario05_30%`[[30]]),
+                   Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 3),
+                   Scénario = c(1, 2, 3))
+
+
+dat1$Scénario <- as.factor(dat1$Scénario)
+dat1$Méthode<- as.factor(dat1$Méthode)
+
+
+ggplot(dat1) +
+  aes(x = Scénario, y = x_cov) +
+  geom_col(fill = "#112446") +
+  theme_minimal() +
+  facet_wrap(vars(Méthode))
+
 ################################################################################
 # Scénarios avec différentes valeurs de couverture vaccinale et un taux de co-infection entre 30% et 40%
 
@@ -270,6 +316,7 @@ View(comparaison03)
 
 ####################### Représentation graphique ###############################
 
+# Biais
 dat2 <- data.frame(x_biais = c(comparaison03$`Scénario06_15%`[[1]], comparaison03$`Scénario06_50%`[[1]], comparaison03$`Scénario06_70%`[[1]],
                                comparaison03$`Scénario06_15%`[[6]], comparaison03$`Scénario06_50%`[[6]], comparaison03$`Scénario06_70%`[[6]],
                                comparaison03$`Scénario06_15%`[[11]], comparaison03$`Scénario06_50%`[[11]], comparaison03$`Scénario06_70%`[[11]],
@@ -286,6 +333,27 @@ dat2$Méthode<- as.factor(dat2$Méthode)
 
 ggplot(dat2) +
   aes(x = Scénario, y = x_biais) +
+  geom_col(fill = "#112446") +
+  theme_minimal() +
+  facet_wrap(vars(Méthode))
+
+# Couverture
+dat2 <- data.frame(x_cov = c(comparaison03$`Scénario06_15%`[[5]], comparaison03$`Scénario06_50%`[[5]], comparaison03$`Scénario06_70%`[[5]],
+                               comparaison03$`Scénario06_15%`[[10]], comparaison03$`Scénario06_50%`[[10]], comparaison03$`Scénario06_70%`[[10]],
+                               comparaison03$`Scénario06_15%`[[15]], comparaison03$`Scénario06_50%`[[15]], comparaison03$`Scénario06_70%`[[15]],
+                               comparaison03$`Scénario06_15%`[[20]], comparaison03$`Scénario06_50%`[[20]], comparaison03$`Scénario06_70%`[[20]],
+                               comparaison03$`Scénario06_15%`[[25]], comparaison03$`Scénario06_50%`[[25]], comparaison03$`Scénario06_70%`[[25]],
+                               comparaison03$`Scénario06_15%`[[30]], comparaison03$`Scénario06_50%`[[30]], comparaison03$`Scénario06_70%`[[30]]),
+                   Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 3),
+                   Scénario = c(1, 2, 3))
+
+
+dat2$Scénario <- as.factor(dat2$Scénario)
+dat2$Méthode<- as.factor(dat2$Méthode)
+
+
+ggplot(dat2) +
+  aes(x = Scénario, y = x_cov) +
   geom_col(fill = "#112446") +
   theme_minimal() +
   facet_wrap(vars(Méthode))
@@ -359,6 +427,7 @@ View(comparaison04)
 
 ####################### Représentation graphique ###############################
 
+# Biais
 dat3 <- data.frame(x_biais = c(comparaison04$`Scénario07_10%`[[1]], comparaison04$`Scénario07_30%`[[1]], comparaison04$`Scénario07_50%`[[1]],
                                comparaison04$`Scénario07_10%`[[6]], comparaison04$`Scénario07_30%`[[6]], comparaison04$`Scénario07_50%`[[6]],
                                comparaison04$`Scénario07_10%`[[11]], comparaison04$`Scénario07_30%`[[11]], comparaison04$`Scénario07_50%`[[11]],
@@ -375,6 +444,27 @@ dat3$Méthode<- as.factor(dat3$Méthode)
 
 ggplot(dat3) +
   aes(x = Scénario, y = x_biais) +
+  geom_col(fill = "#112446") +
+  theme_minimal() +
+  facet_wrap(vars(Méthode))
+
+# Couverture
+dat3 <- data.frame(x_cov = c(comparaison04$`Scénario07_10%`[[5]], comparaison04$`Scénario07_30%`[[5]], comparaison04$`Scénario07_50%`[[5]],
+                               comparaison04$`Scénario07_10%`[[10]], comparaison04$`Scénario07_30%`[[10]], comparaison04$`Scénario07_50%`[[10]],
+                               comparaison04$`Scénario07_10%`[[15]], comparaison04$`Scénario07_30%`[[15]], comparaison04$`Scénario07_50%`[[15]],
+                               comparaison04$`Scénario07_10%`[[20]], comparaison04$`Scénario07_30%`[[20]], comparaison04$`Scénario07_50%`[[20]],
+                               comparaison04$`Scénario07_10%`[[25]], comparaison04$`Scénario07_30%`[[25]], comparaison04$`Scénario07_50%`[[25]],
+                               comparaison04$`Scénario07_10%`[[30]], comparaison04$`Scénario07_30%`[[30]], comparaison04$`Scénario07_50%`[[30]]),
+                   Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 3),
+                   Scénario = c(1, 2, 3))
+
+
+dat3$Scénario <- as.factor(dat3$Scénario)
+dat3$Méthode<- as.factor(dat3$Méthode)
+
+
+ggplot(dat3) +
+  aes(x = Scénario, y = x_cov) +
   geom_col(fill = "#112446") +
   theme_minimal() +
   facet_wrap(vars(Méthode))
@@ -448,7 +538,9 @@ comparaison05$`Scénario04_40%` <- c(
 )
 
 View(comparaison05)
+####################### Représentation graphique ###############################
 
+# Biais
 dat4 <- data.frame(x_biais = c(comparaison05$`Scénario01_0%`[[1]], comparaison05$`Scénario02_10%`[[1]], comparaison05$`Scénario03_20%`[[1]], comparaison05$`Scénario04_40%`[[1]],
                               comparaison05$`Scénario01_0%`[[6]], comparaison05$`Scénario02_10%`[[6]], comparaison05$`Scénario03_20%`[[6]], comparaison05$`Scénario04_40%`[[6]],
                               comparaison05$`Scénario01_0%`[[11]], comparaison05$`Scénario02_10%`[[11]], comparaison05$`Scénario03_20%`[[11]], comparaison05$`Scénario04_40%`[[11]],
@@ -465,6 +557,27 @@ dat4$Méthode<- as.factor(dat4$Méthode)
 
 ggplot(dat4) +
   aes(x = Scénario, y = x_biais) +
+  geom_col(fill = "#112446") +
+  theme_minimal() +
+  facet_wrap(vars(Méthode))
+
+# Couverture
+dat4 <- data.frame(x_cov = c(comparaison05$`Scénario01_0%`[[5]], comparaison05$`Scénario02_10%`[[5]], comparaison05$`Scénario03_20%`[[5]], comparaison05$`Scénario04_40%`[[5]],
+                               comparaison05$`Scénario01_0%`[[10]], comparaison05$`Scénario02_10%`[[10]], comparaison05$`Scénario03_20%`[[10]], comparaison05$`Scénario04_40%`[[10]],
+                               comparaison05$`Scénario01_0%`[[15]], comparaison05$`Scénario02_10%`[[15]], comparaison05$`Scénario03_20%`[[15]], comparaison05$`Scénario04_40%`[[15]],
+                               comparaison05$`Scénario01_0%`[[20]], comparaison05$`Scénario02_10%`[[20]], comparaison05$`Scénario03_20%`[[20]], comparaison05$`Scénario04_40%`[[20]],
+                               comparaison05$`Scénario01_0%`[[25]], comparaison05$`Scénario02_10%`[[25]], comparaison05$`Scénario03_20%`[[25]], comparaison05$`Scénario04_40%`[[25]],
+                               comparaison05$`Scénario01_0%`[[30]], comparaison05$`Scénario02_10%`[[30]], comparaison05$`Scénario03_20%`[[30]], comparaison05$`Scénario04_40%`[[30]]),
+                   Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 4),
+                   Scénario = c(1, 2, 3, 4))
+
+
+dat4$Scénario <- as.factor(dat4$Scénario)
+dat4$Méthode<- as.factor(dat4$Méthode)
+
+
+ggplot(dat4) +
+  aes(x = Scénario, y = x_cov) +
   geom_col(fill = "#112446") +
   theme_minimal() +
   facet_wrap(vars(Méthode))
