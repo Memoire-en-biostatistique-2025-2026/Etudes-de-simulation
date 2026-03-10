@@ -62,13 +62,16 @@ for (i in 1:nsim) {
 l_vraiRRc
 
 mean(l_vraiRRc)
+# 0.4193506
 sd(l_vraiRRc)
-
+# 0.01009558
 
 l_vraiRRm
 
 mean(l_vraiRRm)
+# 0.4258316
 sd(l_vraiRRm)
+# 0.01009127
 
 ################################################################################
 # Initialiser des objets pour contenir les resultats
@@ -613,13 +616,16 @@ for (i in 1:nsim) {
 l_vraiRRc
 
 mean(l_vraiRRc)
+# 0.4095404
 sd(l_vraiRRc)
-
+# 0.00787197
 
 l_vraiRRm
 
 mean(l_vraiRRm)
+# 0.4162812
 sd(l_vraiRRm)
+# 0.007878872
 
 ################################################################################
 # Initialiser des objets pour contenir les resultats
@@ -1165,13 +1171,16 @@ for (i in 1:nsim) {
 l_vraiRRc
 
 mean(l_vraiRRc)
+# 0.4163938
 sd(l_vraiRRc)
-
+# 0.007897903
 
 l_vraiRRm
 
 mean(l_vraiRRm)
+# 0.423021
 sd(l_vraiRRm)
+# 0.007873269
 
 ################################################################################
 # Initialiser des objets pour contenir les resultats

@@ -63,13 +63,16 @@ for (i in 1:nsim) {
 l_vraiRRc
 
 mean(l_vraiRRc)
+# 0.3922989
 sd(l_vraiRRc)
-
+# 0.01513285
 
 l_vraiRRm
 
 mean(l_vraiRRm)
+# 0.3937817
 sd(l_vraiRRm)
+# 0.01513449
 
 ################################################################################
 # Initialiser des objets pour contenir les resultats
@@ -578,6 +581,7 @@ kable(Tab01)
 # Pour I2_prev = 15% : co_inf_para1 = 3, co_inf_para2 = 5
 # Proportion de co-infection ~30%
 
+set.seed(1) 
 nsim <- 10 # Nombre de réplications
 
 seeds_list <- sample(1:1000000, size = nsim)
@@ -611,13 +615,16 @@ for (i in 1:nsim) {
 l_vraiRRc
 
 mean(l_vraiRRc)
+# 0.4063673
 sd(l_vraiRRc)
-
+# 0.01464491
 
 l_vraiRRm
 
 mean(l_vraiRRm)
+# 0.4085708
 sd(l_vraiRRm)
+# 0.01465049
 
 ################################################################################
 # Initialiser des objets pour contenir les resultats
@@ -1119,6 +1126,8 @@ kable(Tab01)
 # Pour I2_prev = 30% : co_inf_para1 = 1, co_inf_para2 = 0.5
 # Proportion de co-infection ~30%
 
+set.seed(1) 
+
 nsim <- 10 # Nombre de réplications
 
 seeds_list <- sample(1:1000000, size = nsim)
@@ -1152,13 +1161,16 @@ for (i in 1:nsim) {
 l_vraiRRc
 
 mean(l_vraiRRc)
+# 0.4005304
 sd(l_vraiRRc)
-
+# 0.008038521
 
 l_vraiRRm
 
 mean(l_vraiRRm)
+# 0.4048493
 sd(l_vraiRRm)
+# 0.008058527
 
 ################################################################################
 # Initialiser des objets pour contenir les resultats
