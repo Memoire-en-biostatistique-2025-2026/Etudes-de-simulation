@@ -865,12 +865,12 @@ ggplot(dat) +
   facet_wrap(vars(Méthode))
 
 # Couverture
-dat <- data.frame(x_cov = c(comparaison04$`Scénario07_10%`[[5]], comparaison04$`Scénario07_30%`[[5]], comparaison04$`Scénario07_50%`[[5]],
-                            comparaison04$`Scénario07_10%`[[10]], comparaison04$`Scénario07_30%`[[10]], comparaison04$`Scénario07_50%`[[10]],
-                            comparaison04$`Scénario07_10%`[[15]], comparaison04$`Scénario07_30%`[[15]], comparaison04$`Scénario07_50%`[[15]],
-                            comparaison04$`Scénario07_10%`[[20]], comparaison04$`Scénario07_30%`[[20]], comparaison04$`Scénario07_50%`[[20]],
-                            comparaison04$`Scénario07_10%`[[25]], comparaison04$`Scénario07_30%`[[25]], comparaison04$`Scénario07_50%`[[25]],
-                            comparaison04$`Scénario07_10%`[[30]], comparaison04$`Scénario07_30%`[[30]], comparaison04$`Scénario07_50%`[[30]]),
+dat <- data.frame(x_cov = c(comparaison08$`Scénario07_10%`[[5]], comparaison08$`Scénario07_30%`[[5]], comparaison08$`Scénario07_50%`[[5]],
+                            comparaison08$`Scénario07_10%`[[10]], comparaison08$`Scénario07_30%`[[10]], comparaison08$`Scénario07_50%`[[10]],
+                            comparaison08$`Scénario07_10%`[[15]], comparaison08$`Scénario07_30%`[[15]], comparaison08$`Scénario07_50%`[[15]],
+                            comparaison08$`Scénario07_10%`[[20]], comparaison08$`Scénario07_30%`[[20]], comparaison08$`Scénario07_50%`[[20]],
+                            comparaison08$`Scénario07_10%`[[25]], comparaison08$`Scénario07_30%`[[25]], comparaison08$`Scénario07_50%`[[25]],
+                            comparaison08$`Scénario07_10%`[[30]], comparaison08$`Scénario07_30%`[[30]], comparaison08$`Scénario07_50%`[[30]]),
                   Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 3),
                   Scénario = c(1, 2, 3))
 
