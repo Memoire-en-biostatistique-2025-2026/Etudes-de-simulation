@@ -470,6 +470,106 @@ ggplot(dat) +
   facet_wrap(vars(Méthode))
 
 ################################################################################
+# Scénarios avec différentes valeurs de prévalence de W1 et un taux de co-infection entre 30% et 40%
+
+# Tableau de comparaison
+
+comparaison05 <- data.frame(matrix(ncol = 5, 
+                                   nrow = 30))
+
+colnames(comparaison05) <- c(
+  "Estimation", 
+  "Performance",
+  "Scénario09_10%",
+  "Scénario09_15%",
+  "Scénario09_20%"
+)
+
+comparaison05$Estimation <- c("RegLog", "-", "-", "-", "-", "IPW", "-", "-", "-", "-", 
+                              "TNDDR_RF", "-", "-", "-", "-", "TNDDR_Lasso", "-", "-", "-", "-",
+                              "TNDDR_Mars", "-", "-", "-", "-", "TNDDR_RN", "-", "-", "-", "-")
+
+comparaison05$Performance <- rep(c("Biais", "Variance", "MSE", "Précision", "%Cov"), 6)
+
+comparaison05$`Scénario09_10%` <- c(
+  
+  0.175823717157357, 0.0108261917709699, 0.0417293450942291, 0.0108434183114487 ,0.465,
+  0.157865298697298, 0.0112956098633009, 0.0417293450942291,  0.013964902641564, 0.541,
+  0.138396036028392, 0.0130979296035067, 0.0322382944622752, 0.0817987789382379, 0.845,
+  0.14537269810135, 0.0646423549340083, 0.0857109339323407, -0.745683686158505, 0.629,
+  0.114631524677064, 0.0426487673480325, 0.0557465050304728, 0.631156655380948, 0.906,
+  -0.0280821502323639, 0.120644489972518, 0.121312452644218, 1.42253009199377, 0.879
+  
+)
+
+comparaison05$`Scénario09_15%` <- c(
+  
+  0.198554209371233, 0.00983982345794051, 0.0492537576935179, 0.0083945959879799, 0.311,
+  0.181026535350851, 0.0100243707369039, 0.0492537576935179, 0.0170215118831167, 0.365,
+  0.164112753688571, 0.0108618015415147, 0.0377839356632187, 0.00142517430247924, 0.715,
+  0.200546466184456, 0.0252976877048579, 0.0654912751162262, 0.262340267801779, 0.341,
+  0.135060442443518, 0.0359589898124236, 0.0541643539356501, 0.867881259792783, 0.831,
+  0.00465075736726189, 0.113252670245633, 0.113161047119477, -0.437781547114235, 0.853
+  
+)
+
+comparaison05$`Scénario09_20%` <- c(
+  
+  0.24424407055347, 0.00943043170781744, 0.0690761672766379, 0.00341786990662474, 0.115,
+  0.228244359290928, 0.00952754733098909 , 0.0690761672766379, 0.014177880553069, 0.155,
+  0.209353163887801, 0.0104651796157284, 0.0542834616659454, -0.00167007043181153, 0.485,
+  0.24104636999114, 0.0194207899024812, 0.0775047215984843, 0.302417093737385, 0.157,
+  0.182751771164768, 0.0350625625715622, 0.0684257098728505, 0.77530622133134, 0.669,
+  0.0750761891788735, 0.112000197655862, 0.117524631639828, 0.480470019294936, 0.792
+  
+)
+
+View(comparaison05)
+
+####################### Représentation graphique ###############################
+
+# Biais
+dat <- data.frame(x_biais = c(comparaison05$`Scénario09_10%`[[1]], comparaison05$`Scénario09_15%`[[1]], comparaison05$`Scénario09_20%`[[1]],
+                              comparaison05$`Scénario09_10%`[[6]], comparaison05$`Scénario09_15%`[[6]], comparaison05$`Scénario09_20%`[[6]],
+                              comparaison05$`Scénario09_10%`[[11]], comparaison05$`Scénario09_15%`[[11]], comparaison05$`Scénario09_20%`[[11]],
+                              comparaison05$`Scénario09_10%`[[16]], comparaison05$`Scénario09_15%`[[16]], comparaison05$`Scénario09_20%`[[16]],
+                              comparaison05$`Scénario09_10%`[[21]], comparaison05$`Scénario09_15%`[[21]], comparaison05$`Scénario09_20%`[[21]],
+                              comparaison05$`Scénario09_10%`[[26]], comparaison05$`Scénario09_15%`[[26]], comparaison05$`Scénario09_20%`[[26]]),
+                  Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 3),
+                  Scénario = c(1, 2, 3))
+
+
+dat$Scénario <- as.factor(dat$Scénario)
+dat$Méthode<- as.factor(dat$Méthode)
+
+
+ggplot(dat) +
+  aes(x = Scénario, y = x_biais) +
+  geom_col(fill = "#112446") +
+  theme_minimal() +
+  facet_wrap(vars(Méthode))
+
+# Couverture
+dat <- data.frame(x_cov = c(comparaison05$`Scénario09_10%`[[5]], comparaison05$`Scénario09_15%`[[5]], comparaison05$`Scénario09_20%`[[5]],
+                            comparaison05$`Scénario09_10%`[[10]], comparaison05$`Scénario09_15%`[[10]], comparaison05$`Scénario09_20%`[[10]],
+                            comparaison05$`Scénario09_10%`[[15]], comparaison05$`Scénario09_15%`[[15]], comparaison05$`Scénario09_20%`[[15]],
+                            comparaison05$`Scénario09_10%`[[20]], comparaison05$`Scénario09_15%`[[20]], comparaison05$`Scénario09_20%`[[20]],
+                            comparaison05$`Scénario09_10%`[[25]], comparaison05$`Scénario09_15%`[[25]], comparaison05$`Scénario09_20%`[[25]],
+                            comparaison05$`Scénario09_10%`[[30]], comparaison05$`Scénario09_15%`[[30]], comparaison05$`Scénario09_20%`[[30]]),
+                  Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN"), each = 3),
+                  Scénario = c(1, 2, 3))
+
+
+dat$Scénario <- as.factor(dat$Scénario)
+dat$Méthode<- as.factor(dat$Méthode)
+
+
+ggplot(dat) +
+  aes(x = Scénario, y = x_cov) +
+  geom_col(fill = "#112446") +
+  theme_minimal() +
+  facet_wrap(vars(Méthode))
+################################################################################
 ## Taille d'échantillo = 5000
 ################################################################################
 ## Scénarios avec différents taux de co-infection
