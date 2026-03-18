@@ -75,7 +75,7 @@ sd(l_vraiRRm)
 ################################################################################
 # Initialiser des objets pour contenir les resultats
 
-Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
+Tab01 <- data.frame(n = c("5000", "-", "-", "-"))
 
 ################################################################################
 ########################## Analyse des résultats ###############################
@@ -135,7 +135,7 @@ methode <- list(RandomForest, Lasso, Mars, RN)
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, W1_prev = 0.1,
+  dat <- datagen(seed = seeds_list[i], ssize = 5000, W1_prev = 0.1,
                  co_inf_para1 = 0.5, co_inf_para2 = 0.6, popsize = 1*10**6)
   
   resultats[i,] <- RegLog(dat) # Régression logistique
@@ -593,7 +593,7 @@ sd(l_vraiRRm)
 ################################################################################
 # Initialiser des objets pour contenir les resultats
 
-Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
+Tab01 <- data.frame(n = c("5000", "-", "-", "-"))
 
 ################################################################################
 ########################## Analyse des résultats ###############################
@@ -653,7 +653,7 @@ methode <- list(RandomForest, Lasso, Mars, RN)
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, W1_prev = 0.15,
+  dat <- datagen(seed = seeds_list[i], ssize = 5000, W1_prev = 0.15,
                  co_inf_para1 = 0.1, co_inf_para2 = 0.5, popsize = 1*10**6)
   
   resultats[i,] <- RegLog(dat) # Régression logistique
@@ -1111,7 +1111,7 @@ sd(l_vraiRRm)
 ################################################################################
 # Initialiser des objets pour contenir les resultats
 
-Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
+Tab01 <- data.frame(n = c("5000", "-", "-", "-"))
 
 ################################################################################
 ########################## Analyse des résultats ###############################
@@ -1171,7 +1171,7 @@ methode <- list(RandomForest, Lasso, Mars, RN)
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, W1_prev = 0.2,
+  dat <- datagen(seed = seeds_list[i], ssize = 5000, W1_prev = 0.2,
                  co_inf_para1 = 0.1, co_inf_para2 = 0.12, popsize = 1*10**6)
   
   resultats[i,] <- RegLog(dat) # Régression logistique

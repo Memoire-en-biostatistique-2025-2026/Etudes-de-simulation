@@ -13,17 +13,17 @@ library(dplyr)
 library(kableExtra)
 
 ################################################################################
-# Scénario 05 (co-infection ~ 40% dans l'échantillon): Sous-scénario 01 : W1_prev = 10%, 15% et 20% 
+# Scénario 05 (co-infection ~ 40% dans l'échantillon): Sous-scénario 01 : W2_prev = 10%, 15% et 20% 
 #                                                                         
-# Pour W1_prev = 30% : co_inf_para1 = 0.5, co_inf_para2 = 0.6
-# Pour W1_prev = 50% : co_inf_para1 = 0.1, co_inf_para2 = 0.5
-# Pour W1_prev = 70% : co_inf_para1 = 0.1, co_inf_para2 = 0.12
+# Pour W2_prev = 10% : co_inf_para1 = 2, co_inf_para2 = 3
+# Pour W2_prev = 15% : 
+# Pour W2_prev = 20% : 
 
 ################################################################################
 
 ################################################################################
 ################################################################################
-# Pour W1_prev = 10% : co_inf_para1 = 0.5, co_inf_para2 = 0.6
+# Pour W2_prev = 10% : co_inf_para1 = 2, co_inf_para2 = 3
 # Proportion de co-infection ~40%
 
 set.seed(1) # Pour avoir toujours les mêmes germes
@@ -37,8 +37,8 @@ l_vraiRRm <- rep(NA, nsim)
 
 for (i in 1:nsim) {
   
-  dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000, W1_prev = 0.1,
-                      co_inf_para1 = 0.5, co_inf_para2 = 0.6)
+  dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000, W2_prev = 0.1,
+                      co_inf_para1 = 2, co_inf_para2 = 3)
   
   summary(dat)
   
@@ -61,21 +61,21 @@ for (i in 1:nsim) {
 l_vraiRRc
 
 mean(l_vraiRRc)
-# 0.3922989
+# 0.5042997
 sd(l_vraiRRc)
-# 0.01513285
+# 0.004300895
 
 l_vraiRRm
 
 mean(l_vraiRRm)
-# 0.3937817
+# 0.5303867
 sd(l_vraiRRm)
-# 0.01513449
+# 0.004232317
 
 ################################################################################
 # Initialiser des objets pour contenir les resultats
 
-Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
+Tab01 <- data.frame(n = c("5000", "-", "-", "-"))
 
 ################################################################################
 ########################## Analyse des résultats ###############################
@@ -135,8 +135,8 @@ methode <- list(RandomForest, Lasso, Mars, RN)
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, W1_prev = 0.1,
-                 co_inf_para1 = 0.5, co_inf_para2 = 0.6, popsize = 1*10**6)
+  dat <- datagen(seed = seeds_list[i], ssize = 5000, W2_prev = 0.1,
+                 co_inf_para1 = 2, co_inf_para2 = 3, popsize = 1*10**6)
   
   resultats[i,] <- RegLog(dat) # Régression logistique
   resultats2[i,] <- IPW(dat)   # IPW
@@ -542,7 +542,7 @@ kable(Tab01)
 
 ################################################################################
 ################################################################################
-# Pour W1_prev = 15% : co_inf_para1 = 0.1, co_inf_para2 = 0.5
+# Pour I2_prev = 15% : co_inf_para1 = 2, co_inf_para2 = 3
 # Proportion de co-infection ~40%
 
 set.seed(1) 
@@ -555,8 +555,8 @@ l_vraiRRm <- rep(NA, nsim)
 
 for (i in 1:nsim) {
   
-  dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000, W1_prev = 0.15,
-                      co_inf_para1 = 0.1, co_inf_para2 = 0.5)
+  dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000, I2_prev = 0.15,
+                      co_inf_para1 = 2, co_inf_para2 = 3)
   
   summary(dat)
   
@@ -593,7 +593,7 @@ sd(l_vraiRRm)
 ################################################################################
 # Initialiser des objets pour contenir les resultats
 
-Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
+Tab01 <- data.frame(n = c("5000", "-", "-", "-"))
 
 ################################################################################
 ########################## Analyse des résultats ###############################
@@ -653,8 +653,8 @@ methode <- list(RandomForest, Lasso, Mars, RN)
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, W1_prev = 0.15,
-                 co_inf_para1 = 0.1, co_inf_para2 = 0.5, popsize = 1*10**6)
+  dat <- datagen(seed = seeds_list[i], ssize = 5000, I2_prev = 0.15,
+                 co_inf_para1 = 2, co_inf_para2 = 3, popsize = 1*10**6)
   
   resultats[i,] <- RegLog(dat) # Régression logistique
   resultats2[i,] <- IPW(dat)   # IPW
@@ -1059,7 +1059,7 @@ Tab01$`Autres` = list(
 kable(Tab01)
 ################################################################################
 ################################################################################
-# Pour W1_prev = 20% : co_inf_para1 = 0.1, co_inf_para2 = 0.12
+# Pour I2_prev = 20% : co_inf_para1 = 2, co_inf_para2 = 3
 # Proportion de co-infection ~40%
 
 set.seed(1) 
@@ -1073,8 +1073,8 @@ l_vraiRRm <- rep(NA, nsim)
 
 for (i in 1:nsim) {
   
-  dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000, W1_prev = 0.2,
-                      co_inf_para1 = 0.1, co_inf_para2 = 0.12)
+  dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000, I2_prev = 0.2,
+                      co_inf_para1 = 2, co_inf_para2 = 3)
   
   summary(dat)
   
@@ -1111,7 +1111,7 @@ sd(l_vraiRRm)
 ################################################################################
 # Initialiser des objets pour contenir les resultats
 
-Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
+Tab01 <- data.frame(n = c("5000", "-", "-", "-"))
 
 ################################################################################
 ########################## Analyse des résultats ###############################
@@ -1171,8 +1171,8 @@ methode <- list(RandomForest, Lasso, Mars, RN)
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, W1_prev = 0.2,
-                 co_inf_para1 = 0.1, co_inf_para2 = 0.12, popsize = 1*10**6)
+  dat <- datagen(seed = seeds_list[i], ssize = 5000, I2_prev = 0.2,
+                 co_inf_para1 = 2, co_inf_para2 = 3, popsize = 1*10**6)
   
   resultats[i,] <- RegLog(dat) # Régression logistique
   resultats2[i,] <- IPW(dat)   # IPW
