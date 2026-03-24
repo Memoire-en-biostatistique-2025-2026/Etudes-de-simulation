@@ -43,7 +43,7 @@
    
   Then we changed one hyperparameter at a time, keeping the others at their initial values (those of the baseline scenario).
   
-   High co-infection rate_TND ~ 40% for :
+   High co-infection rate_TND ~ 40% for:
    
    * Scenario 05: Prevalence of I2 (infection of interest): 15%, 50%, and 70%.
 
