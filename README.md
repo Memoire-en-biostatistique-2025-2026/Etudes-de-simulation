@@ -53,5 +53,5 @@
    
    * Scenario 08: Prevalence of W1 (infection of interest): 10%, 15%, and 30%.
    
-   * Scenario 09: Prevalence of W2 (infection of interest): (Not Not coded yet)
+   * Scenario 09: Prevalence of W2 (infection of interest): (Not coded yet)
 
