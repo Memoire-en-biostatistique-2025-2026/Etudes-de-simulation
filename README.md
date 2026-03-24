@@ -25,6 +25,7 @@
 1. Source codes and data generation environment (Folder `Code R`):
 
    a) `Générations des données.R`:
+   
    b) Estimation functions:
       1. `Fonc01_RegLog.R`: Code for logistic regression.
       2. `Fonc02_IPW.R`: Code for Inverse Probability Weighting (IPW) method.
