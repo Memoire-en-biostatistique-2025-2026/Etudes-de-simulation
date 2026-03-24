@@ -24,7 +24,7 @@
 
 1. Source codes and data generation environment (Folder `Code R`):
 
-   a) `Générations des données.R`:
+   a) `Générations des données.R`: Data generation process (variables and their distributions) as well as counterfactual scenarios.
    
    b) Estimation functions:
       1. `Fonc01_RegLog.R`: Code for logistic regression.
@@ -55,3 +55,4 @@
    
    * Scenario 09: Prevalence of W2 (infection of interest): (Not coded yet)
 
+2. `Résultats bruts`: The raw results of some of the scenarios presented above.
