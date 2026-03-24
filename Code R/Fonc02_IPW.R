@@ -79,6 +79,7 @@ IPW <- function(dat){
   
   ## RRm (marginal relative risk)
   ## ^VE (vaccine effectiveness)
+  ## Variance of the log of mRR
   ## Lower bound of the confidence interval
   ## Upper bound of the confidence interval
 

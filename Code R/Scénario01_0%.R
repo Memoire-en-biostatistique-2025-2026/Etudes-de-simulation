@@ -1,10 +1,12 @@
 
+# Execute R code directly from the following files
+
 source("Code R/Génération des données.R")
 source("Code R/Fonc01_RegLog.R")
 source("Code R/Fonc02_IPW.R")
 source("Code R/Fonc03_TNDDR.R")
 
-# Chargements des librairies nécessaires
+# Install and load required packages
 
 library(simhelpers)
 library(dplyr)
@@ -13,11 +15,11 @@ library(knitr)
 library(dplyr)
 library(kableExtra)
 
-# Calcul des vraies valeurs 
+# Calculate true values of cRR and mRR 
 
-set.seed(1) # Pour avoir toujours les mêmes germes
+set.seed(1) # To ensure reproducibility
 
-nsim <- 10 # Nombre de réplications
+nsim <- 10 # Number of replicas
 
 seeds_list <- sample(1:1000000, size = nsim)
 
@@ -62,61 +64,62 @@ sd(l_vraiRRm)
 # 0.00673342
 
 ################################################################################
-# Initialiser des objets pour contenir les resultats
+# Initialize objects to store results
 
 Tab01 <- data.frame(n = c("1000", "-", "-", "-"))
 
 ################################################################################
-########################## Analyse des résultats ###############################
+########################## Analysis of the results #############################
 
-nsim <- 1000
+nsim <- 1000 # Number of replicas
 
-# Initialiser des objets pour contenir les resultats
+# Initialize objects to store results
 
 resultats <- data.frame(matrix(ncol = 4, 
                                nrow = nsim))
 
-colnames(resultats) <- c("coe_reg", 
-                         "err_reg",
-                         "RRc", # Risque relatif conditionnel
-                         "est_VE")
+colnames(resultats) <- c("coe_reg", # Logistic regression coefficient
+                         "err_reg", # Standard error of the coefficient
+                         "RRc", # Conditional risk ratio
+                         "est_VE") # ^VE (vaccine effectiveness)
 
 resultats2 <- data.frame(matrix(ncol = 5, 
                                 nrow = nsim))
 
-colnames(resultats2) <- c("RRm",# Risque relatif marginal
-                          "VE",
-                          "var_log_RRm",# Variance du log du risque relatif marginal
-                          "IC_inf", # Borne inférieure de l'intervalle de confiance
-                          "IC_sup") # Sa borne supérieure
+colnames(resultats2) <- c("RRm",# Marginal relative risk
+                          "VE",# ^VE (vaccine effectiveness)
+                          "var_log_RRm",# Variance of the log of mRR
+                          "IC_inf", # Lower bound of the confidence interval
+                          "IC_sup") # Upper bound of the confidence interval
 
 resultats3 <- data.frame(matrix(ncol = 36, 
                                 nrow = nsim))
 
 colnames(resultats3) <- c("RRm_RF", "VE_RF", "var_log_RRm-RF", "IC_inf1-RF", "IC_sup1-RF", "IC_inf2-RF", "IC_sup2-RF", 
-                                                                  "IC_inf3-RF", "IC_sup3-RF",# Forêt aléatoire
+                                                                  "IC_inf3-RF", "IC_sup3-RF",# Random Forest
                              
                              "RRm_Lasso", "VE_Lasso","var_log_RRm-Lasso", "IC_inf1-Lasso", "IC_sup1-Lasso", 
                                                                           "IC_inf2-Lasso", "IC_sup2-Lasso", 
-                                                                          "IC_inf3-Lasso", "IC_sup3-Lasso",# Régression Lasso
+                                                                          "IC_inf3-Lasso", "IC_sup3-Lasso",# Lasso regression
                              
                              "RRm_Mars", "VE_Mars","var_log_RRm-Mars", "IC_inf1-Mars", "IC_sup1-Mars", 
                                                                        "IC_inf2-Mars", "IC_sup2-Mars", 
-                                                                       "IC_inf3-Mars", "IC_sup3-Mars",# Régression avec splines
+                                                                       "IC_inf3-Mars", "IC_sup3-Mars",# MARS
                              
                              "RRm_RN", "VE_RN","var_log_RRm-RN", "IC_inf1-RN", "IC_sup1-RN", 
                                                                  "IC_inf2-RN", "IC_sup2-RN", 
-                                                                 "IC_inf3-RN", "IC_sup3-RN"# Réseaux de neurones
+                                                                 "IC_inf3-RN", "IC_sup3-RN"# Neural networks
                              
                              
-                          # Risque relatid marginal   
-                          # Variance du log du risque relatif marginal
-                          # Borne inférieure du premier intervalle de confiance
-                          # Sa borne supérieure
-                          # Borne inférieure du deuxième intervalle de confiance
-                          # Sa borne supérieure
-                          # Borne inférieure du troisième intervalle de confiance
-                          # Sa borne supérieure
+                          # Marginal relative risk  
+                          # ^VE (vaccine effectiveness)
+                          # Variance of the log of the mRR
+                          # Lower bound of the first confidence interval
+                          # Its upper bound
+                          # Lower bound of the second confidence interval
+                          # Its upper bound
+                          # Lower bound of the third confidence interval
+                          # Its upper bound
                        
 )
 
@@ -126,7 +129,7 @@ for (i in 1:nsim) {
   
   dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8, popsize = 1*10**6)
   
-  resultats[i,] <- RegLog(dat) # Régression logistique
+  resultats[i,] <- RegLog(dat) # Logistic regression
   resultats2[i,] <- IPW(dat)   # IPW
   
   l <- list()
@@ -135,23 +138,24 @@ for (i in 1:nsim) {
     k <- rep(NA, 9)
     tryCatch({
       
-    k <- TNDDR(dat, j) # Liste des résultats pour la méthode j
+    k <- TNDDR(dat, j) # List of results for method j
     
     }, error = function(e){})
     
-    l <- append(l, k) # Combiner les résultats des différentes méthodes
+    l <- append(l, k) # Combining the results of different methods for TNDDR
   
   resultats3[i,] <- l
   
     
   }
   
-  # DT : Ajout d'une ligne pour suivre l'avancement
+  # Add a line to track progress
   
   if(!(i%%10)) print(data.frame(temps = Sys.time(), iter = i))
   
 }
-# Combien de réplications avec des NA
+
+# How many replicates with NA?
 
 sum(rowSums(is.na(resultats)) > 0)
 sum(rowSums(is.na(resultats2)) > 0)
@@ -161,11 +165,11 @@ sum(rowSums(is.na(resultats3[,10:18])) > 0)
 sum(rowSums(is.na(resultats3[,19:27])) > 0)
 sum(rowSums(is.na(resultats3[,28:36])) > 0)
 
-########################## Régression logistique ###############################
+############################# Logistic regression ##############################
 
 Tab01$Methode <- c("RegLog", "-", "-","-")
 
-##    - statistiques descriptives
+##    - Descriptive statistics
 
 summary(resultats$RRc)
 mean(resultats$RRc)
@@ -174,9 +178,9 @@ sd(resultats$RRc)
 sd(resultats$coe_reg)
 mean(resultats$err_reg)
 
-help("calc_absolute") # calculer les différentes mesures de performance
+help("calc_absolute") # calculate various performance metrics
 
-# Ajout de la colonne contenant la vraie valeur du paramètre
+# Add a column containing the true value of the parameter
 
 resultats$vrai_param <- rep(mean(l_vraiRRc), nsim)
 
@@ -196,7 +200,7 @@ MCSE_mse <- calc_absolute(resultats, RRc, vrai_param, criteria = "mse")
 
 help("calc_coverage")
 
-# Calcul des bornes de l'intervalle de confiance
+# Calculating the confidence interval bounds
 
 resultats$lim_inf <- exp(resultats[, 1] - 1.96*resultats[, 2]) 
 resultats$lim_sup <- exp(resultats[, 1] + 1.96*resultats[, 2])
@@ -219,7 +223,7 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[2]),
   list(name = "Mse", value = MCSE_mse[2]),
-  list(name = "Précision_var", value = sd(resultats$coe_reg) - mean(resultats$err_reg)) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(resultats$coe_reg) - mean(resultats$err_reg)) # See how accurately the variance is estimated
   
 )
 
@@ -234,7 +238,7 @@ kable(Tab01)
 
 Tab01$Methode <- c("IPW", "-", "-","-")
 
-##    - statistiques descriptives
+##    - Descriptive statistics
 
 summary(resultats2$RRm)
 mean(resultats2$RRm)
@@ -243,13 +247,11 @@ sd(resultats2$RRm)
 mean(sqrt(resultats2$var_log_RRm))
 sd(log(resultats2$RRm))
 
-##    - biais, variance, moyenne de l'erreur-type, couverture des IC
+help("calc_absolute") # calculate various performance metrics
+
+# Add a column containing the true value of the parameter
 
 resultats2$vrai_param <- rep(mean(l_vraiRRm), nsim) # vraie valeur du paramètre
-
-Tab01$Methode <- c("IPW", "-", "-", "-")
-
-help("calc_absolute") # calculer les différentes mesures de performance
 
 ### MCSE_biais
 
@@ -267,9 +269,6 @@ MCSE_MSE <- calc_absolute(resultats2, RRm, vrai_param, criteria = "mse")
 
 help("calc_coverage")
 
-# Calcul des bornes de l'intervalle de confiance
-
-
 coverage <- calc_coverage(resultats2, IC_inf, IC_sup, vrai_param)
 
 Tab01$`Erreur de Monte Carlo` = list(
@@ -286,7 +285,7 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[2]),
   list(name = "Mse", value = MCSE_mse[2]),
-  list(name = "Précision_var", value = sd(log(resultats2$RRm)) - mean(sqrt(resultats2$var_log_RRm)) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(log(resultats2$RRm)) - mean(sqrt(resultats2$var_log_RRm)) # See how accurately the variance is estimated
        
   )
   
@@ -300,11 +299,11 @@ kable(Tab01)
 # |-    |-       |MCSE_mse           , 0.00025532290970098   |Mse                , 0.00517118027056473 |
 # |-    |-       |%Cov, 0.92                                 |Précision_var     , 0.0202533974759736   |
 
-########################## TNDDR ###############################
+################################## TNDDR #######################################
 
 Tab01$Methode <- c("TNDDR_RF", "-", "-","-")
 
-##    - statistiques descriptives
+##    - Descriptive statistics
 
 summary(resultats3$RRm_RF)
 mean(resultats3$RRm_RF)
@@ -313,9 +312,9 @@ sd(resultats3$RRm_RF)
 mean(sqrt(resultats3$`var_log_RRm-RF`))
 sd(log(resultats3$RRm_RF))
 
-help("calc_absolute") # calculer les différentes mesures de performance
+help("calc_absolute") # calculate various performance metrics
 
-# Ajout de la colonne contenant la vraie valeur du paramètre
+# Add a column containing the true value of the parameter
 
 resultats3$vrai_param <- rep(mean(l_vraiRRm), nsim)
 
@@ -335,8 +334,6 @@ MCSE_mse <- calc_absolute(resultats3, RRm_RF, vrai_param, criteria = "mse")
 
 help("calc_coverage")
 
-# Calcul des bornes de l'intervalle de confiance
-
 coverage <- calc_coverage(resultats3, `IC_inf2-RF`, `IC_sup2-RF`, vrai_param)
 
 Tab01$`Erreur de Monte Carlo` = list(
@@ -353,7 +350,7 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[2]),
   list(name = "Mse", value = MCSE_mse[2]),
-  list(name = "Précision_var", value = sd(log(resultats3$RRm_RF)) - mean(sqrt(resultats3$`var_log_RRm-RF`)) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(log(resultats3$RRm_RF)) - mean(sqrt(resultats3$`var_log_RRm-RF`)) # See how accurately the variance is estimated
        
   )
   
@@ -369,11 +366,11 @@ kable(Tab01)
 
 ################################################################################
 
-# Régression Lasso
+# Lasso regression
 
 Tab01$Methode <- c("TNDDR_Lasso", "-", "-","-")
 
-##    - statistiques descriptives
+##    - Descriptive statistics
 
 summary(resultats3$RRm_Lasso)
 mean(resultats3$RRm_Lasso)
@@ -382,7 +379,7 @@ sd(resultats3$RRm_Lasso)
 mean(sqrt(resultats3$`var_log_RRm-Lasso`))
 sd(log(resultats3$RRm_Lasso))
 
-help("calc_absolute") # calculer les différentes mesures de performance
+help("calc_absolute") # calculate various performance metrics
 
 ### MCSE_biais
 
@@ -400,8 +397,6 @@ MCSE_mse <- calc_absolute(resultats3, RRm_Lasso, vrai_param, criteria = "mse")
 
 help("calc_coverage")
 
-# Calcul des bornes de l'intervalle de confiance
-
 coverage <- calc_coverage(resultats3, `IC_inf2-Lasso`, `IC_sup2-Lasso`, vrai_param)
 
 Tab01$`Erreur de Monte Carlo` = list(
@@ -418,7 +413,7 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[2]),
   list(name = "Mse", value = MCSE_mse[2]),
-  list(name = "Précision_var", value = sd(log(resultats3$RRm_Lasso)) - mean(sqrt(resultats3$`var_log_RRm-Lasso`)) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(log(resultats3$RRm_Lasso)) - mean(sqrt(resultats3$`var_log_RRm-Lasso`)) # See how accurately the variance is estimated
        
   )
   
@@ -434,11 +429,11 @@ kable(Tab01)
 
 ################################################################################
 
-# earth_GLM
+# MARS
 
 Tab01$Methode <- c("TNDDR_Mars", "-", "-","-")
 
-##    - statistiques descriptives
+##    - Descriptive statistics
 
 summary(resultats3$RRm_Mars)
 mean(resultats3$RRm_Mars)
@@ -447,7 +442,7 @@ sd(resultats3$RRm_Mars)
 mean(sqrt(resultats3$`var_log_RRm-Mars`))
 sd(log(resultats3$RRm_Mars))
 
-help("calc_absolute") # calculer les différentes mesures de performance
+help("calc_absolute") # calculate various performance metrics
 
 ### MCSE_biais
 
@@ -465,8 +460,6 @@ MCSE_mse <- calc_absolute(resultats3, RRm_Mars, vrai_param, criteria = "mse")
 
 help("calc_coverage")
 
-# Calcul des bornes de l'intervalle de confiance
-
 coverage <- calc_coverage(resultats3, `IC_inf2-Mars`, `IC_sup2-Mars`, vrai_param)
 
 Tab01$`Erreur de Monte Carlo` = list(
@@ -483,7 +476,7 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[2]),
   list(name = "Mse", value = MCSE_mse[2]),
-  list(name = "Précision_var", value = sd(log(resultats3$RRm_Mars)) - mean(sqrt(resultats3$`var_log_RRm-Mars`)) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(log(resultats3$RRm_Mars)) - mean(sqrt(resultats3$`var_log_RRm-Mars`)) # See how accurately the variance is estimated
        
   )
   
@@ -499,11 +492,11 @@ kable(Tab01)
 
 ################################################################################
 
-# Réseaux de neurones
+# Neural networks
 
 Tab01$Methode <- c("TNDDR_RN", "-", "-","-")
 
-##    - statistiques descriptives
+##    - Descriptive statistics
 
 summary(resultats3$RRm_RN)
 mean(resultats3$RRm_RN)
@@ -512,7 +505,7 @@ sd(resultats3$RRm_RN)
 mean(sqrt(resultats3$`var_log_RRm-RN`))
 sd(log(resultats3$RRm_RN))
 
-help("calc_absolute") # calculer les différentes mesures de performance
+help("calc_absolute") # calculate various performance metrics
 
 ### MCSE_biais
 
@@ -530,8 +523,6 @@ MCSE_mse <- calc_absolute(resultats3, RRm_RN, vrai_param, criteria = "mse")
 
 help("calc_coverage")
 
-# Calcul des bornes de l'intervalle de confiance
-
 coverage <- calc_coverage(resultats3, `IC_inf2-RN`, `IC_sup2-RN`, vrai_param)
 
 Tab01$`Erreur de Monte Carlo` = list(
@@ -548,7 +539,7 @@ Tab01$`Autres` = list(
   list(name = "Bias", value = MCSE_biais[2]),
   list(name = "Var", value = MCSE_var[2]),
   list(name = "Mse", value = MCSE_mse[2]),
-  list(name = "Précision_var", value = sd(log(resultats3$RRm_RN)) - mean(sqrt(resultats3$`var_log_RRm-RN`)) # Voir si la variance est bien estimée
+  list(name = "Précision_var", value = sd(log(resultats3$RRm_RN)) - mean(sqrt(resultats3$`var_log_RRm-RN`)) # See how accurately the variance is estimated
        
   )
   
