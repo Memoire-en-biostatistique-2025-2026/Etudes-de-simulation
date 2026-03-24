@@ -4,7 +4,7 @@
 
  This project aim to explore the impact of the proportion of co-infections on the estimation of vaccine effectiveness in the context of a testnegative design study (TND). And this by trying to isolate the impact of co-infections while maintaining fixed baseline prevalences.
  
- The simulation study aims to evaluate the performance of different methods for estimating vaccine effectiveness : logistic regression, IPW, and TNDDR (doubly robust estimator), in the presence of co-infection, which may violate the control exchangeability assumption.
+ The simulation study aims to evaluate the performance of different methods for estimating vaccine effectiveness : logistic regression, IPW (Inverse Probability Weighting), and TNDDR (doubly robust estimator), in the presence of co-infection, which may violate the control exchangeability assumption.
  
  Next we tried to explore individual impact of different hyperparameters, including vaccination coverage, prevalence of target infection, prevalence of non-target infection and sample size.
  

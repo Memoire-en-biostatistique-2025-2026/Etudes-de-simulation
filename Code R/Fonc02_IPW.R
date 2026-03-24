@@ -1,40 +1,35 @@
 
-# Chargement des librairies nécessaires
+# Install and load required packages
 
 library(dplyr)
 library(geepack)
 library(geex)
 
-# Définir la fonction pour l'inverse de probabilité de traitement
+# Define function for Inverse Probability Weighting (IPW)
 
 IPW <- function(dat){
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
-  # Calcul des poids
+  # Calculate Weights 
   
   mod.denom <- glm(V ~ C,
                    
                    family = binomial(link = "logit"),  
                    data = TNDdat,
-                   subset = (TNDdat$Y == 0)) # Chez les témoins
+                   subset = (TNDdat$Y == 0)) # Among controls
   
   g1 <- predict(mod.denom, newdata = TNDdat, type = "response")
   
-  # Analyse avec IPW
-  # Enregistrer les resultats
-  
-  ## TND (infection symptomatique)
+  # IPW estimator
   
   RRm <- mean(TNDdat$Y*TNDdat$V/g1)/mean(TNDdat$Y*(1-TNDdat$V)/(1-g1))
    
-  # Risque relatif marginal-Efficacité vaccinale
-  
-############### Calcul des ICs avec l'approche des m-estimateurs ###############
+######## Calculate confidence intervals using the m-estimator approach #########
 
-# Estimation de la variance
+# Estimate variance
 
-#### Estimation du RRm avec GEEx ####
+#### Estimation of RRm with GEEx ####
 
   geex_ef <- function(data){
     
@@ -46,10 +41,9 @@ IPW <- function(dat){
     
       alpha <- theta[1:2]  
     
-      pscore <- (Y == 0)*plogis(alpha[1] + alpha[2]*C)
-    # pscore seulement chez les témoins
+      pscore <- (Y == 0)*plogis(alpha[1] + alpha[2]*C) # pscore only among controls
     
-    # Equations d'estimation : les poids sont estimés à partir d'une régression logistique simple
+      # Estimation equations: weights are estimated using simple logistic regression
     
       eq_1 <- (Y == 0)*(V - pscore) # ∂l(β)/β0 = 0
     
@@ -64,22 +58,29 @@ IPW <- function(dat){
 
   mestr <- m_estimate(estFUN = geex_ef,                                       
                     data = TNDdat,                                             
-                    root_control = setup_root_control(start = c(0, 0, 0.5, 0.5))) # Mêmes valeurs que dans le code que vous m'avez envoyé
+                    root_control = setup_root_control(start = c(0, 0, 0.5, 0.5))) # The same values as in the code you sent me
 
   beta_geex <- roots(mestr) # theta = (β0, β1, ψ10)         
-  se_geex <- sqrt(diag(vcov(mestr))) # vcov(mestr) : Matrice de variance-covariance
+  se_geex <- sqrt(diag(vcov(mestr))) # vcov(mestr) : Variance-covariance matrix
   
-  # var(ln(O/E)) ~  (1/o^2)*var(O) + (1/e^2)*var(E) - (2/o*e)*COV(O,E) : O et E sont dépendants
+  # var(ln(O/E)) ~  (1/o^2)*var(O) + (1/e^2)*var(E) - (2/o*e)*COV(O,E) : O and E are dependents
 
   var_log_RRm <- (1/beta_geex[[3]]^2) * vcov(mestr)[3, 3] + (1/beta_geex[[4]]^2) * vcov(mestr)[4, 4] -
                 
                  (2/beta_geex[[3]]*beta_geex[[4]])*vcov(mestr)[3, 4]
                 
 
-## Intervalle de confiance pour RRm
+## Confidence interval for RRm
 
   IC_Inf <- beta_geex[[3]]/beta_geex[[4]]*exp(- 1.96*sqrt(var_log_RRm)) 
   IC_Sup <- beta_geex[[3]]/beta_geex[[4]]*exp(1.96*sqrt(var_log_RRm)) 
+  
+  # Store results 
+  
+  ## RRm (marginal relative risk)
+  ## ^VE (vaccine effectiveness)
+  ## Lower bound of the confidence interval
+  ## Upper bound of the confidence interval
 
   l <- list(RRm, 1 - RRm, var_log_RRm, IC_Inf, IC_Sup)
 
