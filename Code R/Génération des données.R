@@ -1,5 +1,5 @@
 
-## Chargement des librairies nécessaires
+# Install and load required packages
 
 library("stats")
 library("rje")
@@ -9,47 +9,45 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
                     
                     popsize = 150000, co_inf_para1 = 0, co_inf_para2 = 0,
                     
-                    CV = 0.33, # Couverture vaccinale
-                    I1_prev = 0.15, # Prévalence de I1
-                    I2_prev = 0.5, # Prévalence de I2
-                    W1_prev = 0.05,# Prévalence de W1
-                    W2_prev = 0.02, # Prévalence de W2
-                                   # Valeurs par défaut pour le scénario de base
+                    CV = 0.33, # Vaccination coverage
+                    I1_prev = 0.15, # Prevalence of I1
+                    I2_prev = 0.5, # Prevalence of I2
+                    W1_prev = 0.05,# Prevalence of W1
+                    W2_prev = 0.02, # Prevalence of W2
+                                   # Default values for the baseline scenario
                     
-                    return_full = FALSE) { # Pour choisir entre population et échantillon
+                    return_full = FALSE) { # To choose between the population and the TND sample
   
   
-  # Génération du facteur de confusion continu C 
+  # Generation of the continuous confounding factor C 
   
-  C <- runif(n = popsize, 0.1, 3) # On commence par les noeuds racines de notre DAG
+  C <- runif(n = popsize, 0.1, 3) # We start with the root nodes of our DAG
   
-  # Génération du statut vaccinal V : V ~ Bernoulli(logit(b0 + b1*C))
+  # Generate Vaccination Status V : V ~ Bernoulli(logit(b0 + b1*C))
   
-  ## Définir la fonction en b0 (en calculant l'intégrale) pour V
+  ## expressing the desired marginal probability as a function of b0 for V
   
   a <- 1/0.87
   f_V <- function (b0) {
     
     a*(log(1 + exp(b0 + 3*0.3)) - log(1 + exp(b0 + 0.1*0.3))) - CV
       
-       # Contrainte pour la probabilité marginale
+       # CV: the desired marginal probability, Vaccination coverage (hyperparameter)
     
   }
   
   b0 <- uniroot(f_V, c(-10, 10))$root
   
-  V <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.3*C)) # Couverture vaccinale (hyperparamètre)
-  # Voir fichier Anciens fichiers\Génération des variables
-  # pour la valeur de b0 
+  V <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.3*C)) 
+  # See the file Anciens fichiers\Génération des variables
+  # for the value of b0 
   
-  # Génération des infections I1 : I1 ~ Bernoulli(logit(b0 + b1*C + b2*C2)) et 
-  #                           I2 : I2 ~ Bernoulli(logit(b0 + b1*C + b2*V + b3*C2))
+  # Generate independent infections I1 : I1 ~ Bernoulli(logit(b0 + b1*C + b2*C2)) and 
+  #                                 I2 : I2 ~ Bernoulli(logit(b0 + b1*C + b2*V + b3*C2))
   
   C2 <- 2*rbinom(n = popsize, 1, 0.5) - 1
   
-  ## Calcul de la valeur de b0 pour I1 avec b1 et b2 connus
-  
-  # On pose:
+  ## expressing the desired marginal probability as a function of b0 for I1 with b1 and b2 known
   
   a <- 0.5/2.9
   
@@ -59,17 +57,17 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
               
     log(1 + exp(b0 + 0.1*0.35 - co_inf_para1)) - log(1 + exp(b0 + 0.1*0.35 + co_inf_para1))) - 
       
-    I1_prev # Contrainte pour la probabilité marginale
+    I1_prev # I1_prev: the desired marginal probability, prevalence of I1 (hyperparameter)
     
   }
   
   b0 <- uniroot(f_I1, c(-10, 10))$root
   
-  I1 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.35*C + co_inf_para1*C2)) # Pour une prévalence ~ 
+  I1 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.35*C + co_inf_para1*C2)) 
   
-  ## Calcul de la valeur de b0 pour I2 avec b1, b2 et b3 connus
+  ## expressing the desired marginal probability as a function of b0 for I2 with b1, b2 and b3 known
   
-  P_I2 <- function(c,b0) { # Probabilité conjointe pour I2
+  P_I2 <- function(c,b0) { # Joint probability for I2
     
     a*(expit(b0 + 0.15*c - 0.1 - co_inf_para2)*expit(0.5 + 0.3*c) + 
          
@@ -84,7 +82,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   f_I2 <- function(b0){ # P(I2 = 2) - 0.50
     
-    integrate(P_I2, 0.1, 3, b0)$value - I2_prev # Contrainte pour la probabilité marginale
+    integrate(P_I2, 0.1, 3, b0)$value - I2_prev # I2_prev: the desired marginal probability, prevalence of I2 (hyperparameter)
     
   }
   
@@ -92,10 +90,10 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   I2 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.15*C - 0.1*V + co_inf_para2*C2)) # Pour une prévalence ~ 
   
-  # Génération des symptomes W1: W1~Bernoulli(logit(b0 + b1*C[I1 = 1]))  et 
-  #                          W2: W2~Bernoulli(logit(b0 + b1*C[I2 == 1] + b2*V[I2 == 1]))
+  # Generate symptoms W1: W1~Bernoulli(logit(b0 + b1*C[I1 = 1]))  and 
+  #                   W2: W2~Bernoulli(logit(b0 + b1*C[I2 == 1] + b2*V[I2 == 1]))
   
-  ## Définir la fonction en b0 (en calculant l'intégrale) pour W1
+  ## expressing the desired marginal probability as a function of b0 for W1
   
   a <- 1/2.9
   b1 <- 0.5
@@ -104,13 +102,13 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
     (a/b1)*(log(1 + exp(b0 + 3*b1 ))  - log(1 + exp(b0 + 0.1*b1))) - 
       
-      W1_prev # Contrainte pour la probabilité marginale
+      W1_prev # W1_prev: the desired marginal probability, prevalence of W1 (hyperparameter)
     
   }
   
   b0 <- uniroot(f_W1, c(-10, 10))$root 
   
-  W1 <- rep(0, popsize) # W1 = 0 si I1 = 0, donc:
+  W1 <- rep(0, popsize) # W1 = 0 if I1 = 0, so:
   
   W1[I1 == 1] <- rbinom(
     
@@ -120,9 +118,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     
   ) # W1 = 1 ~ 4%-5%
   
-  ## Définir la fonction en b0 (en calculant l'intégrale) pour W2
-  
-  # On pose:
+  ## expressing the desired marginal probability as a function of b0 for W2
   
   a <- 0.5/2.9
   a0 <- -1.18
@@ -130,7 +126,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   b1 <- 2
   b2 <- -0.91
   
-  P_W2 <- function(c,b0) { # Probabilité conjointe pour W2
+  P_W2 <- function(c,b0) { # Joint probability for W2
     
     a*(expit(b0 + b1*c + b2)*expit(a0 + a1*c) + 
          
@@ -145,18 +141,18 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   help(integrate)
   # ...	
-  # additional arguments to be passed to f : on utilise cet argument pour passer 
-  # la valeur b0 à la fonction P_I2 dans ce cas.
+  # Additional arguments to be passed to f: this argument is used to pass 
+  # the value b0 to the P_W2 function in this case.
   
   f_W2 <- function(b0){
     
-    integrate(P_W2, 0.1, 3, b0)$value - W2_prev # Contrainte pour la probabilité marginale
+    integrate(P_W2, 0.1, 3, b0)$value - W2_prev # W2_prev: the desired marginal probability, prevalence of W2 (hyperparameter)
     
   }
   
   b0 <- uniroot(f_W2, c(-10, 10))$root 
    
-  W2 <- rep(0, popsize) # W2_0 = 0 si I2_0 = 0, donc:
+  W2 <- rep(0, popsize) # W2_0 = 0 if I2_0 = 0, so:
   
   W2[I2 == 1] <- rbinom(
     
@@ -169,56 +165,56 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   co_W <- sum(W1 == 1 & W2 == 1, na.rm = TRUE)
   per_co_W <- co_W / popsize * 100
   
-  # Génération de W
+  # Generate W
   
   W <- pmax(W1, W2)
   
-  # Génération de l'hospitalization 
+  # Generate hospitalization
   
-  H = rep(0, popsize) # H = 0 si W = 0, donc:
+  H = rep(0, popsize) # H = 0 if W = 0 (only possible if symptoms present), so:
   
   H[W == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W == 1]),
                       size = 1, n = sum(W == 1))
   
-  # Le devis test-négatif ne conserve que les personnes testées : H = 1
+  # The TND includes only those who have been tested : H = 1
   
-  R <- sample(which(H == 1), ssize, replace = TRUE) # Échantillon aléatoire parmi les personnes hospitalisées
+  R <- sample(which(H == 1), ssize, replace = TRUE) # A random sample of hospitalized patients
   
   if (return_full == FALSE) {
     
     dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W1 = W1, W2 = W2,
                                
-                               W = W, V = V, C = C)[R, ]) # Virus respiratoire syncytial RSV
+                               W = W, V = V, C = C)[R, ]) # Respiratory syncytial virus RSV
     
-    # Calcul du pourcentage de co-infection (symptomatique) dans l'échantillon
+    # Calculate the percentage of (symptomatic) co-infections in the sample
     
     co_inf <- sum(dat$Infec == 1 & dat$Infec_RSV == 1)
     
     per_co_inf <- co_inf / ssize * 100
     
-    print(paste("Le pourcentage de co_infection dans l'échantillon est :", per_co_inf))
+    print(paste("The percentage of co-infections in the sample is :", per_co_inf))
     
-  } else { # Données pour la population totale (return_full == TRUE)
+  } else { # Data for the total population (return_full == TRUE)
     
     dat <- as.data.frame(cbind(Infec_RSV = I2, Infec = I1, H = H, W1 = W1, W2 = W2,
                                
                                W = W, V = V, C = C))
     
-    # Calcul du pourcentage de co-infection symptomatique dans la population
+    # Calculate the percentage of symptomatic co-infections in the population
     
     co_inf_1 <- sum(dat$Infec == 1 & dat$Infec_RSV == 1 & dat$W == 1)
     
     per_co_inf_1 <- co_inf_1 / popsize * 100
     
-    print((paste("Le pourcentage de co_infection symptomatique dans la population est :", per_co_inf_1)))
+    print((paste("The percentage of symptomatic co-infections in the population is :", per_co_inf_1)))
     
-    # Calcul du pourcentage de co-infection asymptomatique dans la population
+    # Calculate the percentage of asymptomatic co-infections in the population
     
     co_inf_0 <- sum(dat$Infec == 1 & dat$Infec_RSV == 1 & dat$W == 0)
     
     per_co_inf_0 <- co_inf_0 / popsize * 100
     
-    print((paste("Le pourcentage de co_infection asymptomatique dans la population est :", per_co_inf_0)))
+    print((paste("The percentage of asymptomatic co-infections in the population is :", per_co_inf_0)))
     
   }
   
@@ -228,63 +224,62 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
 
 dat_full <- datagen(return_full = TRUE)
 
-sum(dat_full$V == 1)/nrow(dat_full) * 100 # Couverture vaccinale
+sum(dat_full$V == 1)/nrow(dat_full) * 100 # Vaccination coverage
 
 sum(dat_full$Infec == 1)/nrow(dat_full) * 100
-sum(dat_full$W1 == 1)/sum(dat_full$Infec == 1) * 100 # Prévalence symptomatique pour I1
+sum(dat_full$W1 == 1)/sum(dat_full$Infec == 1) * 100 # Symptomatic prevalence for I1
 
 sum(dat_full$Infec_RSV == 1)/nrow(dat_full) * 100
-sum(dat_full$W2 == 1)/sum(dat_full$Infec_RSV == 1) * 100 # Prévalence symptomatique pour I2
+sum(dat_full$W2 == 1)/sum(dat_full$Infec_RSV == 1) * 100 # Symptomatic prevalence for I2
 
 ################################################################################ 
 
-# Génération des scénarios contrefactuels
+# Generating counterfactual scenarios
 
 datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
                          
                          co_inf_para1 = 0, co_inf_para2 = 0,
                          
-                         CV = 0.33, # Couverture vaccinale
-                         I1_prev = 0.15, # Prévalence de I1
-                         I2_prev = 0.5,  # Prévalence de I2
-                         W1_prev = 0.05, # Prévalence de W1
-                         W2_prev = 0.02 # Prévalence de W2
-                                         # Valeurs par défaut pour le scénario de base
-                         ) {
+                         CV = 0.33, # Vaccination coverage
+                         I1_prev = 0.15, # Prevalence of I1
+                         I2_prev = 0.5, # Prevalence of I2
+                         W1_prev = 0.05,# Prevalence of W1
+                         W2_prev = 0.02, # Prevalence of W2
+                         # Default values for the baseline scenario
+                         
+                         return_full = FALSE) { # To choose between the population and the TND sample
   
   
-  # Génération du facteur de confusion continu C 
+  # Generation of the continuous confounding factor C 
   
-  C <- runif(n = popsize, 0.1, 3); # On commence par les noeuds racines de notre DAG
+  C <- runif(n = popsize, 0.1, 3); 
   
-  # Génération du statut vaccinal V : V ~ Bernoulli(logit(b0 + b1*C))
+  # Generate Vaccination Status V : V ~ Bernoulli(logit(b0 + b1*C))
   
-  ## Définir la fonction en b0 (en calculant l'intégrale) pour V
+  ## expressing the desired marginal probability as a function of b0 for V
   
   a <- 1/0.87
   f_V <- function (b0) {
     
     a*(log(1 + exp(b0 + 3*0.3)) - log(1 + exp(b0 + 0.1*0.3))) - 
       
-      CV # Contrainte pour la probabilité marginale
+      CV # CV: the desired marginal probability, Vaccination coverage (hyperparameter)
     
   }
   
   b0 <- uniroot(f_V, c(-10, 10))$root
   
-  V <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.3*C)) # Couverture vaccinale (hyperparamètre)
-  # Voir fichier Anciens fichiers\Génération des variables
-  # pour la valeur de b0 
+  V <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.3*C)) 
+  # See the file Anciens fichiers\Génération des variables
+  # for the value of b0 
   
-  # Génération des infections I1 : I1 ~ Bernoulli(logit(a0 + a1*C)) et 
-  #                           I2 : I2 ~ Bernoulli(logit(a0 + a1*C + a2*V))
+  # Generate independent infections I1 : I1 ~ Bernoulli(logit(b0 + b1*C + b2*C2)) and 
+  #                                 I2 : I2 ~ Bernoulli(logit(b0 + b1*C + b2*V + b3*C2))
   
   
   C2 <- 2*rbinom(n = popsize, 1, 0.5) - 1
   
-  ## Calcul de la valeur de b0 pour I1 avec b1 et b2 connus
-  
-  # On pose:
+  ## expressing the desired marginal probability as a function of b0 for I1 with b1 and b2 known
   
   a <- 0.5/2.9
   
@@ -294,7 +289,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
                 
               log(1 + exp(b0 + 0.1*0.35 - co_inf_para1)) - log(1 + exp(b0 + 0.1*0.35 + co_inf_para1))) - 
       
-      I1_prev # Contrainte pour la probabilité marginale
+      I1_prev # I1_prev: the desired marginal probability, prevalence of I1 (hyperparameter)
     
   }
   
@@ -302,9 +297,9 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   I1 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.35*C + co_inf_para1*C2))
   
-  ## Calcul de la valeur de b0 pour I2 avec b1, b2 et b3 connus
+  ## expressing the desired marginal probability as a function of b0 for I2 with b1, b2 and b3 known
   
-  P_I2 <- function(c,b0) { # Probabilité conjointe pour I2
+  P_I2 <- function(c,b0) { # Joint probability for I2
     
     a*(expit(b0 + 0.15*c - 0.1 - co_inf_para2)*expit(0.5 + 0.3*c) + 
          
@@ -319,7 +314,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   f_I2 <- function(b0){ # P(I2 = 2) - 0.50
     
-    integrate(P_I2, 0.1, 3, b0)$value - I2_prev # Contrainte pour la probabilité marginale
+    integrate(P_I2, 0.1, 3, b0)$value - I2_prev # I2_prev: the desired marginal probability, prevalence of I2 (hyperparameter)
     
   }
   
@@ -328,10 +323,10 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   I2_0 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.15*C - 0.1*0 + co_inf_para2*C2))
   I2_1 <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.15*C - 0.1*1 + co_inf_para2*C2))
   
-  # Génération des symptomes W1: W1~Bernoulli(logit(a0 + a1*C[I1 = 1]))  et 
-  #                          W2: W2~Bernoulli(logit(a0 + a1*C[I2 == 1] + a2*V[I2 == 1]))
+  # Generate symptoms W1: W1~Bernoulli(logit(b0 + b1*C[I1 = 1]))  and 
+  #                   W2: W2~Bernoulli(logit(b0 + b1*C[I2 == 1] + b2*V[I2 == 1]))
   
-  ## Définir la fonction en b0 (en calculant l'intégrale) pour W1
+  ## expressing the desired marginal probability as a function of b0 for W1
   
   a <- 1/2.9
   b1 <- 0.5
@@ -340,12 +335,12 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
     (a/b1)*(log(1 + exp(b0 + 3*b1 ))  - log(1 + exp(b0 + 0.1*b1))) - 
       
-      W1_prev # Contrainte pour la probabilité marginale
+      W1_prev #  W1_prev: the desired marginal probability, prevalence of W1 (hyperparameter)
     
   }
   
   b0 <- uniroot(f_W1, c(-10, 10))$root
-  W1 <- rep(0, popsize) # W1 = 0 si I1 = 0, donc:
+  W1 <- rep(0, popsize) # W1 = 0 if I1 = 0, so:
   
   W1[I1 == 1] <- rbinom(
     
@@ -355,9 +350,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
   )
   
-  ## Définir la fonction en b0 (en calculant l'intégrale) pour W2
-  
-  # On pose:
+  ## expressing the desired marginal probability as a function of b0 for W1
   
   a <- 0.5/2.9
   a0 <- -1.18
@@ -365,7 +358,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   b1 <- 2
   b2 <- -0.91
   
-  P_W2 <- function(c,b0) { # Probabilité conjointe pour W2
+  P_W2 <- function(c,b0) { # Joint probability for W2
     
     a*(expit(b0 + b1*c + b2)*expit(a0 + a1*c) + 
          
@@ -380,19 +373,19 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   help(integrate)
   # ...	
-  # additional arguments to be passed to f : on utilise cet argument pour passer 
-  # la valeur b0 à la fonction P_I2 dans ce cas.
+  # Additional arguments to be passed to f: this argument is used to pass 
+  # the value b0 to the P_W2 function in this case.
   
   f_W2 <- function(b0){
     
-    integrate(P_W2, 0.1, 3, b0)$value - W2_prev # Contrainte pour la probabilité marginale
+    integrate(P_W2, 0.1, 3, b0)$value - W2_prev # W2_prev: the desired marginal probability, prevalence of W2 (hyperparameter)
     
   }
   
   b0 <- uniroot(f_W2, c(-10, 10))$root
   
-  W2_0 <- rep(0, popsize) # W2_0 = 0 si I2_0 = 0, donc:
-  W2_1 <- rep(0, popsize) # W2_1 = 0 si I2_1 = 0, donc:
+  W2_0 <- rep(0, popsize) # W2_0 = 0 if I2_0 = 0, so:
+  W2_1 <- rep(0, popsize) # W2_1 = 0 if I2_1 = 0, soc:
   
   W2_0[I2_0 == 1] <- rbinom(
     
@@ -410,16 +403,16 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
   )
   
-  # Génération de W
+  # Generate W
   
   W_0 <- pmax(W1, W2_0)
   W_1 <- pmax(W1, W2_1)
   
   
-  # Génération de l'hospitalization 
+  # Generate hospitalization 
   
-  H_0 = rep(0, popsize) # H_0 = 0 si W_0 = 0, donc:
-  H_1 = rep(0, popsize) # H_1 = 0 si W_1 = 0, donc:
+  H_0 = rep(0, popsize) # H_0 = 0 if W_0 = 0, so:
+  H_1 = rep(0, popsize) # H_1 = 0 if W_1 = 0, so:
   
   H_0[W_0 == 1] <- rbinom(prob = plogis(-1.5 + 0.5*C[W_0 == 1]),
                           size = 1, n = sum(W_0 == 1))
@@ -429,7 +422,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   dat <- data.frame(C, I1, I2_0, I2_1, W1, W2_0, W2_1, W_0, W_1, H_0, H_1)
   
-  # Calcul du pourcentage de co-infection
+  # Calculate the percentage of co-infections
   
   co_inf_0 <- sum(dat$I1 == 1 & dat$I2_0 == 1)
   
