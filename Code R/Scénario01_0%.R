@@ -251,7 +251,7 @@ help("calc_absolute") # calculate various performance metrics
 
 # Add a column containing the true value of the parameter
 
-resultats2$vrai_param <- rep(mean(l_vraiRRm), nsim) # vraie valeur du paramètre
+resultats2$vrai_param <- rep(mean(l_vraiRRm), nsim) 
 
 ### MCSE_biais
 
