@@ -14,7 +14,7 @@
 
  We want to generate P(I1 = 1| C2) = b0 + b1*C + b2C2 so that, the marginal probability P(I1 = 1) is fixed at 0.15. Because C and C2 are independent by construction, the constraint P(I1 = 1) = 0.15 can be expressed as:
  
- 0.15 - ∫_0.1^3〖P(I1=1│C= c,C2 = -1) * P(C2 = -1)f(c)dc〗+ ∫_0.1^3〖P(I1= 1|C = c,C2 = 1) * P(C2 = 1)f(c) dc〗, with b1 and b2 known and b0 to be found.
+ 0.15 = ∫_0.1^3〖P(I1=1│C= c,C2 = -1) * P(C2 = -1)f(c)dc〗+ ∫_0.1^3〖P(I1= 1|C = c,C2 = 1) * P(C2 = 1)f(c) dc〗, with b1 and b2 known and b0 to be found.
 
 •	Most values of the various hyperparameters for the base scenario were chosen based on the literature to create realistic scenarios.
 
