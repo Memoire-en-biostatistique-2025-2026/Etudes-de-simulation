@@ -67,7 +67,7 @@ IPW <- function(dat){
 
   var_log_RRm <- (1/beta_geex[[3]]^2) * vcov(mestr)[3, 3] + (1/beta_geex[[4]]^2) * vcov(mestr)[4, 4] -
                 
-                 (2/beta_geex[[3]]*beta_geex[[4]])*vcov(mestr)[3, 4]
+                 (2/(beta_geex[[3]]*beta_geex[[4]]))*vcov(mestr)[3, 4]
                 
 
 ## Confidence interval for RRm
