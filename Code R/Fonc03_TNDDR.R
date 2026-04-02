@@ -296,7 +296,7 @@ PM <- function(dat) {
   Out_mu2 <- glm( 
       
       Y ~ C + V,
-      data = TNDdat_train1,
+      data = TNDdat_train2,
       family = binomial(link = "logit")
       
     )
