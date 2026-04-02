@@ -38,7 +38,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   b0_V <- uniroot(f_V, c(-10, 10))$root
   
-  V <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.3*C)) 
+  V <- rbinom(n = popsize, size = 1, prob = plogis(b0_V + 0.3*C)) 
   # See the file Anciens fichiers\Génération des variables
   # for the value of b0 
   

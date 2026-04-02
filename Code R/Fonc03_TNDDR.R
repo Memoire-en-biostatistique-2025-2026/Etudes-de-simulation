@@ -211,6 +211,176 @@ RandomForest <- function(dat) {
 
 ################################################################################
 
+# GLM
+
+PM <- function(dat) {
+  
+  TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
+  
+  # Convert the variables V and Y (response variables) into factors for classification
+  
+  TNDdat$V <- as.factor(TNDdat$V)
+  TNDdat$Y <- as.factor(TNDdat$Y)
+  
+  # Step 1: Randomly split the dataset into two equal parts 
+  # Double CrossFit
+  
+  s <- sample(1:nrow(TNDdat), nrow(TNDdat) / 2)
+  TNDdat_train1 <- TNDdat[s, ]
+  TNDdat_train2 <- TNDdat[-s, ]
+  
+  # Step 2: Estimate the probability P_TND(V = v/ C = c, Y = 0)  
+  ## Training the Lasso model
+  
+  ### First training set: TNDdat_ctr1 
+  
+  TNDdat_ctr1 <- subset(TNDdat_train1, Y == 0)
+  
+  mod_g1_ctr <- glm( 
+    
+    V ~ C,
+    data = TNDdat_ctr1,
+    family = binomial(link = "logit")
+    
+  )
+  
+  ### Second training set : TNDdat_ctr2
+  
+  TNDdat_ctr2 <- subset(TNDdat_train2, Y == 0)
+  
+  mod_g2_ctr <- glm( 
+    
+    V ~ C,
+    data = TNDdat_ctr2,
+    family = binomial(link = "logit")
+    
+  )
+  
+  ## Predicting probabilities on test sets
+  # Store results
+  
+  g1_cont <- rep(NA, nrow(TNDdat))  
+  
+  # Make sure that the training and test sets have the same structure every time
+  
+  TNDdata_test1 <- data.matrix(as.data.frame(cbind(select(TNDdat_train2, !c(V))) 
+  ))
+  
+  
+  TNDdata_test2 <- data.matrix(as.data.frame(cbind(select(TNDdat_train1, !c(V)) 
+  )))
+  
+  # Predict on TNDdata_test1 (a dataset other than the one used for the model's initial training)
+  
+  g1_cont[-s] <- predict(mod_g1_ctr, newx = TNDdata_test1, type = "response")
+  
+  # Predict on TNDdata_test2 (a dataset other than the one used for the second model training)
+  
+  g1_cont[s] <- predict(mod_g2_ctr, newx = TNDdata_test2, type = "response")
+  
+  # Step 3: Estimate the probability  P_TND(Y = 1/ V = v, C = c)  
+  ## Training the random forest model
+  
+  ### First training set
+  
+  Out_mu1 <- glm( 
+    
+    Y ~ C + V,
+    data = TNDdat_train1,
+    family = binomial(link = "logit")
+    
+  )
+    
+  ### Second training set
+  
+  Out_mu2 <- glm( 
+      
+      Y ~ C + V,
+      data = TNDdat_train1,
+      family = binomial(link = "logit")
+      
+    )
+    
+  ## Predicting probabilities on test sets
+  # Store results
+  
+  mu1 <- rep(NA, nrow(TNDdat)) #P_TND(Y = 1/ V = 1, C = c) 
+  
+  # Make sure that the training and test sets have the same structure every time
+  
+  TNDdata_mu1_test1 <- data.matrix(as.data.frame(cbind(V = 1, select(TNDdat_train2, !c(Y, V)))))
+  
+  TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 1, select(TNDdat_train1, !c(Y, V)))))
+  
+  # Predict mu1: P(Y = 1/ V = 1) on TNDdata_mu1_test1
+  
+  mu1[s] <- predict(Out_mu2, newx = TNDdata_mu1_test1)
+  
+  # Predict mu1: P(Y = 1/ V = 1) on TNDdata_mu1_test2
+  
+  mu1[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test2)
+  
+  ## Predicting probabilities on test sets
+  # Store results
+  
+  mu0 <- rep(NA, nrow(TNDdat)) #P_TND(Y = 1/ V = 0, C = c) 
+  
+  # Make sure that the training and test sets have the same structure every time
+  
+  TNDdata_mu1_test1 <- data.matrix(as.data.frame(cbind(V = 0, select(TNDdat_train2, !c(Y, V)))))
+  
+  TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 0, select(TNDdat_train1, !c(Y, V)))))
+  
+  # Predict mu0: P(Y = 1/ V = 0) on TNDdata_mu1_test1
+  
+  mu0[s] <- predict(Out_mu2, newx = TNDdata_mu1_test1)
+  
+  # Predict mu1: P(Y = 1/ V = 0) on TNDdata_mu1_test2
+  
+  mu0[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test2)
+  
+  # Step 4: Estimate the probability  m0 (1 - Y or P(Y = 0)) 
+  ## Training the Lasso model
+  
+  ### First training set  
+  
+  Out_m1 <- glm( 
+    
+    Y ~ C,
+    data = TNDdat_train1,
+    family = binomial(link = "logit")
+    
+  )
+  
+  ### Second training set
+  
+  Out_m2 <- glm( 
+    
+    Y ~ C,
+    data = TNDdat_train2,
+    family = binomial(link = "logit")
+    
+  )
+  
+  ## Predicting probabilities on test sets
+  # Store results
+  
+  m0 <- rep(NA, nrow(TNDdat))
+  
+  m0[-s] <- 1 - predict(Out_m1, newx = cbind(data.matrix(select(TNDdat_train2, !c(V,Y))), 0))
+  m0[s] <- 1 - predict(Out_m2, newx = cbind(data.matrix(select(TNDdat_train1, !c(V,Y))), 0))
+  
+  mu1 <- pmin(pmax(mu1, 0.01), 0.99)
+  mu0 <- pmin(pmax(mu0, 0.01), 0.99)
+  m0 <- pmin(pmax(m0, 0.01), 0.99)
+  g1 <- pmin(pmax(g1_cont, 0.01), 0.99)
+  g0 <- 1 - pmin(pmax(g1_cont, 0.01), 0.99)
+  
+  return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1, g0 = g0, w1 = m0 / (1 - mu1), w0 = m0 / (1 - mu0)))
+  
+}
+
+################################################################################
 ## Lasso Regression
 
 Lasso <- function(dat) {
