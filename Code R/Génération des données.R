@@ -173,7 +173,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   # The TND includes only those who have been tested : H = 1
   
-  R <- sample(which(H == 1), ssize) # A random sample of hospitalized patients
+  R <- sample(which(H == 1), ssize, replace = TRUE) # A random sample of hospitalized patients with replacement
   
   if (return_full == FALSE) {
     
