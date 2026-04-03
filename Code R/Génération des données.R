@@ -262,9 +262,9 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
     
   }
   
-  b0 <- uniroot(f_V, c(-10, 10))$root
+  b0_V <- uniroot(f_V, c(-10, 10))$root
   
-  V <- rbinom(n = popsize, size = 1, prob = plogis(b0 + 0.3*C)) 
+  V <- rbinom(n = popsize, size = 1, prob = plogis(b0_V + 0.3*C)) 
   # See the file Anciens fichiers\Génération des variables
   # for the value of b0 
   
@@ -296,13 +296,13 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   
   P_I2 <- function(c,b0) { # Joint probability for I2
     
-    a*(expit(b0 + 0.15*c - 0.1 - co_inf_para2)*expit(0.5 + 0.3*c) + 
+    a*(expit(b0 + 0.15*c - 0.1 - co_inf_para2)*expit(b0_V + 0.3*c) + 
          
-         expit(b0 + 0.15*c - co_inf_para2)*(1 - expit(0.5 + 0.3*c)) + 
+         expit(b0 + 0.15*c - co_inf_para2)*(1 - expit(b0_V + 0.3*c)) + 
          
-         expit(b0 + 0.15*c - 0.1 + co_inf_para2)*expit(0.5 + 0.3*c) + 
+         expit(b0 + 0.15*c - 0.1 + co_inf_para2)*expit(b0_V + 0.3*c) + 
          
-         expit(b0 + 0.15*c + co_inf_para2)*(1 - expit(0.5 + 0.3*c))
+         expit(b0 + 0.15*c + co_inf_para2)*(1 - expit(b0_V + 0.3*c))
     )
     
   }
@@ -348,20 +348,14 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
   ## expressing the desired marginal probability as a function of b0 for W1
   
   a <- 0.5/2.9
-  a0 <- -1.18
-  a1 <- 0.3
   b1 <- 2
   b2 <- -0.91
   
   P_W2 <- function(c,b0) { # Joint probability for W2
     
-    a*(expit(b0 + b1*c + b2)*expit(a0 + a1*c) + 
+    a*(expit(b0 + b1*c + b2)*expit(b0_V + 0.3*c) + 
          
-         expit(b0 + b1*c)*expit(a0 + a1*c) + 
-         
-         expit(b0 + b1*c + b2)*expit(a0 + a1*c) + 
-         
-         expit(b0 + b1*c )*expit(a0 + a1*c)
+         expit(b0 + b1*c)*(1 - expit(b0_V + 0.3*c)) 
     )
     
   }
