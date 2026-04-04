@@ -52,16 +52,16 @@ for (i in 1:nsim) {
 l_vraiRRc
 
 mean(l_vraiRRc)
-# 0.4269703
+# 0.433797
 sd(l_vraiRRc)
-# 0.0067748
+# 0.01140663
 
 l_vraiRRm
 
 mean(l_vraiRRm)
-# 0.4331308
+# 0.442533
 sd(l_vraiRRm)
-# 0.00673342
+# 0.01140144
 
 ################################################################################
 # Initialize objects to store results
@@ -92,7 +92,7 @@ colnames(resultats2) <- c("RRm",# Marginal relative risk
                           "IC_inf", # Lower bound of the confidence interval
                           "IC_sup") # Upper bound of the confidence interval
 
-resultats3 <- data.frame(matrix(ncol = 36, 
+resultats3 <- data.frame(matrix(ncol = 45, 
                                 nrow = nsim))
 
 colnames(resultats3) <- c("RRm_RF", "VE_RF", "var_log_RRm-RF", "IC_inf1-RF", "IC_sup1-RF", "IC_inf2-RF", "IC_sup2-RF", 
@@ -108,7 +108,11 @@ colnames(resultats3) <- c("RRm_RF", "VE_RF", "var_log_RRm-RF", "IC_inf1-RF", "IC
                              
                              "RRm_RN", "VE_RN","var_log_RRm-RN", "IC_inf1-RN", "IC_sup1-RN", 
                                                                  "IC_inf2-RN", "IC_sup2-RN", 
-                                                                 "IC_inf3-RN", "IC_sup3-RN"# Neural networks
+                                                                 "IC_inf3-RN", "IC_sup3-RN",# Neural networks
+                          
+                             "RRm_GLM", "VE_GLM","var_log_RRm-GLM", "IC_inf1-GLM", "IC_sup1-GLM", 
+                                                                    "IC_inf2-GLM", "IC_sup2-GLM", 
+                                                                    "IC_inf3-GLM", "IC_sup3-GLM"# GLM
                              
                              
                           # Marginal relative risk  
@@ -123,7 +127,7 @@ colnames(resultats3) <- c("RRm_RF", "VE_RF", "var_log_RRm-RF", "IC_inf1-RF", "IC
                        
 )
 
-methode <- list(RandomForest, Lasso, Mars, RN)
+methode <- list(RandomForest, Lasso, Mars, RN, PM)
 
 for (i in 1:nsim) {
   
@@ -230,10 +234,10 @@ Tab01$`Autres` = list(
 kable(Tab01)
 # |n    |Methode |Erreur de Monte Carlo                      |Autres                                   |
 # |:----|:-------|:------------------------------------------|:----------------------------------------|
-# |1000 |RegLog  |MCSE_bias          , 0.00227107010359948   |Bias               , 0.00431029169741981 |
-# |-    |-       |MCSE_var            , 0.000248927204728417 |Var                , 0.00515775941546335 |
-# |-    |-       |MCSE_mse           , 0.00025532290970098   |Mse                , 0.00517118027056473 |
-# |-    |-       |%Cov , 0.935                               |Précision_var     , 0.0108328892435793   |
+# |1000 |RegLog  |MCSE_bias          , 0.00246123429550497   |Bias              , 0.0115108444214486   |
+# |-    |-       |MCSE_var            , 0.000311211588883888 |Var                , 0.00605767425736983 |
+# |-    |-       |MCSE_mse            , 0.000336497525976083 |Mse                , 0.00618411612240726 |
+# |-    |-       |%Cov , 0.939                               |Précision_var      , 0.00798473551411361 |
 ################################ IPW ###########################################
 
 Tab01$Methode <- c("IPW", "-", "-","-")
@@ -294,10 +298,10 @@ Tab01$`Autres` = list(
 kable(Tab01)
 # |n    |Methode |Erreur de Monte Carlo                      |Autres                                   |
 # |:----|:-------|:------------------------------------------|:----------------------------------------|
-# |1000 |IPW     |MCSE_bias          , 0.00235358235050801   |Bias               , 0.00350652442522281 |
-# |-    |-       |MCSE_var            , 0.000271938703775821 |Var               , 0.0055393498806228   |
-# |-    |-       |MCSE_mse           , 0.00025532290970098   |Mse                , 0.00517118027056473 |
-# |-    |-       |%Cov, 0.92                                 |Précision_var     , 0.0202533974759736   |
+# |1000 |IPW     |MCSE_bias          , 0.00262257984621719   |Bias              , 0.0107930118635027   |
+# |-    |-       |MCSE_var            , 0.000362374455940646 |Var                , 0.00687792504978457 |
+# |-    |-       |MCSE_mse            , 0.000336497525976083 |Mse                , 0.00618411612240726 |
+# |-    |-       |%Cov , 0.939                               |Précision_var     , 0.0106667813118236   |
 
 ################################## TNDDR #######################################
 
@@ -359,10 +363,10 @@ Tab01$`Autres` = list(
 kable(Tab01)
 # |n    |Methode  |Erreur de Monte Carlo                      |Autres                                     |
 # |:----|:--------|:------------------------------------------|:------------------------------------------|
-# |1000 |TNDDR_RF |MCSE_bias          , 0.00242627695238398   |Bias                , -0.00749651150305158 |
-# |-    |-        |MCSE_var            , 0.000309118649771439 |Var                , 0.00588681984966969   |
-# |-    |-        |MCSE_mse            , 0.000300598818252828 |Mse               , 0.0059371307145354     |
-# |-    |-        |%Cov , 0.915                               |Précision_var      , 0.00810227815887712   |
+# |1000 |TNDDR_RF |MCSE_bias          , 0.00265839120478238   |Bias                , -0.00118391963955972 |
+# |-    |-        |MCSE_var            , 0.000359232927743366 |Var                , 0.00706704379766431   |
+# |-    |-        |MCSE_mse            , 0.000356790236555875 |Mse                , 0.00706137841957958   |
+# |-    |-        |%Cov , 0.939                               |Précision_var       , 0.000723366757559546 |
 
 ################################################################################
 
@@ -422,10 +426,10 @@ Tab01$`Autres` = list(
 kable(Tab01)
 # |n    |Methode     |Erreur de Monte Carlo                      |Autres                                   |
 # |:----|:-----------|:------------------------------------------|:----------------------------------------|
-# |1000 |TNDDR_Lasso |MCSE_bias          , 0.00249442597586346   |Bias              , 0.0184089730777646   |
-# |-    |-           |MCSE_var            , 0.000349162576502188 |Var                , 0.00622216094906239 |
-# |-    |-           |MCSE_mse            , 0.000370920446375611 |Mse                , 0.00655482907789119 |
-# |-    |-           |%Cov , 0.707                               |Précision_var    , 0.157388490308017     |
+# |1000 |TNDDR_Lasso |MCSE_bias         , 0.0030942787036793     |Bias              , 0.0305998919991354   |
+# |-    |-           |MCSE_var            , 0.000708562785540954 |Var                , 0.00957456069604325 |
+# |-    |-           |MCSE_mse            , 0.000724874944007486 |Mse              , 0.010501339525706     |
+# |-    |-           |%Cov , 0.682                               |Précision_var   , 0.35341508232079       |
 
 ################################################################################
 
@@ -485,10 +489,10 @@ Tab01$`Autres` = list(
 kable(Tab01)
 # |n    |Methode    |Erreur de Monte Carlo                    |Autres                                   |
 # |:----|:----------|:----------------------------------------|:----------------------------------------|
-# |1000 |TNDDR_Mars |MCSE_bias          , 0.00549395705528207 |Bias               , -0.0335229593985449 |
-# |-    |-          |MCSE_var           , 0.00206622043358165 |Var               , 0.0301835641252836   |
-# |-    |-          |MCSE_mse           , 0.00208683405376841 |Mse               , 0.0312771693679948   |
-# |-    |-          |%Cov , 0.904                             |Précision_var    , 0.999162775950091     |
+# |1000 |TNDDR_Mars |MCSE_bias          , 0.00519960378532947 |Bias               , -0.0234954908536374 |
+# |-    |-          |MCSE_var           , 0.00185148851723487 |Var               , 0.0270358795244125   |
+# |-    |-          |MCSE_mse           , 0.00185574064026053 |Mse               , 0.0275608817353415   |
+# |-    |-          |%Cov , 0.932                             |Précision_var    , 0.785244114252654     |
 
 ################################################################################
 
@@ -548,7 +552,71 @@ Tab01$`Autres` = list(
 kable(Tab01)
 # |n    |Methode  |Erreur de Monte Carlo                    |Autres                                   |
 # |:----|:--------|:----------------------------------------|:----------------------------------------|
-# |1000 |TNDDR_RN |MCSE_bias          , 0.00585340225441332 |Bias               , -0.0402598554293597 |
-# |-    |-        |MCSE_var           , 0.00213156974158722 |Var               , 0.0342623179519709   |
-# |-    |-        |MCSE_mse           , 0.00216799216251572 |Mse               , 0.0358489115932119   |
-# |-    |-        |%Cov , 0.908                             |Précision_var   , 1.27082748336588       |
+# |1000 |TNDDR_RN |MCSE_bias          , 0.00699716261546737 |Bias               , -0.0634801520410606 |
+# |-    |-        |MCSE_var           , 0.00236415557931744 |Var               , 0.0489602846672942   |
+# |-    |-        |MCSE_mse           , 0.00250017726071097 |Mse               , 0.0529410540857831   |
+# |-    |-        |%Cov , 0.906                             |Précision_var    , 0.790566074532532     |
+
+################################################################################
+
+# GLM
+
+Tab01$Methode <- c("TNDDR_GLM", "-", "-","-")
+
+##    - Descriptive statistics
+
+summary(resultats3$RRm_GLM)
+mean(resultats3$RRm_GLM)
+sd(resultats3$RRm_GLM)
+
+mean(sqrt(resultats3$`var_log_RRm-GLM`))
+sd(log(resultats3$RRm_GLM))
+
+help("calc_absolute") # calculate various performance metrics
+
+### MCSE_biais
+
+MCSE_biais <- calc_absolute(resultats3, RRm_GLM, vrai_param, criteria = "bias")
+
+### MCSE_var
+
+MCSE_var <- calc_absolute(resultats3, RRm_GLM, vrai_param, criteria = "var")
+
+### MCSE_MSE 
+
+MCSE_mse <- calc_absolute(resultats3, RRm_GLM, vrai_param, criteria = "mse")
+
+### Coverage
+
+help("calc_coverage")
+
+coverage <- calc_coverage(resultats3, `IC_inf2-GLM`, `IC_sup2-GLM`, vrai_param)
+
+Tab01$`Erreur de Monte Carlo` = list(
+  
+  list(name = "MCSE_bias", value = MCSE_biais[3]),
+  list(name = "MCSE_var", value = MCSE_var[3]),
+  list(name = "MCSE_mse", value = MCSE_mse[3]),
+  list(name = "%Cov", value = coverage[2])
+  
+)
+
+Tab01$`Autres` = list(
+  
+  list(name = "Bias", value = MCSE_biais[2]),
+  list(name = "Var", value = MCSE_var[2]),
+  list(name = "Mse", value = MCSE_mse[2]),
+  list(name = "Précision_var", value = sd(log(resultats3$RRm_GLM)) - mean(sqrt(resultats3$`var_log_RRm-GLM`)) # See how accurately the variance is estimated
+       
+  )
+  
+)
+
+kable(Tab01)
+# |n    |Methode   |Erreur de Monte Carlo                    |Autres                                 |
+# |:----|:---------|:----------------------------------------|:--------------------------------------|
+# |1000 |TNDDR_GLM |MCSE_bias        , 0.012203119826957     |Bias              , -0.219942308787711 |
+# |-    |-         |MCSE_var           , 0.00667899952861983 |Var              , 0.148916133511072   |
+# |-    |-         |MCSE_mse           , 0.00224251563592946 |Mse             , 0.19714183657243     |
+# |-    |-         |%Cov, 1                                  |Précision_var    , -8.83898065472698   |
+
