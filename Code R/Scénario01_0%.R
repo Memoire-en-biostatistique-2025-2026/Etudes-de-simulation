@@ -28,7 +28,7 @@ l_vraiRRm <- rep(NA, nsim)
 
 for (i in 1:nsim) {
   
-  dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000,
+  dat <- datagen.cont(seed = seeds_list[i],
                       co_inf_para1 = 8, co_inf_para2 = -8)
   
   summary(dat)
@@ -131,10 +131,15 @@ methode <- list(RandomForest, Lasso, Mars, RN, PM)
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8, popsize = 1*10**6)
+  dat <- datagen(seed = seeds_list[i], ssize = 1000, co_inf_para1 = 8, co_inf_para2 = -8)
   
+  tryCatch({
   resultats[i,] <- RegLog(dat) # Logistic regression
+  }, error = function(e){})
+  
+  tryCatch({
   resultats2[i,] <- IPW(dat)   # IPW
+  }, error = function(e){})
   
   l <- list()
   
@@ -168,6 +173,7 @@ sum(rowSums(is.na(resultats3[,1:9])) > 0)
 sum(rowSums(is.na(resultats3[,10:18])) > 0)
 sum(rowSums(is.na(resultats3[,19:27])) > 0)
 sum(rowSums(is.na(resultats3[,28:36])) > 0)
+sum(rowSums(is.na(resultats3[,37:45])) > 0)
 
 ############################# Logistic regression ##############################
 

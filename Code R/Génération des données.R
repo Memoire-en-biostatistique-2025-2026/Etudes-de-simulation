@@ -7,7 +7,7 @@ library("rje")
 
 datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
                     
-                    popsize = 150000, co_inf_para1 = 0, co_inf_para2 = 0,
+                    popsize = 1*10**6, co_inf_para1 = 0, co_inf_para2 = 0,
                     
                     CV = 0.33, # Vaccination coverage
                     I1_prev = 0.15, # Prevalence of I1
@@ -231,7 +231,7 @@ sum(dat_full$W2 == 1)/sum(dat_full$Infec_RSV == 1) * 100 # Symptomatic prevalenc
 
 # Generating counterfactual scenarios
 
-datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 150000,
+datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 1*10**6,
                          
                          co_inf_para1 = 0, co_inf_para2 = 0,
                          

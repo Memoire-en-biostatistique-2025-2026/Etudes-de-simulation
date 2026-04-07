@@ -331,7 +331,7 @@ PM <- function(dat) {
   
   TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 0, select(TNDdat_train1, !c(Y, V)))))
   
-  # Predict mu1: P(Y = 1/ V = 0) on TNDdata_mu1_test1
+  # Predict mu0: P(Y = 1/ V = 0) on TNDdata_mu1_test1
   
   mu0[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test1)
   
@@ -381,6 +381,7 @@ PM <- function(dat) {
 }
 
 ################################################################################
+
 ## Lasso Regression
 
 Lasso <- function(dat) {
@@ -530,7 +531,7 @@ Lasso <- function(dat) {
   
   TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 0, select(TNDdat_train1, !c(Y, V)))))
   
-  # Predict mu1: P(Y = 1/ V = 0) on TNDdata_mu1_test1
+  # Predict mu0: P(Y = 1/ V = 0) on TNDdata_mu1_test1
   
   mu0[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test1)
   
