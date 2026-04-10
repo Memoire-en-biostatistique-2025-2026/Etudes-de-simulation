@@ -14,10 +14,10 @@ library(Rmisc)
 ## Scénarios avec différents taux de co-infection
 # Chargement des résultats bruts
 
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario01.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario02.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario03.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario04.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario01.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario02.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario03.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario04.RData")
 
 # Tableau de comparaison 
 
@@ -151,9 +151,9 @@ ggplot(dat) +
 
 ## Chargement des résultats bruts
 
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario05_10%.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario05_15%.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario05_30%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario05_10%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario05_15%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario05_30%.RData")
 
 # nsim = 1000, Scénarios 05 prévalence de I2  ~ 10%, 15% et 30%, taux de co-infection ~30%-40%
 
@@ -270,9 +270,9 @@ ggplot(dat) +
 
 ## Chargement des résultats bruts
 
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario06_15%.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario06_50%.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario06_70%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario06_50%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario06_70%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario06_85%.RData")
 
 # nsim = 1000, Scénarios 06 couverture vaccinale  ~ 50%, 70% et 85%, taux de co-infection ~30%-40%
 
@@ -387,9 +387,9 @@ ggplot(dat) +
 
 ## Chargement des résultats bruts
 
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario07_10%.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario07_30%.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario07_50%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario07_10%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario07_30%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario07_50%.RData")
 
 # nsim = 1000, Scénarios 07 prévalence de I1  ~ 10%, 30% et 50%, taux de co-infection ~30%-40%
 
