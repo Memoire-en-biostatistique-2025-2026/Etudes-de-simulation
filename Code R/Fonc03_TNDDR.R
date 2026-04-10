@@ -272,11 +272,11 @@ PM <- function(dat) {
   
   # Predict on TNDdata_test1 (a dataset other than the one used for the model's initial training)
   
-  g1_cont[-s] <- predict(mod_g1_ctr, newx = TNDdata_test1, type = "response")
+  g1_cont[-s] <- predict(mod_g1_ctr, newdata = as.data.frame(TNDdata_test1), type = "response")
   
   # Predict on TNDdata_test2 (a dataset other than the one used for the second model training)
   
-  g1_cont[s] <- predict(mod_g2_ctr, newx = TNDdata_test2, type = "response")
+  g1_cont[s] <- predict(mod_g2_ctr, newdata = as.data.frame(TNDdata_test2), type = "response")
   
   # Step 3: Estimate the probability  P_TND(Y = 1/ V = v, C = c)  
   ## Training the random forest model
@@ -314,11 +314,11 @@ PM <- function(dat) {
   
   # Predict mu1: P(Y = 1/ V = 1) on TNDdata_mu1_test1
   
-  mu1[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test1)
+  mu1[-s] <- predict(Out_mu1, newdata = as.data.frame(TNDdata_mu1_test1))
   
   # Predict mu1: P(Y = 1/ V = 1) on TNDdata_mu1_test2
   
-  mu1[s] <- predict(Out_mu2, newx = TNDdata_mu1_test2)
+  mu1[s] <- predict(Out_mu2, newdata = as.data.frame(TNDdata_mu1_test2))
   
   ## Predicting probabilities on test sets
   # Store results
@@ -333,11 +333,11 @@ PM <- function(dat) {
   
   # Predict mu0: P(Y = 1/ V = 0) on TNDdata_mu1_test1
   
-  mu0[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test1)
+  mu0[-s] <- predict(Out_mu1, newdata = as.data.frame(TNDdata_mu1_test1))
   
   # Predict mu0: P(Y = 1/ V = 0) on TNDdata_mu1_test2
   
-  mu0[s] <- predict(Out_mu2, newx = TNDdata_mu1_test2)
+  mu0[s] <- predict(Out_mu2, newdata = as.data.frame(TNDdata_mu1_test2))
   
   # Step 4: Estimate the probability  m0 (1 - Y or P(Y = 0)) 
   ## Training the Lasso model
@@ -367,8 +367,8 @@ PM <- function(dat) {
   
   m0 <- rep(NA, nrow(TNDdat))
   
-  m0[-s] <- 1 - predict(Out_m1, newx = cbind(data.matrix(select(TNDdat_train2, !c(V,Y))), 0))
-  m0[s] <- 1 - predict(Out_m2, newx = cbind(data.matrix(select(TNDdat_train1, !c(V,Y))), 0))
+  m0[-s] <- 1 - predict(Out_m1, newdata = as.data.frame(cbind(data.matrix(select(TNDdat_train2, !c(V,Y))), 0)))
+  m0[s] <- 1 - predict(Out_m2, newdata = as.data.frame(cbind(data.matrix(select(TNDdat_train1, !c(V,Y))), 0)))
   
   mu1 <- pmin(pmax(mu1, 0.01), 0.99)
   mu0 <- pmin(pmax(mu0, 0.01), 0.99)
