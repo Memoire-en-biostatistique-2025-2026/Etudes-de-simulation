@@ -5,9 +5,9 @@ library("stats")
 library("rje")
 
 
-datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000, 
+datagen <- function(seed = sample(1:1000000, size = 1), popsize = 1*10**6, ssize = 5000, 
                     
-                    popsize = 1*10**6, co_inf_para1 = 0, co_inf_para2 = 0,
+                    co_inf_para1 = 0, co_inf_para2 = 0,
                     
                     CV = 0.33, # Vaccination coverage
                     I1_prev = 0.15, # Prevalence of I1
@@ -309,7 +309,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 1*10**6,
     
   }
   
-  f_I2 <- function(b0){ # P(I2 = 2) - 0.50
+  f_I2 <- function(b0){ # P(I2 = 1) - 0.50
     
     integrate(P_I2, 0.1, 3, b0)$value - I2_prev # I2_prev: the desired marginal probability, prevalence of I2 (hyperparameter)
     
@@ -350,6 +350,7 @@ datagen.cont <- function(seed = sample(1:1000000, size = 1), popsize = 1*10**6,
   ## expressing the desired marginal probability as a function of b0 for W1
   
   a <- 0.5/2.9
+  
   b1 <- 2
   b2 <- -0.91
   
