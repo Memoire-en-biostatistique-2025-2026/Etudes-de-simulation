@@ -173,7 +173,8 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
   
   # The TND includes only those who have been tested : H = 1
   
-  R <- sample(which(H == 1), ssize, replace = TRUE) # A random sample of hospitalized patients with replacement
+  R <- sample(which(W == 1), ssize, replace = TRUE) # A random sample of patients with symptoms (W=1 <=> H=1) with replacement
+  pourcentage_unique <- (nrow(unique(R)) / nrow(R)) * 100 # Pourcentages des non doublons
   
   if (return_full == FALSE) {
     
@@ -188,6 +189,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), ssize = 5000,
     per_co_inf <- co_inf / ssize * 100
     
     print(paste("The percentage of co-infections in the sample is :", per_co_inf))
+    print(paste("The percentage of unique lines is :", pourcentage_unique))
     
   } else { # Data for the total population (return_full == TRUE)
     
