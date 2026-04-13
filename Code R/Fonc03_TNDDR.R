@@ -309,11 +309,11 @@ PM <- function(dat) {
   
   # Predict mu1: P(Y = 1/ V = 1) on TNDdata_mu1_test1
   
-  mu1[-s] <- predict(Out_mu1, newdata = as.data.frame(TNDdata_mu1_test1))
+  mu1[-s] <- predict(Out_mu1, newdata = as.data.frame(TNDdata_mu1_test1), type = "response")
   
   # Predict mu1: P(Y = 1/ V = 1) on TNDdata_mu1_test2
   
-  mu1[s] <- predict(Out_mu2, newdata = as.data.frame(TNDdata_mu1_test2))
+  mu1[s] <- predict(Out_mu2, newdata = as.data.frame(TNDdata_mu1_test2), type = "response")
   
   ## Predicting probabilities on test sets
   # Store results
@@ -328,11 +328,11 @@ PM <- function(dat) {
   
   # Predict mu0: P(Y = 1/ V = 0) on TNDdata_mu1_test1
   
-  mu0[-s] <- predict(Out_mu1, newdata = as.data.frame(TNDdata_mu1_test1))
+  mu0[-s] <- predict(Out_mu1, newdata = as.data.frame(TNDdata_mu1_test1), type = "response")
   
   # Predict mu0: P(Y = 1/ V = 0) on TNDdata_mu1_test2
   
-  mu0[s] <- predict(Out_mu2, newdata = as.data.frame(TNDdata_mu1_test2))
+  mu0[s] <- predict(Out_mu2, newdata = as.data.frame(TNDdata_mu1_test2), type = "response")
   
   # Step 4: Estimate the probability  m0 (1 - Y or P(Y = 0)) 
   ## Training the Lasso model
@@ -362,8 +362,8 @@ PM <- function(dat) {
   
   m0 <- rep(NA, nrow(TNDdat))
   
-  m0[-s] <- 1 - predict(Out_m1, newdata = as.data.frame(cbind(data.matrix(select(TNDdat_train2, !c(V,Y))), 0)))
-  m0[s] <- 1 - predict(Out_m2, newdata = as.data.frame(cbind(data.matrix(select(TNDdat_train1, !c(V,Y))), 0)))
+  m0[-s] <- 1 - predict(Out_m1, newdata = as.data.frame(cbind(data.matrix(select(TNDdat_train2, !c(V,Y))), 0)), type = "response")
+  m0[s] <- 1 - predict(Out_m2, newdata = as.data.frame(cbind(data.matrix(select(TNDdat_train1, !c(V,Y))), 0)), type = "response")
   
   mu1 <- pmin(pmax(mu1, 0.01), 0.99)
   mu0 <- pmin(pmax(mu0, 0.01), 0.99)
@@ -504,11 +504,11 @@ Lasso <- function(dat) {
   
   # Predict mu1: P(Y = 1/ V = 1) on TNDdata_mu1_test1
   
-  mu1[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test1)
+  mu1[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test1, type = "response")
   
   # Predict mu1: P(Y = 1/ V = 1) on TNDdata_mu1_test2
   
-  mu1[s] <- predict(Out_mu2, newx = TNDdata_mu1_test2)
+  mu1[s] <- predict(Out_mu2, newx = TNDdata_mu1_test2, type = "response")
   
   ## Predicting probabilities on test sets
   # Store results
@@ -523,11 +523,11 @@ Lasso <- function(dat) {
   
   # Predict mu0: P(Y = 1/ V = 0) on TNDdata_mu1_test1
   
-  mu0[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test1)
+  mu0[-s] <- predict(Out_mu1, newx = TNDdata_mu1_test1, type = "response")
   
   # Predict mu0: P(Y = 1/ V = 0) on TNDdata_mu1_test2
   
-  mu0[s] <- predict(Out_mu2, newx = TNDdata_mu1_test2)
+  mu0[s] <- predict(Out_mu2, newx = TNDdata_mu1_test2, type = "response")
   
   # Step 4: Estimate the probability  m0 (1 - Y or P(Y = 0)) 
   ## Training the Lasso model
@@ -573,8 +573,8 @@ Lasso <- function(dat) {
   
   m0 <- rep(NA, nrow(TNDdat))
   
-  m0[-s] <- 1 - predict(Out_m1, newx = cbind(data.matrix(select(TNDdat_train2, !c(V,Y))), 0))
-  m0[s] <- 1 - predict(Out_m2, newx = cbind(data.matrix(select(TNDdat_train1, !c(V,Y))), 0))
+  m0[-s] <- 1 - predict(Out_m1, newx = cbind(data.matrix(select(TNDdat_train2, !c(V,Y))), 0), type = "response")
+  m0[s] <- 1 - predict(Out_m2, newx = cbind(data.matrix(select(TNDdat_train1, !c(V,Y))), 0), type = "response")
   
   mu1 <- pmin(pmax(mu1, 0.01), 0.99)
   mu0 <- pmin(pmax(mu0, 0.01), 0.99)
