@@ -498,9 +498,9 @@ Lasso <- function(dat) {
   
   # Make sure that the training and test sets have the same structure every time
   
-  TNDdata_mu1_test1 <- data.matrix(as.data.frame(cbind(V = 1, select(TNDdat_train2, !c(Y, V)))))
+  TNDdata_mu1_test1 <- data.matrix(as.data.frame(cbind(select(TNDdat_train2, !c(Y, V)), V = 1)))
   
-  TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(V = 1, select(TNDdat_train1, !c(Y, V)))))
+  TNDdata_mu1_test2 <- data.matrix(as.data.frame(cbind(select(TNDdat_train1, !c(Y, V)), V = 1)))
   
   # Predict mu1: P(Y = 1/ V = 1) on TNDdata_mu1_test1
   
