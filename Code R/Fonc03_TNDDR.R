@@ -383,11 +383,6 @@ Lasso <- function(dat) {
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
-  # Convert the variables V and Y (response variables) into factors for classification
-  
-  TNDdat$V <- as.factor(TNDdat$V)
-  TNDdat$Y <- as.factor(TNDdat$Y)
-  
   # Step 1: Randomly split the dataset into two equal parts 
   # Double CrossFit
   
