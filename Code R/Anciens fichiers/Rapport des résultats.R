@@ -623,9 +623,9 @@ ggplot(dat) +
 
 ## Chargement des résultats bruts
 
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario09_10%.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario09_15%.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario09_30%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario09_10%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario09_15%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario09_20%.RData")
 
 # nsim = 1000, Scénarios 09 prévalence de W1  ~ 10%, 15% et 30%, taux de co-infection ~30%-40%
 

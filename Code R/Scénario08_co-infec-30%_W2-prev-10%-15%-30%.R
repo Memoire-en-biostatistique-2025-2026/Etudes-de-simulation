@@ -37,7 +37,7 @@ l_vraiRRm <- rep(NA, nsim)
 
 for (i in 1:nsim) {
   
-  dat <- datagen.cont(seed = seeds_list[i], popsize = 1000000, W2_prev = 0.05,
+  dat <- datagen.cont(seed = seeds_list[i], W2_prev = 0.05,
                       co_inf_para1 = 1, co_inf_para2 = 3)
   
   summary(dat)
