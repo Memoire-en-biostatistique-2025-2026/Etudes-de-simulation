@@ -13,7 +13,7 @@ library(nnet)
 
 ## Random forest
 
-RandomForest <- function(dat) {
+RandomForest <- function(dat, trunc = 0.01) {
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
@@ -199,11 +199,11 @@ RandomForest <- function(dat) {
   m0[-s] <- 1 - predict(Out_m1, data = select(TNDdata_test1, -c(V, Y)))$predictions[, 2]
   m0[s] <- 1 - predict(Out_m2, data = select(TNDdata_test2, -c(V, Y)))$predictions[, 2]
   
-  mu1 <- pmin(pmax(mu1, 0.01), 0.99)
-  mu0 <- pmin(pmax(mu0, 0.01), 0.99)
-  m0 <- pmin(pmax(m0, 0.01), 0.99)
-  g1 <- pmin(pmax(g1_cont, 0.01), 0.99)
-  g0 <- 1 - pmin(pmax(g1_cont, 0.01), 0.99)
+  mu1 <- pmin(pmax(mu1, trunc), 1 - trunc)
+  mu0 <- pmin(pmax(mu0, trunc), 1 - trunc)
+  m0 <- pmin(pmax(m0, trunc), 1 - trunc)
+  g1 <- pmin(pmax(g1_cont, trunc), 1 - trunc)
+  g0 <- 1 - pmin(pmax(g1_cont, trunc), 1 - trunc)
   
   return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1, g0 = g0, w1 = m0 / (1 - mu1), w0 = m0 / (1 - mu0)))
   
@@ -213,7 +213,7 @@ RandomForest <- function(dat) {
 
 # GLM
 
-PM <- function(dat) {
+PM <- function(dat, trunc) {
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
@@ -365,11 +365,11 @@ PM <- function(dat) {
   m0[-s] <- 1 - predict(Out_m1, newdata = as.data.frame(cbind(data.matrix(select(TNDdat_train2, !c(V,Y))), 0)), type = "response")
   m0[s] <- 1 - predict(Out_m2, newdata = as.data.frame(cbind(data.matrix(select(TNDdat_train1, !c(V,Y))), 0)), type = "response")
   
-  mu1 <- pmin(pmax(mu1, 0.01), 0.99)
-  mu0 <- pmin(pmax(mu0, 0.01), 0.99)
-  m0 <- pmin(pmax(m0, 0.01), 0.99)
-  g1 <- pmin(pmax(g1_cont, 0.01), 0.99)
-  g0 <- 1 - pmin(pmax(g1_cont, 0.01), 0.99)
+  mu1 <- pmin(pmax(mu1, trunc), 1 - trunc)
+  mu0 <- pmin(pmax(mu0, trunc), 1 - trunc)
+  m0 <- pmin(pmax(m0, trunc), 1 - trunc)
+  g1 <- pmin(pmax(g1_cont, trunc), 1 - trunc)
+  g0 <- 1 - pmin(pmax(g1_cont, trunc), 1 - trunc)
   
   return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1, g0 = g0, w1 = m0 / (1 - mu1), w0 = m0 / (1 - mu0)))
   
@@ -379,7 +379,7 @@ PM <- function(dat) {
 
 ## Lasso Regression
 
-Lasso <- function(dat) {
+Lasso <- function(dat, trunc = 0.01) {
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
@@ -576,11 +576,11 @@ Lasso <- function(dat) {
   m0[-s] <- 1 - predict(Out_m1, newx = cbind(data.matrix(select(TNDdat_train2, !c(V,Y))), 0), type = "response")
   m0[s] <- 1 - predict(Out_m2, newx = cbind(data.matrix(select(TNDdat_train1, !c(V,Y))), 0), type = "response")
   
-  mu1 <- pmin(pmax(mu1, 0.01), 0.99)
-  mu0 <- pmin(pmax(mu0, 0.01), 0.99)
-  m0 <- pmin(pmax(m0, 0.01), 0.99)
-  g1 <- pmin(pmax(g1_cont, 0.01), 0.99)
-  g0 <- 1 - pmin(pmax(g1_cont, 0.01), 0.99)
+  mu1 <- pmin(pmax(mu1, trunc), 1 - trunc)
+  mu0 <- pmin(pmax(mu0, trunc), 1 - trunc)
+  m0 <- pmin(pmax(m0, trunc), 1 - trunc)
+  g1 <- pmin(pmax(g1_cont, trunc), 1 - trunc)
+  g0 <- 1 - pmin(pmax(g1_cont, trunc), 1 - trunc)
   
   return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1, g0 = g0, w1 = m0 / (1 - mu1), w0 = m0 / (1 - mu0)))
   
@@ -590,7 +590,7 @@ Lasso <- function(dat) {
 
 ## Multivariate Adaptive Regression Splines (MARS)
 
-Mars <- function(dat){
+Mars <- function(dat, trunc = 0.01){
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
@@ -746,11 +746,11 @@ Mars <- function(dat){
   m0[-s] <- 1 - predict(Out_m1, newdata = select(TNDdat_train2, !c(V,Y)), type = "response")
   m0[s] <- 1 - predict(Out_m2, newdata = select(TNDdat_train1, !c(V,Y)), type = "response")
   
-  mu1 <- pmin(pmax(mu1, 0.01), 0.99)
-  mu0 <- pmin(pmax(mu0, 0.01), 0.99)
-  m0 <- pmin(pmax(m0, 0.01), 0.99)
-  g1 <- pmin(pmax(g1_cont, 0.01), 0.99)
-  g0 <- 1 - pmin(pmax(g1_cont, 0.01), 0.99)
+  mu1 <- pmin(pmax(mu1, trunc), 1 - trunc)
+  mu0 <- pmin(pmax(mu0, trunc), 1 - trunc)
+  m0 <- pmin(pmax(m0, trunc), 1 - trunc)
+  g1 <- pmin(pmax(g1_cont, trunc), 1 - trunc)
+  g0 <- 1 - pmin(pmax(g1_cont, trunc), 1 - trunc)
   
   return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1,g0 = g0, w1 = m0 / (1 - mu1),w0 = m0 / (1 - mu0)))
   
@@ -760,7 +760,7 @@ Mars <- function(dat){
 
 ## Neural networks
 
-RN <- function(dat) {
+RN <- function(dat, trunc = 0.01) {
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
@@ -937,11 +937,11 @@ RN <- function(dat) {
   m0[-s] <- 1 - predict(Out_m1, newdata = select(TNDdat_train2, -c(V, Y)), type = "raw")
   m0[s] <- 1 - predict(Out_m2, newdata = select(TNDdat_train1, -c(V, Y)), type = "raw")
   
-  mu1 <- pmin(pmax(mu1, 0.01), 0.99)
-  mu0 <- pmin(pmax(mu0, 0.01), 0.99)
-  m0 <- pmin(pmax(m0, 0.01), 0.99)
-  g1 <- pmin(pmax(g1_cont, 0.01), 0.99)
-  g0 <- 1 - pmin(pmax(g1_cont, 0.01), 0.99)
+  mu1 <- pmin(pmax(mu1, trunc), 1 - trunc)
+  mu0 <- pmin(pmax(mu0, trunc), 1 - trunc)
+  m0 <- pmin(pmax(m0, trunc), 1 - trunc)
+  g1 <- pmin(pmax(g1_cont, trunc), 1 - trunc)
+  g0 <- 1 - pmin(pmax(g1_cont, trunc), 1 - trunc)
   
   return(list(mu1 = mu1, mu0 = mu0, m0 = m0, g1 = g1, g0 = g0, w1 = m0 / (1 - mu1), w0 = m0 / (1 - mu0)))
   
@@ -953,10 +953,10 @@ RN <- function(dat) {
 
 # Define the function for the TNDDR
 
-TNDDR <- function(dat, methode){
+TNDDR <- function(dat, methode, ...){
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
-  estimations <- methode(dat)
+  estimations <- methode(dat, ...)
   
   # Estimation of 𝜓𝑣: 𝜓𝑣 = 𝜓𝑣(ℙTND)=𝔼TND[𝜇𝑣(𝒄)*𝜔𝑣(𝒄)] with
   #  𝜇𝑣(𝒄) = ℙTND (𝑌 = 1|𝑉 = 1,𝑪 = 𝒄),
