@@ -504,9 +504,9 @@ ggplot(dat) +
 
 ## Chargement des résultats bruts
 
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario09_10%.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario09_15%.RData")
-load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats_Scénario09_30%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario08_5%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario08_10%.RData")
+load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario08_15%.RData")
 
 # nsim = 1000, Scénarios 08 prévalence de W2  ~ 5%, 15% et 30%, taux de co-infection ~30%-40%
 
@@ -519,8 +519,8 @@ colnames(comparaison05) <- c(
   "Estimation", 
   "Performance",
   "Scénario08_5%",
-  "Scénario08_15%",
-  "Scénario08_30%"
+  "Scénario08_10%",
+  "Scénario08_15%"
 )
 
 comparaison05$Estimation <- c("RegLog", "-", "-", "-", "-", "IPW", "-", "-", "-", "-", 
@@ -639,7 +639,7 @@ colnames(comparaison06) <- c(
   "Performance",
   "Scénario09_10%",
   "Scénario09_15%",
-  "Scénario09_30%"
+  "Scénario09_20%"
 )
 
 comparaison06$Estimation <- c("RegLog", "-", "-", "-", "-", "IPW", "-", "-", "-", "-", 
@@ -673,7 +673,7 @@ comparaison06$`Scénario09_15%` <- c(
   
 )
 
-comparaison06$`Scénario09_30%` <- c(
+comparaison06$`Scénario09_20%` <- c(
   
   Tab01_9_3$Autres, Tab01_9_3$`Erreur de Monte Carlo`[4],
   Tab02_9_3$Autres, Tab02_9_3$`Erreur de Monte Carlo`[4],
@@ -687,7 +687,7 @@ comparaison06$`Scénario09_30%` <- c(
 
 comparaison06$`Scénario09_10%` <- sapply(comparaison06$`Scénario09_10%`, FUN = function(x)x[[2]])
 comparaison06$`Scénario09_15%` <- sapply(comparaison06$`Scénario09_15%`, FUN = function(x)x[[2]])
-comparaison06$`Scénario09_30%` <- sapply(comparaison06$`Scénario09_30%`, FUN = function(x)x[[2]])
+comparaison06$`Scénario09_20%` <- sapply(comparaison06$`Scénario09_20%`, FUN = function(x)x[[2]])
 
 View(comparaison06)
 
