@@ -671,7 +671,7 @@ l_vraiRRm <- rep(NA, nsim)
 
 for (i in 1:nsim) {
   
-  dat <- datagen.cont(seed = seeds_list[i], I2_prev = 0.1,
+  dat <- datagen.cont(seed = seeds_list[i], W2_prev = 0.1,
                       co_inf_para1 = 3, co_inf_para2 = 4)
   
   summary(dat)
@@ -695,16 +695,16 @@ for (i in 1:nsim) {
 l_vraiRRc
 
 mean(l_vraiRRc)
-# 0.4074851
+# 0.5514657
 sd(l_vraiRRc)
-# 0.01280726
+# 0.002756909
 
 l_vraiRRm
 
 mean(l_vraiRRm)
-# 0.4095705
+# 0.5838678
 sd(l_vraiRRm)
-# 0.01280394
+# 0.002640419
 
 ################################################################################
 # Initialize objects to store results
@@ -774,7 +774,7 @@ methode <- list(RandomForest, Lasso, Mars, RN, PM)
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, I2_prev = 0.1,
+  dat <- datagen(seed = seeds_list[i], ssize = 1000, W2_prev = 0.1,
                  co_inf_para1 = 3, co_inf_para2 = 4)
   
   tryCatch({
@@ -1302,7 +1302,7 @@ l_vraiRRm <- rep(NA, nsim)
 
 for (i in 1:nsim) {
   
-  dat <- datagen.cont(seed = seeds_list[i], I2_prev = 0.2,
+  dat <- datagen.cont(seed = seeds_list[i], W2_prev = 0.2,
                       co_inf_para1 = 2, co_inf_para2 = 3)
   
   summary(dat)
@@ -1405,7 +1405,7 @@ methode <- list(RandomForest, Lasso, Mars, RN, PM)
 
 for (i in 1:nsim) {
   
-  dat <- datagen(seed = seeds_list[i], ssize = 1000, I2_prev = 0.2,
+  dat <- datagen(seed = seeds_list[i], ssize = 1000, W2_prev = 0.2,
                  co_inf_para1 = 2, co_inf_para2 = 3)
   
   tryCatch({
