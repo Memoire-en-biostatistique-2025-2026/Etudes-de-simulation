@@ -508,7 +508,7 @@ load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/A
 load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario08_10%.RData")
 load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/Activité de recherche_03/Etudes-de-simulation/Résultats bruts/Résultats_Scénario08_15%.RData")
 
-# nsim = 1000, Scénarios 08 prévalence de W2  ~ 5%, 15% et 30%, taux de co-infection ~30%-40%
+# nsim = 1000, Scénarios 08 prévalence de W2  ~ 5%, 10% et 15%, taux de co-infection ~30%-40%
 
 # Tableau de comparaison
 
@@ -542,7 +542,7 @@ comparaison05$`Scénario08_5%` <- c(
   
 )
 
-comparaison05$`Scénario08_15%` <- c(
+comparaison05$`Scénario08_10%` <- c(
   
   Tab01_8_2$Autres, Tab01_8_2$`Erreur de Monte Carlo`[4],
   Tab02_8_2$Autres, Tab02_8_2$`Erreur de Monte Carlo`[4],
@@ -554,7 +554,7 @@ comparaison05$`Scénario08_15%` <- c(
   
 )
 
-comparaison05$`Scénario08_30%` <- c(
+comparaison05$`Scénario08_15%` <- c(
   
   Tab01_8_3$Autres, Tab01_8_3$`Erreur de Monte Carlo`[4],
   Tab02_8_3$Autres, Tab02_8_3$`Erreur de Monte Carlo`[4],
@@ -566,22 +566,22 @@ comparaison05$`Scénario08_30%` <- c(
   
 )
 
+comparaison05$`Scénario08_5%` <- sapply(comparaison05$`Scénario08_5%`, FUN = function(x)x[[2]])
 comparaison05$`Scénario08_10%` <- sapply(comparaison05$`Scénario08_10%`, FUN = function(x)x[[2]])
 comparaison05$`Scénario08_15%` <- sapply(comparaison05$`Scénario08_15%`, FUN = function(x)x[[2]])
-comparaison05$`Scénario08_30%` <- sapply(comparaison05$`Scénario08_30%`, FUN = function(x)x[[2]])
 
 View(comparaison05)
 
 ####################### Représentation graphique ###############################
 
 # Biais
-dat <- data.frame(x_biais = c(comparaison05$`Scénario08_10%`[[1]], comparaison05$`Scénario08_15%`[[1]], comparaison05$`Scénario08_20%`[[1]],
-                              comparaison05$`Scénario08_10%`[[6]], comparaison05$`Scénario08_15%`[[6]], comparaison05$`Scénario08_20%`[[6]],
-                              comparaison05$`Scénario08_10%`[[11]], comparaison05$`Scénario08_15%`[[11]], comparaison05$`Scénario08_20%`[[11]],
-                              comparaison05$`Scénario08_10%`[[16]], comparaison05$`Scénario08_15%`[[16]], comparaison05$`Scénario08_20%`[[16]],
-                              comparaison05$`Scénario08_10%`[[21]], comparaison05$`Scénario08_15%`[[21]], comparaison05$`Scénario08_20%`[[21]],
-                              comparaison05$`Scénario08_10%`[[26]], comparaison05$`Scénario08_15%`[[26]], comparaison05$`Scénario08_20%`[[26]],
-                              comparaison05$`Scénario08_10%`[[31]], comparaison05$`Scénario08_15%`[[31]], comparaison05$`Scénario08_20%`[[31]]),
+dat <- data.frame(x_biais = c(comparaison05$`Scénario08_5%`[[1]], comparaison05$`Scénario08_10%`[[1]], comparaison05$`Scénario08_15%`[[1]],
+                              comparaison05$`Scénario08_5%`[[6]], comparaison05$`Scénario08_10%`[[6]], comparaison05$`Scénario08_15%`[[6]],
+                              comparaison05$`Scénario08_5%`[[11]], comparaison05$`Scénario08_10%`[[11]], comparaison05$`Scénario08_15%`[[11]],
+                              comparaison05$`Scénario08_5%`[[16]], comparaison05$`Scénario08_10%`[[16]], comparaison05$`Scénario08_15%`[[16]],
+                              comparaison05$`Scénario08_5%`[[21]], comparaison05$`Scénario08_10%`[[21]], comparaison05$`Scénario08_15%`[[21]],
+                              comparaison05$`Scénario08_5%`[[26]], comparaison05$`Scénario08_10%`[[26]], comparaison05$`Scénario08_15%`[[26]],
+                              comparaison05$`Scénario08_5%`[[31]], comparaison05$`Scénario08_10%`[[31]], comparaison05$`Scénario08_15%`[[31]]),
                   Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN", "TNDDR_GLM"), each = 3),
                   Scénario = c(1, 2, 3))
 
