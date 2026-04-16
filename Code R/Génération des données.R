@@ -18,6 +18,7 @@ datagen <- function(seed = sample(1:1000000, size = 1), popsize = 1*10**6, ssize
                     
                     return_full = FALSE) { # To choose between the population and the TND sample
   
+  set.seed(seed);
   
   # Generation of the continuous confounding factor C 
   
