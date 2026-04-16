@@ -179,9 +179,9 @@ for (i in 1:nsim) {
     r <- r + 1 
     replicats[r,c(1, 2)] <- list(i, "Mars")
     replicats[r, -c(1, 2)] <- Mars(dat)
-    
+    r <- r + 1
   }
-  r <- r + 1
+  
   
   # Add a line to track progress
   
