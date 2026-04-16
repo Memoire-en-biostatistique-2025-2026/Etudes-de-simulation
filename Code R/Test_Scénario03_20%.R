@@ -148,7 +148,7 @@ for (i in 1:nsim) {
     k <- rep(NA, 9)
     tryCatch({
       
-      k <- TNDDR(dat, j, trunc = 0.023) # List of results for method j
+      k <- TNDDR(dat, j, trunc = 0.01) # List of results for method j
       
     }, error = function(e){})
     

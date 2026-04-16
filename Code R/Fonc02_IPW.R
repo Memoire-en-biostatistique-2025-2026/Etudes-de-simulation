@@ -7,7 +7,7 @@ library(geex)
 
 # Define function for Inverse Probability Weighting (IPW)
 
-IPW <- function(dat){
+IPW <- function(dat, trunc = 0){
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   
@@ -20,6 +20,7 @@ IPW <- function(dat){
                    subset = (TNDdat$Y == 0)) # Among controls
   
   g1 <- predict(mod.denom, newdata = TNDdat, type = "response")
+  g1 <- pmin(pmax(g1, trunc), 1 - trunc)
   
   # IPW estimator
   
