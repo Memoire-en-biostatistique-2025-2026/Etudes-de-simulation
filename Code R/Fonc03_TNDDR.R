@@ -213,7 +213,7 @@ RandomForest <- function(dat, trunc = 0.01) {
 
 # GLM
 
-PM <- function(dat, trunc) {
+PM <- function(dat, trunc = 0.01) {
   
   TNDdat <- data.frame(C = dat$C, V = dat$V, Y = dat$Infec_RSV)
   

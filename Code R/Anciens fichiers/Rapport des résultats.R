@@ -22,7 +22,7 @@ load("C:/Users/lenovo/Desktop/Université Laval 2025-2026/Session d'hiver 2026/A
 # Tableau de comparaison 
 
 comparaison01 <- data.frame(matrix(ncol = 6, 
-                                   nrow = 35))
+                                   nrow = 42))
 
 colnames(comparaison01) <- c(
   "Estimation", 
@@ -33,82 +33,81 @@ colnames(comparaison01) <- c(
   "Scénario04_40%"
 )
 
-comparaison01$Estimation <- c("RegLog", "-", "-", "-", "-", "IPW", "-", "-", "-", "-", 
-                              "TNDDR_RF", "-", "-", "-", "-", "TNDDR_Lasso", "-", "-", "-", "-",
-                              "TNDDR_Mars", "-", "-", "-", "-", "TNDDR_RN", "-", "-", "-", "-",
-                              "TNDDR_GLM", "-", "-", "-", "-")
+comparaison01$Estimation <- c("RegLog", "-", "-", "-", "-","-", "IPW", "-", "-", "-", "-", "-", 
+                              "TNDDR_RF", "-", "-", "-", "-", "-", "TNDDR_Lasso", "-", "-", "-", "-", "-",
+                              "TNDDR_Mars", "-", "-", "-", "-", "-", "TNDDR_RN", "-", "-", "-", "-", "-",
+                              "TNDDR_GLM", "-", "-", "-", "-", "-")
 
-comparaison01$Performance <- rep(c("Biais", "Variance", "MSE", "Précision", "%Cov"), 7)
+comparaison01$Performance <- rep(c("Biais_med", "Biais_moy", "Variance", "MSE", "Précision", "%Cov"), 7)
 
 comparaison01$`Scénario01_0%` <- c(
   
-  Tab01_1$Autres, Tab01_1$`Erreur de Monte Carlo`[4],
-  Tab02_1$Autres, Tab02_1$`Erreur de Monte Carlo`[4],
-  Tab03_1$Autres[1:4], Tab03_1$`Erreur de Monte Carlo`[4],
-  Tab03_1$Autres[5:8], Tab03_1$`Erreur de Monte Carlo`[8],
-  Tab03_1$Autres[9:12], Tab03_1$`Erreur de Monte Carlo`[12],
-  Tab03_1$Autres[13:16], Tab03_1$`Erreur de Monte Carlo`[16],
-  Tab03_1$Autres[17:20], Tab03_1$`Erreur de Monte Carlo`[20]
+  (median(resultats_1$RRc) - mean(l_vraiRRc_1)), Tab01_1$Autres, Tab01_1$`Erreur de Monte Carlo`[4],
+  (median(resultats2_1$RRm) - mean(l_vraiRRm_1)), Tab02_1$Autres, Tab02_1$`Erreur de Monte Carlo`[4],
+  (median(resultats3_1$RRm_RF) - mean(l_vraiRRm_1)), Tab03_1$Autres[1:4], Tab03_1$`Erreur de Monte Carlo`[4],
+  (median(resultats3_1$RRm_Lasso) - mean(l_vraiRRm_1)),Tab03_1$Autres[5:8], Tab03_1$`Erreur de Monte Carlo`[8],
+  (median(resultats3_1$RRm_Mars) - mean(l_vraiRRm_1)), Tab03_1$Autres[9:12], Tab03_1$`Erreur de Monte Carlo`[12],
+  (median(resultats3_1$RRm_RN) - mean(l_vraiRRm_1)), Tab03_1$Autres[13:16], Tab03_1$`Erreur de Monte Carlo`[16],
+  (median(resultats3_1$RRm_GLM) - mean(l_vraiRRm_1)), Tab03_1$Autres[17:20], Tab03_1$`Erreur de Monte Carlo`[20]
   
 )
 
 comparaison01$`Scénario02_10%` <- c(
   
-  Tab01_2$Autres, Tab01_2$`Erreur de Monte Carlo`[4],
-  Tab02_2$Autres, Tab02_2$`Erreur de Monte Carlo`[4],
-  Tab03_2$Autres[1:4], Tab03_2$`Erreur de Monte Carlo`[4],
-  Tab03_2$Autres[5:8], Tab03_2$`Erreur de Monte Carlo`[8],
-  Tab03_2$Autres[9:12], Tab03_2$`Erreur de Monte Carlo`[12],
-  Tab03_2$Autres[13:16], Tab03_2$`Erreur de Monte Carlo`[16],
-  Tab03_2$Autres[17:20], Tab03_2$`Erreur de Monte Carlo`[20]
+  (median(resultats_2$RRc) - mean(l_vraiRRc_2)), Tab01_2$Autres, Tab01_2$`Erreur de Monte Carlo`[4],
+  (median(resultats2_2$RRm) - mean(l_vraiRRm_2)), Tab02_2$Autres, Tab02_2$`Erreur de Monte Carlo`[4],
+  (median(resultats3_2$RRm_RF) - mean(l_vraiRRm_2)), Tab03_2$Autres[1:4], Tab03_2$`Erreur de Monte Carlo`[4],
+  (median(resultats3_2$RRm_Lasso) - mean(l_vraiRRm_2)),Tab03_2$Autres[5:8], Tab03_2$`Erreur de Monte Carlo`[8],
+  (median(resultats3_2$RRm_Mars) - mean(l_vraiRRm_2)), Tab03_2$Autres[9:12], Tab03_2$`Erreur de Monte Carlo`[12],
+  (median(resultats3_2$RRm_RN) - mean(l_vraiRRm_2)), Tab03_2$Autres[13:16], Tab03_2$`Erreur de Monte Carlo`[16],
+  (median(resultats3_2$RRm_GLM) - mean(l_vraiRRm_2)), Tab03_2$Autres[17:20], Tab03_2$`Erreur de Monte Carlo`[20]
   
 )
 
 comparaison01$`Scénario03_20%` <- c(
   
-  Tab01_3$Autres, Tab01_3$`Erreur de Monte Carlo`[4],
-  Tab02_3$Autres, Tab02_3$`Erreur de Monte Carlo`[4],
-  Tab03_3$Autres[1:4], Tab03_3$`Erreur de Monte Carlo`[4],
-  Tab03_3$Autres[5:8], Tab03_3$`Erreur de Monte Carlo`[8],
-  Tab03_3$Autres[9:12], Tab03_3$`Erreur de Monte Carlo`[12],
-  Tab03_3$Autres[13:16], Tab03_3$`Erreur de Monte Carlo`[16],
-  Tab03_3$Autres[17:20], Tab03_3$`Erreur de Monte Carlo`[20]
+  (median(resultats_3$RRc) - mean(l_vraiRRc_3)), Tab01_3$Autres, Tab01_3$`Erreur de Monte Carlo`[4],
+  (median(resultats2_3$RRm) - mean(l_vraiRRm_3)), Tab02_3$Autres, Tab02_3$`Erreur de Monte Carlo`[4],
+  (median(resultats3_3$RRm_RF) - mean(l_vraiRRm_3)), Tab03_3$Autres[1:4], Tab03_3$`Erreur de Monte Carlo`[4],
+  (median(resultats3_3$RRm_Lasso) - mean(l_vraiRRm_3)),Tab03_3$Autres[5:8], Tab03_3$`Erreur de Monte Carlo`[8],
+  (median(resultats3_3$RRm_Mars) - mean(l_vraiRRm_3)), Tab03_3$Autres[9:12], Tab03_3$`Erreur de Monte Carlo`[12],
+  (median(resultats3_3$RRm_RN) - mean(l_vraiRRm_3)), Tab03_3$Autres[13:16], Tab03_3$`Erreur de Monte Carlo`[16],
+  (median(resultats3_3$RRm_GLM) - mean(l_vraiRRm_3)), Tab03_3$Autres[17:20], Tab03_3$`Erreur de Monte Carlo`[20]
   
 )
 
 comparaison01$`Scénario04_40%` <- c(
   
-  Tab01_4$Autres, Tab01_4$`Erreur de Monte Carlo`[4],
-  Tab02_4$Autres, Tab02_4$`Erreur de Monte Carlo`[4],
-  Tab03_4$Autres[1:4], Tab03_4$`Erreur de Monte Carlo`[4],
-  Tab03_4$Autres[5:8], Tab03_4$`Erreur de Monte Carlo`[8],
-  Tab03_4$Autres[9:12], Tab03_4$`Erreur de Monte Carlo`[12],
-  Tab03_4$Autres[13:16], Tab03_4$`Erreur de Monte Carlo`[16],
-  Tab03_4$Autres[17:20], Tab03_4$`Erreur de Monte Carlo`[20]
+  (median(resultats_4$RRc) - mean(l_vraiRRc_4)), Tab01_4$Autres, Tab01_4$`Erreur de Monte Carlo`[4],
+  (median(resultats2_4$RRm) - mean(l_vraiRRm_4)), Tab02_4$Autres, Tab02_4$`Erreur de Monte Carlo`[4],
+  (median(resultats3_4$RRm_RF) - mean(l_vraiRRm_4)), Tab03_4$Autres[1:4], Tab03_4$`Erreur de Monte Carlo`[4],
+  (median(resultats3_4$RRm_Lasso, na.rm = TRUE) - mean(l_vraiRRm_4)),Tab03_4$Autres[5:8], Tab03_4$`Erreur de Monte Carlo`[8],
+  (median(resultats3_4$RRm_Mars) - mean(l_vraiRRm_4)), Tab03_4$Autres[9:12], Tab03_4$`Erreur de Monte Carlo`[12],
+  (median(resultats3_4$RRm_RN) - mean(l_vraiRRm_4)), Tab03_4$Autres[13:16], Tab03_4$`Erreur de Monte Carlo`[16],
+  (median(resultats3_4$RRm_GLM) - mean(l_vraiRRm_4)), Tab03_4$Autres[17:20], Tab03_4$`Erreur de Monte Carlo`[20]
   
 )
 
-
 # nsim = 1000, Scénarios 01, 02, 03 et 04
 
-comparaison01$`Scénario01_0%` <- sapply(comparaison01$`Scénario01_0%`, FUN = function(x)x[[2]])
-comparaison01$`Scénario02_10%` <- sapply(comparaison01$`Scénario02_10%`, FUN = function(x)x[[2]])
-comparaison01$`Scénario03_20%` <- sapply(comparaison01$`Scénario03_20%`, FUN = function(x)x[[2]])
-comparaison01$`Scénario04_40%` <- sapply(comparaison01$`Scénario04_40%`, FUN = function(x)x[[2]])
+comparaison01$`Scénario01_0%`[-c(1, 7, 13, 19, 25, 31, 37)] <- sapply(comparaison01$`Scénario01_0%`[-c(1, 7, 13, 19, 25, 31, 37)], FUN = function(x)x[[2]])
+comparaison01$`Scénario02_10%`[-c(1, 7, 13, 19, 25, 31, 37)] <- sapply(comparaison01$`Scénario02_10%`[-c(1, 7, 13, 19, 25, 31, 37)], FUN = function(x)x[[2]])
+comparaison01$`Scénario03_20%`[-c(1, 7, 13, 19, 25, 31, 37)] <- sapply(comparaison01$`Scénario03_20%`[-c(1, 7, 13, 19, 25, 31, 37)], FUN = function(x)x[[2]])
+comparaison01$`Scénario04_40%`[-c(1, 7, 13, 19, 25, 31, 37)] <- sapply(comparaison01$`Scénario04_40%`[-c(1, 7, 13, 19, 25, 31, 37)], FUN = function(x)x[[2]])
 
 View(comparaison01)
 
 ####################### Représentation graphique ###############################
 
-# Biais
+# Biais moyen
 
-dat <- data.frame(x_biais = c(comparaison01$`Scénario01_0%`[[1]], comparaison01$`Scénario02_10%`[[1]], comparaison01$`Scénario03_20%`[[1]], comparaison01$`Scénario04_40%`[[1]],
-                              comparaison01$`Scénario01_0%`[[6]], comparaison01$`Scénario02_10%`[[6]], comparaison01$`Scénario03_20%`[[6]], comparaison01$`Scénario04_40%`[[6]],
-                              comparaison01$`Scénario01_0%`[[11]], comparaison01$`Scénario02_10%`[[11]], comparaison01$`Scénario03_20%`[[11]], comparaison01$`Scénario04_40%`[[11]],
-                              comparaison01$`Scénario01_0%`[[16]], comparaison01$`Scénario02_10%`[[16]], comparaison01$`Scénario03_20%`[[16]], comparaison01$`Scénario04_40%`[[16]],
-                              comparaison01$`Scénario01_0%`[[21]], comparaison01$`Scénario02_10%`[[21]], comparaison01$`Scénario03_20%`[[21]], comparaison01$`Scénario04_40%`[[21]],
+dat <- data.frame(x_biais = c(comparaison01$`Scénario01_0%`[[2]], comparaison01$`Scénario02_10%`[[2]], comparaison01$`Scénario03_20%`[[2]], comparaison01$`Scénario04_40%`[[2]],
+                              comparaison01$`Scénario01_0%`[[8]], comparaison01$`Scénario02_10%`[[8]], comparaison01$`Scénario03_20%`[[8]], comparaison01$`Scénario04_40%`[[8]],
+                              comparaison01$`Scénario01_0%`[[14]], comparaison01$`Scénario02_10%`[[14]], comparaison01$`Scénario03_20%`[[14]], comparaison01$`Scénario04_40%`[[14]],
+                              comparaison01$`Scénario01_0%`[[20]], comparaison01$`Scénario02_10%`[[20]], comparaison01$`Scénario03_20%`[[20]], comparaison01$`Scénario04_40%`[[20]],
                               comparaison01$`Scénario01_0%`[[26]], comparaison01$`Scénario02_10%`[[26]], comparaison01$`Scénario03_20%`[[26]], comparaison01$`Scénario04_40%`[[26]],
-                              comparaison01$`Scénario01_0%`[[31]], comparaison01$`Scénario02_10%`[[31]], comparaison01$`Scénario03_20%`[[31]], comparaison01$`Scénario04_40%`[[31]]),
+                              comparaison01$`Scénario01_0%`[[32]], comparaison01$`Scénario02_10%`[[32]], comparaison01$`Scénario03_20%`[[32]], comparaison01$`Scénario04_40%`[[32]],
+                              comparaison01$`Scénario01_0%`[[38]], comparaison01$`Scénario02_10%`[[38]], comparaison01$`Scénario03_20%`[[38]], comparaison01$`Scénario04_40%`[[38]]),
                   Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN", "TNDDR_GLM"), each = 4),
                   Scénario = c(1, 2, 3, 4))
 
@@ -125,13 +124,13 @@ ggplot(dat) +
 
 # Couverture
 
-dat <- data.frame(x_cov = c(comparaison01$`Scénario01_0%`[[5]], comparaison01$`Scénario02_10%`[[5]], comparaison01$`Scénario03_20%`[[5]], comparaison01$`Scénario04_40%`[[5]],
-                              comparaison01$`Scénario01_0%`[[10]], comparaison01$`Scénario02_10%`[[10]], comparaison01$`Scénario03_20%`[[10]], comparaison01$`Scénario04_40%`[[10]],
-                              comparaison01$`Scénario01_0%`[[15]], comparaison01$`Scénario02_10%`[[15]], comparaison01$`Scénario03_20%`[[15]], comparaison01$`Scénario04_40%`[[15]],
-                              comparaison01$`Scénario01_0%`[[20]], comparaison01$`Scénario02_10%`[[20]], comparaison01$`Scénario03_20%`[[20]], comparaison01$`Scénario04_40%`[[20]],
-                              comparaison01$`Scénario01_0%`[[25]], comparaison01$`Scénario02_10%`[[25]], comparaison01$`Scénario03_20%`[[25]], comparaison01$`Scénario04_40%`[[25]],
+dat <- data.frame(x_cov = c(comparaison01$`Scénario01_0%`[[6]], comparaison01$`Scénario02_10%`[[6]], comparaison01$`Scénario03_20%`[[6]], comparaison01$`Scénario04_40%`[[6]],
+                              comparaison01$`Scénario01_0%`[[12]], comparaison01$`Scénario02_10%`[[12]], comparaison01$`Scénario03_20%`[[12]], comparaison01$`Scénario04_40%`[[12]],
+                              comparaison01$`Scénario01_0%`[[18]], comparaison01$`Scénario02_10%`[[18]], comparaison01$`Scénario03_20%`[[18]], comparaison01$`Scénario04_40%`[[18]],
+                              comparaison01$`Scénario01_0%`[[24]], comparaison01$`Scénario02_10%`[[24]], comparaison01$`Scénario03_20%`[[24]], comparaison01$`Scénario04_40%`[[24]],
                               comparaison01$`Scénario01_0%`[[30]], comparaison01$`Scénario02_10%`[[30]], comparaison01$`Scénario03_20%`[[30]], comparaison01$`Scénario04_40%`[[30]],
-                              comparaison01$`Scénario01_0%`[[35]], comparaison01$`Scénario02_10%`[[35]], comparaison01$`Scénario03_20%`[[35]], comparaison01$`Scénario04_40%`[[35]]),
+                              comparaison01$`Scénario01_0%`[[36]], comparaison01$`Scénario02_10%`[[36]], comparaison01$`Scénario03_20%`[[36]], comparaison01$`Scénario04_40%`[[36]],
+                              comparaison01$`Scénario01_0%`[[42]], comparaison01$`Scénario02_10%`[[42]], comparaison01$`Scénario03_20%`[[42]], comparaison01$`Scénario04_40%`[[42]]),
                   Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN", "TNDDR_GLM"), each = 4),
                   Scénario = c(1, 2, 3, 4))
 
@@ -145,6 +144,30 @@ ggplot(dat) +
   geom_col(fill = "#112446") +
   theme_minimal() +
   facet_wrap(vars(Méthode))
+
+# Biais médian
+
+dat <- data.frame(x_biais = c(comparaison01$`Scénario01_0%`[[1]], comparaison01$`Scénario02_10%`[[1]], comparaison01$`Scénario03_20%`[[1]], comparaison01$`Scénario04_40%`[[1]],
+                              comparaison01$`Scénario01_0%`[[7]], comparaison01$`Scénario02_10%`[[7]], comparaison01$`Scénario03_20%`[[7]], comparaison01$`Scénario04_40%`[[7]],
+                              comparaison01$`Scénario01_0%`[[13]], comparaison01$`Scénario02_10%`[[13]], comparaison01$`Scénario03_20%`[[13]], comparaison01$`Scénario04_40%`[[13]],
+                              comparaison01$`Scénario01_0%`[[19]], comparaison01$`Scénario02_10%`[[19]], comparaison01$`Scénario03_20%`[[19]], comparaison01$`Scénario04_40%`[[19]],
+                              comparaison01$`Scénario01_0%`[[25]], comparaison01$`Scénario02_10%`[[25]], comparaison01$`Scénario03_20%`[[25]], comparaison01$`Scénario04_40%`[[25]],
+                              comparaison01$`Scénario01_0%`[[31]], comparaison01$`Scénario02_10%`[[31]], comparaison01$`Scénario03_20%`[[31]], comparaison01$`Scénario04_40%`[[31]],
+                              comparaison01$`Scénario01_0%`[[37]], comparaison01$`Scénario02_10%`[[37]], comparaison01$`Scénario03_20%`[[37]], comparaison01$`Scénario04_40%`[[37]]),
+                  Méthode = rep(c("RegLog", "IPW", "TNDDR_RF", "TNDDR_Lasso", "TNDDR_Mars", "TNDDR_RN", "TNDDR_GLM"), each = 4),
+                  Scénario = c(1, 2, 3, 4))
+
+
+dat$Scénario <- as.factor(dat$Scénario)
+dat$Méthode<- as.factor(dat$Méthode)
+
+
+ggplot(dat) +
+  aes(x = Scénario, y = x_biais) +
+  geom_col(fill = "#112446") +
+  theme_minimal() +
+  facet_wrap(vars(Méthode))
+
 
 ################################################################################
 # Scénarios avec différentes valeurs de prévalence de I2 et un taux de co-infection entre 30% et 40%
