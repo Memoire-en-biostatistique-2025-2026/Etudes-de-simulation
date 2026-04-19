@@ -130,7 +130,7 @@ colnames(resultats3) <- c("RRm_RF", "VE_RF", "var_log_RRm-RF", "IC_inf1-RF", "IC
 # Initialize objects to store results for replications with very different results
 
 replicats <- data.frame(matrix(ncol = 9, 
-                               nrow = nsim))
+                               nrow = 3*nsim))
 
 colnames(replicats) <- c("n°Replication", # Numéro de la réplicatoon
                          "Méthode", # Méthode d'estimation
@@ -177,9 +177,13 @@ for (i in 1:nsim) {
     replicats[r,c(1, 2)] <- list(i, "Lasso")
     replicats[r, -c(1, 2)] <- Lasso(dat)
     r <- r + 1 
+    replicats[r,c(1, 2)] <- list(i, "GLM")
+    replicats[r, -c(1, 2)] <- PM(dat)
+    r <- r + 1
     replicats[r,c(1, 2)] <- list(i, "Mars")
     replicats[r, -c(1, 2)] <- Mars(dat)
     r <- r + 1
+    
   }
   
   
