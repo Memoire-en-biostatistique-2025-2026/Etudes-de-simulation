@@ -1000,8 +1000,7 @@ ggplot(dat) +
   aes(x = Scénario, y = x_biais) +
   geom_col(fill = "#112446") +
   theme_minimal() +
-  facet_wrap(vars(Méthode)) +
-  scale_y_continuous(breaks = seq(0, 0.15, 0.1))
+  facet_wrap(vars(Méthode))
 
 # Couverture
 
@@ -1047,8 +1046,7 @@ ggplot(dat) +
   aes(x = Scénario, y = x_biais) +
   geom_col(fill = "#112446") +
   theme_minimal() +
-  facet_wrap(vars(Méthode)) +
-  scale_y_continuous(breaks = seq(0, 0.15, 0.1))
+  facet_wrap(vars(Méthode)) 
 
 ################################################################################
 ################################################################################
