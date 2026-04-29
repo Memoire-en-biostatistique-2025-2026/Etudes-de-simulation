@@ -116,11 +116,20 @@ dat$Scénario <- as.factor(dat$Scénario)
 dat$Méthode<- as.factor(dat$Méthode)
 
 
-ggplot(dat) +
+p1 <- ggplot(dat) +
   aes(x = Scénario, y = x_biais) +
   geom_col(fill = "#112446") +
   theme_minimal() +
-  facet_wrap(vars(Méthode))
+  facet_wrap(vars(Méthode)) +
+  coord_cartesian(ylim = c(-0.15, 0.15)) +
+  theme(
+    # Couleur et épaisseur des lignes principales
+    panel.grid.major = element_line(color = "gray80", size = 0.5),
+    # Couleur et épaisseur des lignes secondaires
+    panel.grid.minor = element_line(color = "gray90", size = 0.25)
+  ) +
+  labs(
+    title = "n =1000") 
 
 # Couverture
 
@@ -143,7 +152,16 @@ ggplot(dat) +
   aes(x = Scénario, y = x_cov) +
   geom_col(fill = "#112446") +
   theme_minimal() +
-  facet_wrap(vars(Méthode))
+  facet_wrap(vars(Méthode)) +
+  scale_y_continuous(breaks = seq(0, 0.15, by = 0.04)) +
+  theme(
+    # Couleur et épaisseur des lignes principales
+    panel.grid.major = element_line(color = "gray80", size = 0.5),
+    # Couleur et épaisseur des lignes secondaires
+    panel.grid.minor = element_line(color = "gray90", size = 0.25)
+  ) +
+  labs(
+    title = "n =1000")
 
 # Biais médian
 
@@ -996,11 +1014,20 @@ dat$Scénario <- as.factor(dat$Scénario)
 dat$Méthode<- as.factor(dat$Méthode)
 
 
-ggplot(dat) +
+p2 <- ggplot(dat) +
   aes(x = Scénario, y = x_biais) +
   geom_col(fill = "#112446") +
   theme_minimal() +
-  facet_wrap(vars(Méthode))
+  facet_wrap(vars(Méthode)) +
+  coord_cartesian(ylim = c(-0.15, 0.15))+
+  theme(
+    # Couleur et épaisseur des lignes principales
+    panel.grid.major = element_line(color = "gray80", size = 0.5),
+    # Couleur et épaisseur des lignes secondaires
+    panel.grid.minor = element_line(color = "gray90", size = 0.25)
+  ) +
+  labs(
+    title = "n =5000")
 
 # Couverture
 
