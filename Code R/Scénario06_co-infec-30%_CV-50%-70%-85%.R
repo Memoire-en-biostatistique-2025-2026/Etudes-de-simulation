@@ -16,7 +16,7 @@ library(dplyr)
 library(kableExtra)
 
 ################################################################################
-# Scénario 06 (co-infection ~ 40% dans l'échantillon): Sous-scénario 01 : Couverture vaccinale = 50%, 70% et 85% 
+# Scénario 06 (co-infection ~ 30% dans l'échantillon): Sous-scénario 01 : Couverture vaccinale = 50%, 70% et 85% 
 #                                                                         I1_prev = 15% et 
 #                                                                         I2 = 50%
 # Pour CV = 50% : co_inf_para1 = 0.5, co_inf_para2 = 0.5
