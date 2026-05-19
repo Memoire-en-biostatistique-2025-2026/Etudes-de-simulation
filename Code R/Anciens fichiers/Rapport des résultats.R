@@ -210,7 +210,8 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
 
   labs(x = "Scénario", y = "Biais") +
   
-  facet_wrap(~Taille)
+  facet_wrap(~Taille) +
+  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6))+
   
   theme_bw() 
 
@@ -426,6 +427,7 @@ dat <- data.frame(x_biais = c(comparaison02$`Scénario05_10%`[[2]], comparaison0
 
 dat$Scénario <- as.factor(dat$Scénario)
 dat$Méthode<- as.factor(dat$Méthode)
+dat$Taille <- as.factor(dat$Taille)
 
 
 ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
@@ -436,7 +438,8 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   
   labs(x = "Scénario", y = "Biais") +
   
-  facet_wrap(~Taille)
+  facet_wrap(~Taille) +
+  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
 
 theme_bw() 
 
@@ -652,6 +655,7 @@ dat <- data.frame(x_biais = c(comparaison03$`Scénario06_50%`[[2]], comparaison0
 
 dat$Scénario <- as.factor(dat$Scénario)
 dat$Méthode<- as.factor(dat$Méthode)
+dat$Taille<- as.factor(dat$Taille)
 
 
 ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
@@ -662,7 +666,8 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   
   labs(x = "Scénario", y = "Biais") +
   
-  facet_wrap(~Taille)
+  facet_wrap(~Taille) +
+  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
 
 theme_bw() 
 
@@ -879,6 +884,7 @@ dat <- data.frame(x_biais = c(comparaison04$`Scénario07_10%`[[2]], comparaison0
 
 dat$Scénario <- as.factor(dat$Scénario)
 dat$Méthode<- as.factor(dat$Méthode)
+dat$Taille<- as.factor(dat$Taille)
 
 
 ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
@@ -889,7 +895,8 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   
   labs(x = "Scénario", y = "Biais") +
   
-  facet_wrap(~Taille)
+  facet_wrap(~Taille) +
+  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
 
 theme_bw() 
 
@@ -1094,6 +1101,7 @@ dat <- data.frame(x_biais = c(comparaison05$`Scénario08_5%`[[2]], comparaison05
 
 dat$Scénario <- as.factor(dat$Scénario)
 dat$Méthode<- as.factor(dat$Méthode)
+dat$Taille<- as.factor(dat$Taille)
 
 
 ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
@@ -1104,7 +1112,8 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   
   labs(x = "Scénario", y = "Biais") +
   
-  facet_wrap(~Taille)
+  facet_wrap(~Taille) +
+  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
 
 theme_bw() 
 
@@ -1323,7 +1332,7 @@ dat <- data.frame(x_biais = c(comparaison06$`Scénario09_5%`[[2]], comparaison06
 
 dat$Scénario <- as.factor(dat$Scénario)
 dat$Méthode<- as.factor(dat$Méthode)
-
+dat$Taille <- as.factor(dat$Taille)
 
 ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
                 group = Méthode, shape = Méthode)) +
@@ -1333,7 +1342,8 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   
   labs(x = "Scénario", y = "Biais") +
   
-  facet_wrap(~Taille)
+  facet_wrap(~Taille) +
+  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
 
 theme_bw() 
 
