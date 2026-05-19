@@ -202,7 +202,7 @@ dat$Méthode<- as.factor(dat$Méthode)
 dat$Taille <- as.factor(dat$Taille)
 
 
-ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
+ggplot(dat, aes(x = Scénario, y = x_biais, fill = Méthode,
                       group = Méthode, shape = Méthode)) +
   
   geom_point(size = 3, alpha = 0.7) +
@@ -211,8 +211,7 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   labs(x = "Scénario", y = "Biais") +
   
   facet_wrap(~Taille) +
-  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6))+
-  
+  scale_shape_manual(values = c(21, 22, 23, 24, 25, 21, 22))+
   theme_bw() 
 
 # Couverture
@@ -430,7 +429,7 @@ dat$Méthode<- as.factor(dat$Méthode)
 dat$Taille <- as.factor(dat$Taille)
 
 
-ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
+ggplot(dat, aes(x = Scénario, y = x_biais, fill = Méthode,
                 group = Méthode, shape = Méthode)) +
   
   geom_point(size = 3, alpha = 0.7) +
@@ -439,7 +438,7 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   labs(x = "Scénario", y = "Biais") +
   
   facet_wrap(~Taille) +
-  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
+  scale_shape_manual(values = c(21, 22, 23, 24, 25, 21, 22)) +
 
 theme_bw() 
 
@@ -658,7 +657,7 @@ dat$Méthode<- as.factor(dat$Méthode)
 dat$Taille<- as.factor(dat$Taille)
 
 
-ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
+ggplot(dat, aes(x = Scénario, y = x_biais, fill = Méthode,
                 group = Méthode, shape = Méthode)) +
   
   geom_point(size = 3, alpha = 0.7) +
@@ -667,8 +666,7 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   labs(x = "Scénario", y = "Biais") +
   
   facet_wrap(~Taille) +
-  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
-
+  scale_shape_manual(values = c(21, 22, 23, 24, 25, 21, 22))+
 theme_bw() 
 
 # Couverture
@@ -887,7 +885,7 @@ dat$Méthode<- as.factor(dat$Méthode)
 dat$Taille<- as.factor(dat$Taille)
 
 
-ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
+ggplot(dat, aes(x = Scénario, y = x_biais, fill = Méthode,
                 group = Méthode, shape = Méthode)) +
   
   geom_point(size = 3, alpha = 0.7) +
@@ -896,7 +894,7 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   labs(x = "Scénario", y = "Biais") +
   
   facet_wrap(~Taille) +
-  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
+  scale_shape_manual(values = c(21, 22, 23, 24, 25, 21, 22))+
 
 theme_bw() 
 
@@ -1104,7 +1102,7 @@ dat$Méthode<- as.factor(dat$Méthode)
 dat$Taille<- as.factor(dat$Taille)
 
 
-ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
+ggplot(dat, aes(x = Scénario, y = x_biais, fill = Méthode,
                 group = Méthode, shape = Méthode)) +
   
   geom_point(size = 3, alpha = 0.7) +
@@ -1113,8 +1111,7 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   labs(x = "Scénario", y = "Biais") +
   
   facet_wrap(~Taille) +
-  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
-
+  scale_shape_manual(values = c(21, 22, 23, 24, 25, 21, 22))+
 theme_bw() 
 
 # Couverture
@@ -1334,7 +1331,7 @@ dat$Scénario <- as.factor(dat$Scénario)
 dat$Méthode<- as.factor(dat$Méthode)
 dat$Taille <- as.factor(dat$Taille)
 
-ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
+ggplot(dat, aes(x = Scénario, y = x_biais, fill = Méthode,
                 group = Méthode, shape = Méthode)) +
   
   geom_point(size = 3, alpha = 0.7) +
@@ -1343,8 +1340,7 @@ ggplot(dat, aes(x = Scénario, y = x_biais, color = Méthode,
   labs(x = "Scénario", y = "Biais") +
   
   facet_wrap(~Taille) +
-  scale_shape_manual(values = c(0, 1, 2, 3, 4, 5, 6)) +
-
+  scale_shape_manual(values = c(21, 22, 23, 24, 25, 21, 22))+
 theme_bw() 
 
 # Couverture
